@@ -36,4 +36,40 @@ public class CancionServiceImpl implements CancionService{
 		}
 		return false;
 	}
+	
+	@Override
+	public Cancion getCancion(int i, String s, int c) throws Exception{
+		
+		try {
+			return repository.findById(i, s, c);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
+		return new Cancion();
+	}
+
+	@Override
+	public Boolean deleteCancion(int i, String s, int c) throws Exception {
+		
+		try {
+			repository.delete(repository.findById(i, s, c));
+			return true;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public Boolean deleteByUser(String s) throws Exception {
+
+		try {
+			repository.deleteAll((repository.getByUser(s)));
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
 }

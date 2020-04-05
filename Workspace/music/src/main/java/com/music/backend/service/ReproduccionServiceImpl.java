@@ -35,4 +35,38 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 		return false;
 	}
 	
+	@Override
+	public Reproduccion getReproduccion(int i, String s) throws Exception{
+		
+		try {
+			return repository.findById(i, s);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return new Reproduccion();
+	}
+
+	@Override
+	public Boolean deleteReproduccion(int i, String s) throws Exception {
+		
+		try {
+			repository.delete(repository.findById(i, s));
+			return true;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	@Override
+	public Boolean deleteByUser(String s) throws Exception {
+
+		try {
+			repository.deleteAll((repository.getByUser(s)));
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
 }

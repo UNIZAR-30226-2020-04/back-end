@@ -17,12 +17,15 @@ import com.music.backend.entity.Album;
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.keyLista;
 import com.music.backend.repository.AlbumRepository;
+import com.music.backend.repository.CancionRepository;
 
 @Service
 public class AlbumServiceImpl implements AlbumService{
 
 	@Autowired
 	AlbumRepository repository;
+	@Autowired
+	CancionService cancionService;
 	
 	@Override
 	public Boolean createAlbum(Album a) throws Exception{
@@ -35,4 +38,42 @@ public class AlbumServiceImpl implements AlbumService{
 		}
 		return false;
 	}
+	
+	@Override
+	public Album getAlbum(int i, String s) throws Exception{
+		
+		try {
+			return repository.findById(i, s);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
+		return new Album();
+	}
+
+	@Override
+	public Boolean deleteAlbum(int i, String s) throws Exception {
+		
+		try {
+			repository.delete(repository.findById(i, s));
+			return true;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
+		return false;
+	}
+
+	@Override
+	public Boolean deleteByUser(String s) throws Exception {
+
+		try {
+			cancionService.deleteByUser(s);
+			repository.deleteAll((repository.getByUser(s)));
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
 }

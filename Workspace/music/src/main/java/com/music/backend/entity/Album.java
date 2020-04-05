@@ -16,7 +16,6 @@ import com.music.backend.entity.keyLista;
 public class Album implements Serializable{
 	
 	@EmbeddedId
-	@NotBlank
 	private keyLista idAlbum;
 	
 	@Column(name = "Nombre", nullable = false,length=100)

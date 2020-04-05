@@ -16,7 +16,6 @@ import com.music.backend.entity.keyLista;
 public class Reproduccion implements Serializable{
 	
 	@EmbeddedId
-	@NotBlank
 	private keyLista idRep;
 	
 	@Column(name = "Nombre", nullable = false,length=100)
