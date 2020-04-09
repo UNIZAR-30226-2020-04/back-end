@@ -1,6 +1,11 @@
 package com.music.backend.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -10,6 +15,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -162,7 +168,140 @@ public class UserController {
 		} catch (Exception e) {
 			System.out.println("Error:");
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
+	}
+	
+	/*
+		Método Login:
+		/loginUser
+		Parámetro: Usuario (Correo + Pass)	
+		Devuelve el Usuario si se ha podido hacer login, sino un Usuario vacío
+	 */
+	
+	@PostMapping(value = "/loginUser", produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public Usuario login(@RequestParam Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+
+		try {
+			Usuario user = (Usuario) u;
+			return usuarioService.loginUser(user.getCorreo(), user.getPass());
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return new Usuario();
+	}
+	/*
+		Método Register:
+		/registerUser
+		Parámetro: Usuario
+		Devuelve true si se ha podido hacer el registro, sino false
+	*/
+	@PostMapping(value = "/registerUser", produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public Boolean register(@RequestParam Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+
+		try {
+			Usuario user = (Usuario) u;
+			return usuarioService.createUser(user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	
+	@PostMapping(value = "/pruebaReact", produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public void pruebaReact(@RequestParam Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+
+		try {
+			Usuario user = (Usuario) u;
+			System.out.println("Object");
+			System.out.println(u);
+			System.out.println("Cast a Usuario");
+			System.out.println(user.toString());
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	
+	
+	
+	
+	@PostMapping(value = "/uploadSong")
+	@ResponseBody
+	public boolean uploadSong(@RequestBody MultipartFile f, ModelMap model, HttpServletResponse response, BindingResult result){
+		try {
+			if(!f.getContentType().equals("MIME_AUDIO_MPEG")) {
+				throw new Exception("No es un archivo de audio");
+			}
+			
+			byte[] b = f.getBytes();
+			
+			Cancion c = new Cancion(new keyLista(1,"usuario"), 1, "nombre", "genero", b);
+			
+			if(!cancionService.createCancion(c)) {
+				throw new Exception("No se ha podido guardar la cancion");
+			}
+			
+			return true;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return false;
+	}
+	
+	@PostMapping(value = "/uploadSongs")
+	@ResponseBody
+	public boolean uploadSongs(@RequestBody MultipartFile[] f, ModelMap model, HttpServletResponse response, BindingResult result){
+		try {
+			for(int i = 0; i < f.length; i++) {
+				MultipartFile f_ = f[i];
+				if(!f_.getContentType().equals("MIME_AUDIO_MPEG")) {
+					throw new Exception("No es un archivo de audio");
+				}
+				
+				byte[] b = f_.getBytes();
+				
+				Cancion c = new Cancion(new keyLista(1,"usuario"), 1, "nombre", "genero", b);
+				
+				if(!cancionService.createCancion(c)) {
+					throw new Exception("No se ha podido guardar la cancion");
+				}
+			}
+			
+			return true;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return false;
+	}
+	
+	@PostMapping(value = "/getSong")
+	@ResponseBody
+	public URL getSong(@RequestBody String u, ModelMap model, HttpServletResponse response, BindingResult result){
+		URL url = null;
+		try {
+			
+			Cancion c = cancionService.getCancion(1, "usuario", 1);
+			
+			String directory = Paths.get("").toAbsolutePath().toString();
+			
+			System.out.println("Directory: " + directory);
+			String path = directory + "\\src\\main\\resources\\files\\";
+			String songName = c.getNombre() + c.getIdCancion().getL_id().getU() + ".mp3";
+			
+			FileOutputStream fos = new FileOutputStream(directory + songName);
+			fos.write(c.getMp3());
+			File f = new File(directory + songName);
+			url = f.toURI().toURL();
+			return url;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return url;
 	}
 	
 	

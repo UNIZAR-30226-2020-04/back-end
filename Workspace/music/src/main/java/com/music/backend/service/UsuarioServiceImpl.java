@@ -67,5 +67,11 @@ public class UsuarioServiceImpl implements UsuarioService{
 		}
 		return false;
 	}
+
+	@Override
+	public Usuario loginUser(String c, String p) throws Exception {
+		// TODO Auto-generated method stub
+		return repository.findByEmail(c);
+	}
 	
 }
