@@ -1,12 +1,16 @@
 package com.music.backend.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
@@ -32,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -181,15 +186,27 @@ public class UserController {
 	
 	@PostMapping(value = "/loginUser", produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public Usuario login(@RequestParam Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Usuario login(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 
 		try {
-			Usuario user = (Usuario) u;
-			return usuarioService.loginUser(user.getCorreo(), user.getPass());
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String c = lhm.get("email");
+			String p = lhm.get("password");
+			
+			System.out.println("Correo: " + c);
+			System.out.println("Password: " + p);
+			
+			Usuario res = usuarioService.loginUser(c,p);
+			
+			System.out.println(res.toString());
+			
+			return res;
 		}catch(Exception e) {
 			System.out.println(e);
 		}
-		return new Usuario();
+		Usuario user = new Usuario();
+		System.out.println(user.getCorreo());
+		return user;
 	}
 	/*
 		Método Register:
@@ -199,10 +216,26 @@ public class UserController {
 	*/
 	@PostMapping(value = "/registerUser", produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public Boolean register(@RequestParam Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean register(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 
 		try {
-			Usuario user = (Usuario) u;
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String name = lhm.get("name");
+			String surname = lhm.get("surname");
+			String username = lhm.get("username");
+			String email = lhm.get("email");
+			String password = lhm.get("password");
+			String dateOfBirth = lhm.get("dateOfBirth");
+			
+			System.out.println("name: " + name);
+			System.out.println("surname: " + surname);
+			System.out.println("username: " + username);
+			System.out.println("email: " + email);
+			System.out.println("password: " + password);
+			System.out.println("dateOfBirth: " + dateOfBirth);
+		    
+		    Usuario user = new Usuario(email, name, null, password, username, dateOfBirth);
+		    System.out.println(user.toString());
 			return usuarioService.createUser(user);
 		}catch(Exception e) {
 			System.out.println(e);
@@ -211,44 +244,78 @@ public class UserController {
 	}
 	
 	
-	@PostMapping(value = "/pruebaReact", produces = "application/json", consumes = "application/json")
+	@PostMapping(value = "/pruebaReact", produces = "application/json")
 	@ResponseBody
-	public void pruebaReact(@RequestParam Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-
+	public void pruebaReact(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		try {
-			Usuario user = (Usuario) u;
-			System.out.println("Object");
-			System.out.println(u);
-			System.out.println("Cast a Usuario");
-			System.out.println(user.toString());
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String c = lhm.get("email");
+			String p = lhm.get("password");
+			System.out.println("Correo: " + c);
+			System.out.println("Password: " + p);
+			
 		}catch(Exception e) {
+			System.out.println("Excepcion en PruebaReact");
 			System.out.println(e);
 		}
 	}
 	
 	
-	
-	
-	
-	@PostMapping(value = "/uploadSong")
+	@PostMapping(value = "/createAlbum", produces = "application/json")
 	@ResponseBody
-	public boolean uploadSong(@RequestBody MultipartFile f, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean createAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
 		try {
-			if(!f.getContentType().equals("MIME_AUDIO_MPEG")) {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String e = lhm.get("email");
+			String n = lhm.get("name");
+			String d = lhm.get("date");
+			
+			albumService.createAlbum(e, n, d);
+			return true;
+		}catch(Exception e) {
+			System.out.println("Excepcion en createAlbum");
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	
+	@PostMapping(value = "/uploadSong", produces = "application/json")
+	@ResponseBody
+	public boolean uploadSong(@RequestParam MultipartFile file, ModelMap model, HttpServletResponse response){
+		System.out.println("Entro en uploadSong");
+		try {
+			/*if(!f.getContentType().equals("MIME_AUDIO_MPEG")) {
 				throw new Exception("No es un archivo de audio");
 			}
-			
-			byte[] b = f.getBytes();
-			
+			*/
+			byte[] b = file.getBytes();
+			System.out.println("He pillado los bytes");
 			Cancion c = new Cancion(new keyLista(1,"usuario"), 1, "nombre", "genero", b);
-			
+			System.out.println("He construido la nueva cancion");
+			/*
 			if(!cancionService.createCancion(c)) {
 				throw new Exception("No se ha podido guardar la cancion");
 			}
+			*/
+			System.out.println("He guardado la cancion");
+			
+			String directory = Paths.get("").toAbsolutePath().toString();
+			
+			System.out.println("Directory: " + directory);
+			String path = directory + "\\src\\main\\resources\\files\\";
+			String songName = c.getNombre() + c.getIdCancion().getL_id().getU() + ".mp3";
+			
+			FileOutputStream fos = new FileOutputStream(path + songName);
+			fos.write(b);
 			
 			return true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		return false;
 	}

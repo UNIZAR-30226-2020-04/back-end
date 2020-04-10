@@ -70,8 +70,36 @@ public class UsuarioServiceImpl implements UsuarioService{
 
 	@Override
 	public Usuario loginUser(String c, String p) throws Exception {
-		// TODO Auto-generated method stub
-		return repository.findByEmail(c);
+		
+		return repository.findByEmailAndPass(c,p);
 	}
+	
+	@Override
+	public Boolean updateUser(String correo, String nombre, String nick) throws Exception{
+		
+		try {
+			Usuario u = repository.findByEmail(correo);
+			u.setNombre(nombre);
+			u.setNick(nick);
+			u = repository.save(u);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public Boolean updatePass(String correo, String oldPass, String newPass) throws Exception{
+		try {
+			Usuario u = repository.findByEmailAndPass(correo, oldPass);
+			u.setPass(newPass);
+			u = repository.save(u);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	
 }
