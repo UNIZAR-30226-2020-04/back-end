@@ -19,4 +19,6 @@ public interface AlbumRepository extends CrudRepository<Album,keyLista> {
 	public Album findById(int i, String s);
 	@Query(value = "SELECT * FROM Album WHERE usuario_id = ?1", nativeQuery = true)
 	public Iterable<Album> getByUser(String s);
+	@Query(value = "SELECT * FROM Album WHERE usuario_id = ?1", nativeQuery = true)
+	public Album[] listAlbumsUser(String s);
 }
