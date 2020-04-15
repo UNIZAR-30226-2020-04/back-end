@@ -25,7 +25,7 @@ public class Cancion implements Serializable{
 	@Column(name = "Genero", nullable = false,length=100)
 	private String Genero;
 	
-	@Column(name = "mp3",length=1024)
+	@Column(name = "mp3", length = 10000000)
 	//@NotBlank
 	private byte[] mp3;
 

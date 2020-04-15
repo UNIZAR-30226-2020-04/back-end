@@ -1,5 +1,6 @@
 package com.music.backend.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +13,10 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.Inflater;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -186,7 +191,7 @@ public class UserController {
 	
 	@PostMapping(value = "/loginUser", produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public Usuario login(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public ResponseEntity<Usuario> login(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -199,15 +204,29 @@ public class UserController {
 			Usuario res = usuarioService.loginUser(c,p);
 			
 			System.out.println(res.toString());
-			
-			return res;
+			ResponseEntity<Usuario> r = new ResponseEntity<Usuario>(res, HttpStatus.OK);
+			return new ResponseEntity<Usuario>(res, HttpStatus.OK);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
 		Usuario user = new Usuario();
 		System.out.println(user.getCorreo());
-		return user;
+		return new ResponseEntity<Usuario>(HttpStatus.BAD_REQUEST);
 	}
+	
+	
+	@PostMapping(value = "/p")
+	public ResponseEntity<Usuario> p(ModelMap model, HttpServletResponse response){
+
+		try {
+			return null;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+	
+	
 	/*
 		Método Register:
 		/registerUser
@@ -292,14 +311,34 @@ public class UserController {
 				throw new Exception("No es un archivo de audio");
 			}
 			*/
+			System.out.println(file.getContentType());
+			System.out.println(file.getName());
+			System.out.println(file.getOriginalFilename());
+			System.out.println(file.getSize());
+			System.out.println(file.getClass());
+			System.out.println(file.getResource());
 			byte[] b = file.getBytes();
+
+  		System.out.println("Bytes antes:");
+			System.out.println(b.length);
+			/*
+			byte[] b_compressed = compressBytes(b);
+			
+			System.out.println("Bytes despues:");
+			System.out.println(b_compressed.length);
+			System.out.println("Bytes uncompressed:");
+			System.out.println(decompressBytes(b_compressed).length);
+			*/
+			/*
 			System.out.println("He pillado los bytes");
+      */
 			keyLista kLa = new keyLista(1,"usuario");
 			Cancion c = new Cancion(kLa, 1, "nombre", "genero", b); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
 			if(!cancionService.createCancion( kLa, c )) {
 				throw new Exception("No se ha podido guardar la cancion");
 			}
+      
 			System.out.println("He guardado la cancion");
 			
 			String directory = Paths.get("").toAbsolutePath().toString();
@@ -310,7 +349,7 @@ public class UserController {
 			
 			FileOutputStream fos = new FileOutputStream(path + songName);
 			fos.write(b);
-			
+			*/
 			return true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -346,9 +385,8 @@ public class UserController {
 		return false;
 	}
 	
-	@PostMapping(value = "/getSong")
-	@ResponseBody
-	public URL getSong(@RequestBody String u, ModelMap model, HttpServletResponse response, BindingResult result){
+	@GetMapping(value = "/getSong")
+	public URL getSong(ModelMap model, HttpServletResponse response){
 		URL url = null;
 		try {
 			
@@ -369,5 +407,77 @@ public class UserController {
 			System.out.println(e.getMessage());
 		}
 		return url;
+	}
+	
+	public byte[] comprimir(byte[] b) {
+		
+	try
+    {
+      ByteArrayOutputStream byteStream =
+        new ByteArrayOutputStream(b.length);
+      try
+      {
+        GZIPOutputStream zipStream = new GZIPOutputStream(byteStream);
+        try
+        {
+          zipStream.write(b);
+        }
+        finally
+        {
+          zipStream.close();
+        }
+      }
+      finally
+      {
+        byteStream.close();
+      }
+
+      byte[] compressedData = byteStream.toByteArray();
+      
+      System.out.println("Comprimido con lo que yo he hecho: " + compressedData.length);
+      return compressedData;
+    }
+    catch(Exception e)
+    {
+      e.printStackTrace();
+    }
+	return null;
+  }
+	
+	
+	// compress the image bytes before storing it in the database
+	public static byte[] compressBytes(byte[] data) {
+		Deflater deflater = new Deflater();
+	    deflater.setInput(data);
+	    deflater.finish();
+	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+	    byte[] buffer = new byte[1024];
+	    while (!deflater.finished()) {
+	    	int count = deflater.deflate(buffer);
+	        outputStream.write(buffer, 0, count);
+	    }
+	    try {
+	    	outputStream.close();
+	    } catch (IOException e) {
+	    }
+	    System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
+	    return outputStream.toByteArray();
+	}
+	    // uncompress the image bytes before returning it to the angular application
+	public static byte[] decompressBytes(byte[] data) {
+	    Inflater inflater = new Inflater();
+	    inflater.setInput(data);
+	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+	    byte[] buffer = new byte[1024];
+	    try {
+	    	while (!inflater.finished()) {
+	    		int count = inflater.inflate(buffer);
+	            outputStream.write(buffer, 0, count);
+	        }
+	            outputStream.close();
+	     } catch (IOException ioe) {
+	     } catch (DataFormatException e) {
+	     }
+	     return outputStream.toByteArray();
 	}
 }
