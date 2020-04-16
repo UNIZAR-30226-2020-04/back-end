@@ -283,7 +283,7 @@ public class UserController {
 	
 	@PostMapping(value = "/createAlbum", produces = "application/json")
 	@ResponseBody
-	public Boolean createAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -292,13 +292,12 @@ public class UserController {
 			String n = lhm.get("name");
 			String d = lhm.get("date");
 			
-			albumService.createAlbum(e, n, d);
-			return true;
+			return albumService.createAlbum(e, n, d);
 		}catch(Exception e) {
 			System.out.println("Excepcion en createAlbum");
 			System.out.println(e);
 		}
-		return false;
+		return null;
 	}
 	
 	@PostMapping(value = "/createPlaylist", produces = "application/json")

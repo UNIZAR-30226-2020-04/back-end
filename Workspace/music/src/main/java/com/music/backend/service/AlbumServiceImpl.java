@@ -40,16 +40,16 @@ public class AlbumServiceImpl implements AlbumService{
 	}
 	
 	@Override
-	public Boolean createAlbum(String email, String name, String date) throws Exception{
+	public keyLista createAlbum(String email, String name, String date) throws Exception{
 		
 		try {
 			Album a = new Album((int)repository.count()+1, email, name, null, date);
 			repository.save(a);
-			return true;
+			return a.getIdAlbum();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
-		return false;
+		return null;
 	}
 	
 	@Override
