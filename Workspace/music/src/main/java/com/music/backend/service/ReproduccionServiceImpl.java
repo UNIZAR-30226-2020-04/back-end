@@ -105,5 +105,17 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 		}
 		return false;
 	}
+
+	@Override
+	public Cancion[] listSongs(int i, String s) throws Exception {
+		try {
+			Reproduccion r = repository.findById(i, s);
+			Cancion[] c = r.canciones.toArray(new Cancion[0]);
+			return c;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 }

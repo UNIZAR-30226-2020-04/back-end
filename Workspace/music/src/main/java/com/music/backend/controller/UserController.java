@@ -485,6 +485,42 @@ public class UserController {
 	}
 	
 	
+	@PostMapping(value = "/listSongsPlaylist", produces = "application/json")
+	@ResponseBody
+	public Cancion[] listSongsPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			int id_p = Integer.parseInt(lhm.get("idplaylist"));
+			
+			return repService.listSongs(id_p, user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+	
+	
+	@PostMapping(value = "/listPodcast", produces = "application/json")
+	@ResponseBody
+	public Cancion[] listPodcast(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			int id_p = Integer.parseInt(lhm.get("idpodcast"));
+			
+			return podService.listPodcast(id_p, user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+	
+	
 	@PostMapping(value = "/deleteAlbum", produces = "application/json")
 	@ResponseBody
 	public Boolean deleteAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){

@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Podcast;
 import com.music.backend.entity.Reproduccion;
 import com.music.backend.entity.keyLista;
@@ -78,5 +79,19 @@ public class PodcastServiceImpl implements PodcastService {
 			System.out.println(e);
 		}
 		return false;
+	}
+
+	@Override
+	public Cancion[] listPodcast(int i, String s) throws Exception {
+
+		try {
+			
+			Podcast p = repository.findById(i, s);
+			Cancion[] c = p.capitulos.toArray(new Cancion[0]);
+			return c;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
 	}
 }

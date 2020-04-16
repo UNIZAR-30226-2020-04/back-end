@@ -1,5 +1,6 @@
 package com.music.backend.service;
 
+import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Reproduccion;
 import com.music.backend.entity.Usuario;
 import com.music.backend.entity.keyCancion;
@@ -13,4 +14,5 @@ public interface ReproduccionService {
 	public Boolean deleteByUser(String s) throws Exception;
 	public Boolean addSong(keyLista kl, keyCancion kc) throws Exception;
 	public Boolean deleteSongPlaylist(keyLista kl, keyCancion kc) throws Exception;
+	public Cancion[] listSongs(int i, String s) throws Exception;
 }
