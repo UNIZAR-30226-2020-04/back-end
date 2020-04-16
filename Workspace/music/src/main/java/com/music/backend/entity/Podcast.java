@@ -7,7 +7,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.persistence.EmbeddedId;
+
 import com.music.backend.entity.keyLista;
 
 @SuppressWarnings("serial")
@@ -27,6 +27,15 @@ public class Podcast implements Serializable{
 	
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
 	private String FechaPublicacion;
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "CapitulosPodcast", joinColumns = { 
+			@JoinColumn(name = "podcast.lista_id", nullable = false, updatable = false), 
+			@JoinColumn(name = "podcast.usuario_id", nullable = false, updatable = false) }, 
+			inverseJoinColumns = { @JoinColumn(name = "cancion.cancion_id", nullable = false, updatable = false),
+									@JoinColumn(name = "cancion.lista_id", nullable = false, updatable = false),
+									@JoinColumn(name = "cancion.usuario_id", nullable = false, updatable = false)})
+	public Set<Cancion> capitulos = new HashSet<Cancion>(0);
 
 	public Podcast() {
 		super();

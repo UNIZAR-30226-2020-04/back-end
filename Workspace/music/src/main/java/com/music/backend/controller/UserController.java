@@ -12,6 +12,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -149,9 +150,9 @@ public class UserController {
 			//Pruebas de DELETE
 			
 			//Usuario
-			if(!usuarioService.deleteUser(u.getCorreo())) {
-				throw new Exception("DELETE usuario mal hecho");
-			}
+			//if(!usuarioService.deleteUser(u.getCorreo())) {
+			//	throw new Exception("DELETE usuario mal hecho");
+			//}
 			/*
 			//Cancion
 			if(!cancionService.deleteCancion(c.getIdCancion().getL_id().getL_id(), c.getIdCancion().getL_id().getU(), c.getIdCancion().getC_id())) {
@@ -294,7 +295,6 @@ public class UserController {
 			
 			return albumService.createAlbum(e, n, d);
 		}catch(Exception e) {
-			System.out.println("Excepcion en createAlbum");
 			System.out.println(e);
 		}
 		return null;
@@ -302,17 +302,22 @@ public class UserController {
 	
 	@PostMapping(value = "/createPlaylist", produces = "application/json")
 	@ResponseBody
-	public Boolean createAlbum(@RequestParam("user") String u, @RequestParam("playlist") String p, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean createPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("user");
+			String p = lhm.get("playlist");
+			
+			System.out.println("u: " + u);
+			System.out.println("p: " + p);
 			
 			Reproduccion r = new Reproduccion();
-			keyLista kl = new keyLista(-1,u);
+			keyLista kl = new keyLista(-1,user);
 			r.setIdRep(kl);
 			r.setNombre(p);
 			return repService.createReproduccion(r);
 		}catch(Exception e) {
-			System.out.println("Excepcion en createAlbum");
 			System.out.println(e);
 		}
 		return false;
@@ -321,13 +326,23 @@ public class UserController {
 	
 	@PostMapping(value = "/addToPlaylist", produces = "application/json")
 	@ResponseBody
-	public Boolean addToPlaylist(@RequestParam("keyList") keyLista kl, @RequestParam("keyCancion") keyCancion kc, 
-				ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean addToPlaylist(@RequestBody Object u, 
+			ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
-			repService.addSong(kl, kc);
+			
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("user");
+			String nombre = lhm.get("nombre");
+			int id_p = Integer.parseInt(lhm.get("idplaylist"));
+			int id_c = Integer.parseInt(lhm.get("idcancion"));
+			
+			keyLista kl = new keyLista(id_p,user);
+			keyCancion kc = new keyCancion(kl,id_c);
+			
+			return repService.addSong(kl, kc);
+			
 		}catch(Exception e) {
-			System.out.println("Excepcion en createAlbum");
 			System.out.println(e);
 		}
 		return false;
@@ -335,13 +350,19 @@ public class UserController {
 	
 	@PostMapping(value = "/suscribeUser", produces = "application/json")
 	@ResponseBody
-	public Boolean suscribeUser(@RequestParam("user") String u, @RequestParam("podcast") keyLista kl, 
+	public Boolean suscribeUser(@RequestBody Object u,
 				ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
-			return usuarioService.suscribe(u, kl);
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("user");
+			String user_p = lhm.get("userpodcast");
+			int id_p = Integer.parseInt(lhm.get("idpodcast"));
+			
+			keyLista kl = new keyLista(id_p, user_p);
+			
+			return usuarioService.suscribe(user, kl);
 		}catch(Exception e) {
-			System.out.println("Excepcion en createAlbum");
 			System.out.println(e);
 		}
 		return false;
@@ -349,19 +370,100 @@ public class UserController {
 	
 	@PostMapping(value = "/createPodcast", produces = "application/json")
 	@ResponseBody
-	public Boolean createAlbum(@RequestParam("user") String u, @RequestParam("nombre") String n,
+	public Boolean createPodcast(@RequestParam("user") String u, @RequestParam("nombre") String n, @RequestParam("nombrecap") String nC,
 			@RequestParam("file") MultipartFile f, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
-			
 			Podcast p = new Podcast(-1, u, n, null, null);
-			return podService.createPodcast(p);
+			if(!podService.createPodcast(p)) {
+				throw new Exception("No se ha podido crear el Podcast");
+			}
+			
+			Cancion c = new Cancion(p.getIdPodcast(), -1, nC, "CapituloPodcast", f.getBytes()) ;
+			if(!cancionService.createCancion(p.getIdPodcast(),c)) {
+				throw new Exception("No se ha podido crear el capitulo del Podcast");
+			}
+			
+			return true;
 		}catch(Exception e) {
-			System.out.println("Excepcion en createAlbum");
 			System.out.println(e);
 		}
 		return false;
 	}
+	
+	
+	
+	@PostMapping(value = "/deleteUser", produces = "application/json")
+	@ResponseBody
+	public Boolean deleteUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			String pass = lhm.get("pass");
+			String passCheck = lhm.get("passCheck");
+			
+			return usuarioService.deleteUser(user, pass, passCheck);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	
+	@PostMapping(value = "/cambiarNombre", produces = "application/json")
+	@ResponseBody
+	public Boolean cambiarNombre(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			String name = lhm.get("name");
+			String newName = lhm.get("newName");
+			return usuarioService.changeName(user, name, newName);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	
+	@PostMapping(value = "/cambiarNick", produces = "application/json")
+	@ResponseBody
+	public Boolean cambiarNick(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			String nick = lhm.get("nick");
+			String newNick = lhm.get("newNick");
+			return usuarioService.changeNick(user, nick, newNick);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	@PostMapping(value = "/cambiarPass", produces = "application/json")
+	@ResponseBody
+	public Boolean cambiarPass(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			String pass = lhm.get("pass");
+			String newPass = lhm.get("newPass");
+			return usuarioService.changePass(user,pass,newPass);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+//////////////////////////////////	
 	
 	
 	@PostMapping(value = "/uploadSong", produces = "application/json")
