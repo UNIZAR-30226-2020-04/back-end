@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Podcast;
 import com.music.backend.entity.keyCancion;
+import com.music.backend.entity.keyLista;
 import com.music.backend.repository.CancionRepository;
 import com.music.backend.repository.UsuarioRepository;
 
@@ -26,14 +27,19 @@ public class CancionServiceImpl implements CancionService{
 	CancionRepository repository;
 	
 	@Override
-	public Boolean createCancion(Cancion c) throws Exception{
+	public Boolean createCancion(keyLista a, Cancion c) throws Exception{
 		
 		try {
+			// Calculo el número de canción dentro del album
+			int c_id = repository.listSongsInAlbumUser(a.getL_id(), a.getU()).length + 1;
+			keyCancion idCancion = new keyCancion(a, c_id);
+			c.setIdCancion(idCancion);
 			repository.save(c);
 			return true;
 		}catch(Exception e) {
 			System.out.println(e);
 		}
+
 		return false;
 	}
 	

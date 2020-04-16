@@ -109,7 +109,7 @@ public class UserController {
 			
 			Cancion c = new Cancion(kLa, 1, "Cancion", "Genero", null);
 			
-			if(!cancionService.createCancion(c)) {
+			if(!cancionService.createCancion( kLa, c)) {
 				throw new Exception("INSERT cancion mal hecho");
 			}
 			
@@ -318,7 +318,8 @@ public class UserController {
 			System.out.println(file.getClass());
 			System.out.println(file.getResource());
 			byte[] b = file.getBytes();
-			System.out.println("Bytes antes:");
+
+  		System.out.println("Bytes antes:");
 			System.out.println(b.length);
 			/*
 			byte[] b_compressed = compressBytes(b);
@@ -328,14 +329,16 @@ public class UserController {
 			System.out.println("Bytes uncompressed:");
 			System.out.println(decompressBytes(b_compressed).length);
 			*/
-			Cancion c = new Cancion(new keyLista(1,"usuario"), 1, "nombre", "genero", b);
-			System.out.println("He construido la nueva cancion");
-			
-			if(!cancionService.createCancion(c)) {
+			/*
+			System.out.println("He pillado los bytes");
+      */
+			keyLista kLa = new keyLista(1,"usuario");
+			Cancion c = new Cancion(kLa, 1, "nombre", "genero", b); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
+			if(!cancionService.createCancion( kLa, c )) {
 				throw new Exception("No se ha podido guardar la cancion");
 			}
-			
-			/*
+      
 			System.out.println("He guardado la cancion");
 			
 			String directory = Paths.get("").toAbsolutePath().toString();
@@ -385,9 +388,10 @@ public class UserController {
 				
 				byte[] b = f_.getBytes();
 				
-				Cancion c = new Cancion(new keyLista(1,"usuario"), 1, "nombre", "genero", b);
+				keyLista kLa = new keyLista(1,"usuario");
+				Cancion c = new Cancion(kLa, 1, "nombre", "genero", b);
 				
-				if(!cancionService.createCancion(c)) {
+				if(!cancionService.createCancion(kLa, c) {
 					throw new Exception("No se ha podido guardar la cancion");
 				}
 			}
@@ -494,6 +498,4 @@ public class UserController {
 	     }
 	     return outputStream.toByteArray();
 	}
-	
-	
 }
