@@ -335,6 +335,20 @@ public class UserController {
 		return false;
 	}
 	
+	@PostMapping(value = "/suscribeUser", produces = "application/json")
+	@ResponseBody
+	public Boolean suscribeUser(@RequestParam("user") String u, @RequestParam("podcast") keyLista kl, 
+				ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			return usuarioService.suscribe(u, kl);
+		}catch(Exception e) {
+			System.out.println("Excepcion en createAlbum");
+			System.out.println(e);
+		}
+		return false;
+	}
+	
 	
 	@PostMapping(value = "/uploadSong", produces = "application/json")
 	@ResponseBody

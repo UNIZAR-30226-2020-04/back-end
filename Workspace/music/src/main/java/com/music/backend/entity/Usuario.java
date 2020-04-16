@@ -36,6 +36,8 @@ public class Usuario implements Serializable{
 	
 	@Column(name = "fNacimiento", nullable = false,length=100)
 	private String fNacimiento;
+	
+	public Set<keyLista> podcasts = new HashSet<keyLista>(0);
 
 	public Usuario() {
 		super();

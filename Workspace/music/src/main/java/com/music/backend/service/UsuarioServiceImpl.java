@@ -100,6 +100,19 @@ public class UsuarioServiceImpl implements UsuarioService{
 		}
 		return false;
 	}
+
+	@Override
+	public Boolean suscribe(String user, keyLista kl) throws Exception {
+		// TODO Auto-generated method stub
+		
+		try {
+			Usuario u = repository.findByEmail(user);
+			return u.podcasts.add(kl);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
 	
 	
 }
