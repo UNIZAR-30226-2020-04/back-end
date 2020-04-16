@@ -37,7 +37,13 @@ public class Usuario implements Serializable{
 	@Column(name = "fNacimiento", nullable = false,length=100)
 	private String fNacimiento;
 	
-	public Set<keyLista> podcasts = new HashSet<keyLista>(0);
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "PodcastUsuario", joinColumns = { 
+			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
+			inverseJoinColumns = { @JoinColumn(name = "podcast.lista_id", nullable = false, updatable = false),
+									@JoinColumn(name = "podcast.usuario_id", nullable = false, updatable = false)})
+	public Set<Podcast> podcasts = new HashSet<Podcast>(0);
 
 	public Usuario() {
 		super();

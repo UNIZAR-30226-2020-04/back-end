@@ -107,7 +107,8 @@ public class UsuarioServiceImpl implements UsuarioService{
 		
 		try {
 			Usuario u = repository.findByEmail(user);
-			return u.podcasts.add(kl);
+			Podcast p = podService.getPodcast(kl.getL_id(), kl.getU());
+			return u.podcasts.add(p);
 		}catch(Exception e) {
 			System.out.println(e);
 		}

@@ -14,16 +14,21 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Reproduccion;
 import com.music.backend.entity.keyCancion;
 import com.music.backend.entity.keyLista;
 import com.music.backend.repository.ReproduccionRepository;
+import com.music.backend.service.CancionService;
 
 @Service
 public class ReproduccionServiceImpl implements ReproduccionService{
 
 	@Autowired
 	ReproduccionRepository repository;
+	
+	@Autowired
+	CancionService canService;
 
 	@Override
 	public Boolean createReproduccion(Reproduccion r) throws Exception{
@@ -81,7 +86,8 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 		
 		try {
 			Reproduccion r = repository.findById(kl.getL_id(), kl.getU());
-			return r.canciones.add(kc);
+			Cancion c = canService.getCancion(kc.getL_id().getL_id(), kc.getL_id().getU(), kc.getC_id());
+			return r.canciones.add(c);
 		}catch(Exception e) {
 			System.out.println(e);
 		}

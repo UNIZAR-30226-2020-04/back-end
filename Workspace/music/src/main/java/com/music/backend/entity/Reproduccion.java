@@ -28,7 +28,14 @@ public class Reproduccion implements Serializable{
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
 	private String FechaPublicacion;
 	
-	public Set<keyCancion> canciones = new HashSet<keyCancion>(0);
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "CancionesPlaylist", joinColumns = { 
+			@JoinColumn(name = "reproduccion.lista_id", nullable = false, updatable = false), 
+			@JoinColumn(name = "reproduccion.usuario_id", nullable = false, updatable = false) }, 
+			inverseJoinColumns = { @JoinColumn(name = "cancion.cancion_id", nullable = false, updatable = false),
+									@JoinColumn(name = "cancion.lista_id", nullable = false, updatable = false),
+									@JoinColumn(name = "cancion.usuario_id", nullable = false, updatable = false)})
+	public Set<Cancion> canciones = new HashSet<Cancion>(0);
 
 	public Reproduccion() {
 		super();
