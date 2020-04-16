@@ -304,7 +304,7 @@ public class UserController {
 	
 	@PostMapping(value = "/uploadSong", produces = "application/json")
 	@ResponseBody
-	public boolean uploadSong(@RequestParam MultipartFile file, ModelMap model, HttpServletResponse response){
+	public boolean uploadSong(@RequestParam("file") MultipartFile file, ModelMap model, HttpServletResponse response){
 		System.out.println("Entro en uploadSong");
 		try {
 			/*if(!f.getContentType().equals("MIME_AUDIO_MPEG")) {
@@ -352,6 +352,24 @@ public class UserController {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
+		return false;
+	}
+	
+	@PostMapping(value = "/uploadReact", produces = "application/json")
+	@ResponseBody
+	public boolean uploadReact(@RequestBody String u, ModelMap model, HttpServletResponse response){
+		
+		try {
+			URI uri = new URI(u);
+			File f = new File(uri);
+			InputStream fis = new FileInputStream(f);
+			byte[] b = null;
+			fis.read(b);
+			System.out.println("Bytes: " + b.toString());
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
 		return false;
 	}
 	
