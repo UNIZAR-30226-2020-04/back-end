@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.music.backend.entity.Reproduccion;
+import com.music.backend.entity.keyCancion;
 import com.music.backend.entity.keyLista;
 import com.music.backend.repository.ReproduccionRepository;
 
@@ -26,15 +27,13 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 
 	@Override
 	public Boolean createReproduccion(Reproduccion r) throws Exception{
-		
-		int id = repository.getNumber(r.getIdRep().getU()).length;
-		keyLista kl = new keyLista(id, r.getIdRep().getU());
-		r.setIdRep(kl);
-		LocalDate date = LocalDate.now();
-		String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
-		r.setFechaPublicacion(fechaPub);
-		
 		try {
+			int id = repository.getNumber(r.getIdRep().getU()).length;
+			keyLista kl = new keyLista(id, r.getIdRep().getU());
+			r.setIdRep(kl);
+			LocalDate date = LocalDate.now();
+			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
+			r.setFechaPublicacion(fechaPub);
 			repository.save(r);
 			return true;
 		}catch(Exception e) {
@@ -71,6 +70,18 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 
 		try {
 			repository.deleteAll((repository.getByUser(s)));
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean addSong(keyLista kl,keyCancion kc) throws Exception {
+		
+		try {
+			Reproduccion r = repository.findById(kl.getL_id(), kl.getU());
+			return r.canciones.add(kc);
 		}catch(Exception e) {
 			System.out.println(e);
 		}

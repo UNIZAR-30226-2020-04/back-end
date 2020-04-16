@@ -27,6 +27,8 @@ public class Reproduccion implements Serializable{
 	
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
 	private String FechaPublicacion;
+	
+	public Set<keyCancion> canciones = new HashSet<keyCancion>(0);
 
 	public Reproduccion() {
 		super();

@@ -321,6 +321,21 @@ public class UserController {
 	}
 	
 	
+	@PostMapping(value = "/addToPlaylist", produces = "application/json")
+	@ResponseBody
+	public Boolean addToPlaylist(@RequestParam("keyList") keyLista kl, @RequestParam("keyCancion") keyCancion kc, 
+				ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			repService.addSong(kl, kc);
+		}catch(Exception e) {
+			System.out.println("Excepcion en createAlbum");
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	
 	@PostMapping(value = "/uploadSong", produces = "application/json")
 	@ResponseBody
 	public boolean uploadSong(@RequestParam("file") MultipartFile file, ModelMap model, HttpServletResponse response){
