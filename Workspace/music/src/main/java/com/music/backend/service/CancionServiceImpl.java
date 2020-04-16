@@ -78,4 +78,15 @@ public class CancionServiceImpl implements CancionService{
 		}
 		return false;
 	}
+
+	@Override
+	public Cancion[] listSongs(String email, int id) throws Exception {
+		
+		try {
+			return repository.listSongsInAlbumUser(id, email);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 }

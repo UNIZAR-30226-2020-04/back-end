@@ -463,6 +463,24 @@ public class UserController {
 		}
 		return false;
 	}
+	
+	
+	@PostMapping(value = "/listSongsAlbum", produces = "application/json")
+	@ResponseBody
+	public Cancion[] listSongsAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
+			
+			return cancionService.listSongs(user, id_a);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 //////////////////////////////////	
 	
 	
