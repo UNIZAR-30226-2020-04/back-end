@@ -311,8 +311,7 @@ public class UserController {
 			keyLista kl = new keyLista(-1,u);
 			r.setIdRep(kl);
 			r.setNombre(p);
-			
-			return true;
+			return repService.createReproduccion(r);
 		}catch(Exception e) {
 			System.out.println("Excepcion en createAlbum");
 			System.out.println(e);
@@ -342,6 +341,22 @@ public class UserController {
 		
 		try {
 			return usuarioService.suscribe(u, kl);
+		}catch(Exception e) {
+			System.out.println("Excepcion en createAlbum");
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	@PostMapping(value = "/createPodcast", produces = "application/json")
+	@ResponseBody
+	public Boolean createAlbum(@RequestParam("user") String u, @RequestParam("nombre") String n,
+			@RequestParam("file") MultipartFile f, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			
+			Podcast p = new Podcast(-1, u, n, null, null);
+			return podService.createPodcast(p);
 		}catch(Exception e) {
 			System.out.println("Excepcion en createAlbum");
 			System.out.println(e);

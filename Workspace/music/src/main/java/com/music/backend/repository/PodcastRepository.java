@@ -14,8 +14,10 @@ import com.music.backend.entity.keyLista;
 @Repository
 public interface PodcastRepository extends CrudRepository<Podcast,keyLista> {
 
-	@Query(value = "SELECT * FROM Podcast WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM podcast WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
 	public Podcast findById(int i, String s);
-	@Query(value = "SELECT * FROM Podcast WHERE usuario_id = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM podcast WHERE usuario_id = ?1", nativeQuery = true)
 	public Iterable<Podcast> getByUser(String s);
+	@Query(value = "SELECT * FROM podcast WHERE usuario_id = ?1", nativeQuery = true)
+	public Podcast[] getNumber(String s);
 }

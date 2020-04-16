@@ -16,10 +16,10 @@ import com.music.backend.entity.keyLista;
 @Repository
 public interface ReproduccionRepository extends CrudRepository<Reproduccion,keyLista> {
 
-	@Query(value = "SELECT * FROM Reproduccion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM reproduccion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
 	public Reproduccion findById(int i, String s);
-	@Query(value = "SELECT * FROM Reproduccion WHERE usuario_id = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM reproduccion WHERE usuario_id = ?1", nativeQuery = true)
 	public Iterable<Reproduccion> getByUser(String s);
-	@Query(value = "SELECT * FROM Reproduccion WHERE usuario_id = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM reproduccion WHERE usuario_id = ?1", nativeQuery = true)
 	public Reproduccion[] getNumber(String s);
 }

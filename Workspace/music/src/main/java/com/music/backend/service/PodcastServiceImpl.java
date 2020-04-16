@@ -2,6 +2,7 @@ package com.music.backend.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
@@ -29,6 +30,13 @@ public class PodcastServiceImpl implements PodcastService {
 	public Boolean createPodcast(Podcast p) throws Exception{
 		
 		try {
+			
+			int id = repository.getNumber(p.getIdPodcast().getU()).length;
+			keyLista kl = new keyLista(id,p.getIdPodcast().getU());
+			p.setIdPodcast(kl);
+			LocalDate date = LocalDate.now();
+			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
+			p.setFechaPublicacion(fechaPub);
 			repository.save(p);
 			return true;
 		}catch(Exception e) {
