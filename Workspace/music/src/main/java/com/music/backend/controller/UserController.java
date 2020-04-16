@@ -498,6 +498,40 @@ public class UserController {
 		}
 		return false;
 	}
+	
+	
+	@PostMapping(value = "/deletePodcast", produces = "application/json")
+	@ResponseBody
+	public Boolean deletePodcast(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			int id_p = Integer.parseInt(lhm.get("idalbum"));
+			return podService.deletePodcast(id_p, user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	
+	@PostMapping(value = "/deletePlaylist", produces = "application/json")
+	@ResponseBody
+	public Boolean deletePlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			int id_r = Integer.parseInt(lhm.get("idalbum"));
+			return repService.deleteReproduccion(id_r, user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
 //////////////////////////////////	
 	
 	
