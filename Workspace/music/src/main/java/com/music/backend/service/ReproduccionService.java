@@ -12,4 +12,5 @@ public interface ReproduccionService {
 	public Boolean deleteReproduccion(int i, String s) throws Exception;
 	public Boolean deleteByUser(String s) throws Exception;
 	public Boolean addSong(keyLista kl, keyCancion kc) throws Exception;
+	public Boolean deleteSongPlaylist(keyLista kl, keyCancion kc) throws Exception;
 }

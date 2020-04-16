@@ -93,5 +93,17 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 		}
 		return false;
 	}
+
+	@Override
+	public Boolean deleteSongPlaylist(keyLista kl, keyCancion kc) throws Exception {
+		try {
+			Reproduccion r = repository.findById(kl.getL_id(), kl.getU());
+			Cancion c = canService.getCancion(kc.getL_id().getL_id(), kc.getL_id().getU(), kc.getC_id());
+			return r.canciones.remove(c);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
 	
 }

@@ -334,11 +334,13 @@ public class UserController {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("user");
 			String nombre = lhm.get("nombre");
+			String user_c = lhm.get("usercancion");
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
 			int id_p = Integer.parseInt(lhm.get("idplaylist"));
 			int id_c = Integer.parseInt(lhm.get("idcancion"));
 			
 			keyLista kl = new keyLista(id_p,user);
-			keyCancion kc = new keyCancion(kl,id_c);
+			keyCancion kc = new keyCancion(id_a, user_c, id_c);
 			
 			return repService.addSong(kl, kc);
 			
@@ -508,7 +510,7 @@ public class UserController {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			
 			String user = lhm.get("user");
-			int id_p = Integer.parseInt(lhm.get("idalbum"));
+			int id_p = Integer.parseInt(lhm.get("idpodcast"));
 			return podService.deletePodcast(id_p, user);
 		}catch(Exception e) {
 			System.out.println(e);
@@ -525,8 +527,32 @@ public class UserController {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			
 			String user = lhm.get("user");
-			int id_r = Integer.parseInt(lhm.get("idalbum"));
+			int id_r = Integer.parseInt(lhm.get("idplaylist"));
 			return repService.deleteReproduccion(id_r, user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	
+	@PostMapping(value = "/deleteSongPlaylist", produces = "application/json")
+	@ResponseBody
+	public Boolean deleteSongPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("user");
+			String nombre = lhm.get("nombre");
+			String user_c = lhm.get("usercancion");
+			int id_p = Integer.parseInt(lhm.get("idplaylist"));
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
+			int id_c = Integer.parseInt(lhm.get("idcancion"));
+			
+			keyLista kl = new keyLista(id_p,user);
+			keyCancion kc = new keyCancion(id_a,user_c,id_c);
+			
+			return repService.deleteSongPlaylist(kl, kc);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
