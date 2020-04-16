@@ -481,6 +481,23 @@ public class UserController {
 		}
 		return null;
 	}
+	
+	
+	@PostMapping(value = "/deleteAlbum", produces = "application/json")
+	@ResponseBody
+	public Boolean deleteAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
+			return albumService.deleteAlbum(id_a, user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
 //////////////////////////////////	
 	
 	
