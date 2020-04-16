@@ -20,4 +20,6 @@ public interface ReproduccionRepository extends CrudRepository<Reproduccion,keyL
 	public Reproduccion findById(int i, String s);
 	@Query(value = "SELECT * FROM Reproduccion WHERE usuario_id = ?1", nativeQuery = true)
 	public Iterable<Reproduccion> getByUser(String s);
+	@Query(value = "SELECT * FROM Reproduccion WHERE usuario_id = ?1", nativeQuery = true)
+	public Reproduccion[] getNumber(String s);
 }

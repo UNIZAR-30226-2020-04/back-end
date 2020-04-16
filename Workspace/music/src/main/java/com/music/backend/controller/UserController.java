@@ -301,6 +301,25 @@ public class UserController {
 		return false;
 	}
 	
+	@PostMapping(value = "/createPlaylist", produces = "application/json")
+	@ResponseBody
+	public Boolean createAlbum(@RequestParam("user") String u, @RequestParam("playlist") String p, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			
+			Reproduccion r = new Reproduccion();
+			keyLista kl = new keyLista(-1,u);
+			r.setIdRep(kl);
+			r.setNombre(p);
+			
+			return true;
+		}catch(Exception e) {
+			System.out.println("Excepcion en createAlbum");
+			System.out.println(e);
+		}
+		return false;
+	}
+	
 	
 	@PostMapping(value = "/uploadSong", produces = "application/json")
 	@ResponseBody
@@ -340,7 +359,7 @@ public class UserController {
 			}
       
 			System.out.println("He guardado la cancion");
-			
+			/*
 			String directory = Paths.get("").toAbsolutePath().toString();
 			
 			System.out.println("Directory: " + directory);
@@ -391,7 +410,7 @@ public class UserController {
 				keyLista kLa = new keyLista(1,"usuario");
 				Cancion c = new Cancion(kLa, 1, "nombre", "genero", b);
 				
-				if(!cancionService.createCancion(kLa, c) {
+				if(!cancionService.createCancion(kLa, c)) {
 					throw new Exception("No se ha podido guardar la cancion");
 				}
 			}
@@ -427,75 +446,5 @@ public class UserController {
 		return url;
 	}
 	
-	public byte[] comprimir(byte[] b) {
-		
-	try
-    {
-      ByteArrayOutputStream byteStream =
-        new ByteArrayOutputStream(b.length);
-      try
-      {
-        GZIPOutputStream zipStream = new GZIPOutputStream(byteStream);
-        try
-        {
-          zipStream.write(b);
-        }
-        finally
-        {
-          zipStream.close();
-        }
-      }
-      finally
-      {
-        byteStream.close();
-      }
-
-      byte[] compressedData = byteStream.toByteArray();
-      
-      System.out.println("Comprimido con lo que yo he hecho: " + compressedData.length);
-      return compressedData;
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-    }
-	return null;
-  }
 	
-	
-	// compress the image bytes before storing it in the database
-	public static byte[] compressBytes(byte[] data) {
-		Deflater deflater = new Deflater();
-	    deflater.setInput(data);
-	    deflater.finish();
-	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-	    byte[] buffer = new byte[1024];
-	    while (!deflater.finished()) {
-	    	int count = deflater.deflate(buffer);
-	        outputStream.write(buffer, 0, count);
-	    }
-	    try {
-	    	outputStream.close();
-	    } catch (IOException e) {
-	    }
-	    System.out.println("Compressed Image Byte Size - " + outputStream.toByteArray().length);
-	    return outputStream.toByteArray();
-	}
-	    // uncompress the image bytes before returning it to the angular application
-	public static byte[] decompressBytes(byte[] data) {
-	    Inflater inflater = new Inflater();
-	    inflater.setInput(data);
-	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-	    byte[] buffer = new byte[1024];
-	    try {
-	    	while (!inflater.finished()) {
-	    		int count = inflater.inflate(buffer);
-	            outputStream.write(buffer, 0, count);
-	        }
-	            outputStream.close();
-	     } catch (IOException ioe) {
-	     } catch (DataFormatException e) {
-	     }
-	     return outputStream.toByteArray();
-	}
 }

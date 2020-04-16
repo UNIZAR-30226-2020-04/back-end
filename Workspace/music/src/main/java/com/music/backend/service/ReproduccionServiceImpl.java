@@ -2,6 +2,7 @@ package com.music.backend.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
@@ -25,6 +26,13 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 
 	@Override
 	public Boolean createReproduccion(Reproduccion r) throws Exception{
+		
+		int id = repository.getNumber(r.getIdRep().getU()).length;
+		keyLista kl = new keyLista(id, r.getIdRep().getU());
+		r.setIdRep(kl);
+		LocalDate date = LocalDate.now();
+		String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
+		r.setFechaPublicacion(fechaPub);
 		
 		try {
 			repository.save(r);
