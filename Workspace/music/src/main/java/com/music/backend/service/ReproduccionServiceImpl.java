@@ -33,7 +33,7 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	@Override
 	public Boolean createReproduccion(Reproduccion r) throws Exception{
 		try {
-			int id = repository.getNumber(r.getIdRep().getU()).length;
+			int id = repository.getNumber(r.getIdRep().getU()).length +1;
 			keyLista kl = new keyLista(id, r.getIdRep().getU());
 			r.setIdRep(kl);
 			LocalDate date = LocalDate.now();

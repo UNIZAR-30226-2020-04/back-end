@@ -291,9 +291,8 @@ public class UserController {
 			
 			String e = lhm.get("email");
 			String n = lhm.get("name");
-			String d = lhm.get("date");
 			
-			return albumService.createAlbum(e, n, d);
+			return albumService.createAlbum(e, n);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -652,6 +651,28 @@ public class UserController {
 		}
 		return false;
 	}
+	
+	
+	@PostMapping(value = "/subirCancion", produces = "application/json")
+	@ResponseBody
+	public boolean subirCancion(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
+								@RequestParam("nombreC") String nombre, ModelMap model, HttpServletResponse response){
+		
+		try {
+			int id_a = Integer.parseInt(id);
+			keyLista kl = new keyLista(id_a,user);
+			Cancion c = new Cancion(kl, -1, "nombre", "genero", file.getBytes()); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
+			if(!cancionService.createCancion( kl, c )) {
+				throw new Exception("No se ha podido guardar la cancion");
+			}
+			return true;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
 	
 	@PostMapping(value = "/uploadReact", produces = "application/json")
 	@ResponseBody

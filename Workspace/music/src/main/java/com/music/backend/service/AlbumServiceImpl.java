@@ -2,6 +2,7 @@ package com.music.backend.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
@@ -40,10 +41,13 @@ public class AlbumServiceImpl implements AlbumService{
 	}
 	
 	@Override
-	public keyLista createAlbum(String email, String name, String date) throws Exception{
+	public keyLista createAlbum(String email, String name) throws Exception{
 		
 		try {
-			Album a = new Album((int)repository.count()+1, email, name, null, date);
+			LocalDate date = LocalDate.now();
+			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
+			int id = repository.listAlbumsUser(email).length + 1;
+			Album a = new Album(id, email, name, null, fechaPub);
 			repository.save(a);
 			return a.getIdAlbum();
 		}catch(Exception e) {

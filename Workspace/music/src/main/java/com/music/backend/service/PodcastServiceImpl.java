@@ -32,7 +32,7 @@ public class PodcastServiceImpl implements PodcastService {
 		
 		try {
 			
-			int id = repository.getNumber(p.getIdPodcast().getU()).length;
+			int id = repository.getNumber(p.getIdPodcast().getU()).length +1;
 			keyLista kl = new keyLista(id,p.getIdPodcast().getU());
 			p.setIdPodcast(kl);
 			LocalDate date = LocalDate.now();
