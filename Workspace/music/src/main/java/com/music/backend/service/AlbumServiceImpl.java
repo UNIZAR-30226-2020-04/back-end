@@ -72,6 +72,7 @@ public class AlbumServiceImpl implements AlbumService{
 	public Boolean deleteAlbum(int i, String s) throws Exception {
 		
 		try {
+			cancionService.deleteAllFromAlbum(i, s);
 			repository.delete(repository.findById(i, s));
 			return true;
 		}catch(Exception e) {

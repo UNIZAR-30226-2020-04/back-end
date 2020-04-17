@@ -69,6 +69,18 @@ public class CancionServiceImpl implements CancionService{
 	}
 	
 	@Override
+	public Boolean deleteAllFromAlbum(int i, String s) throws Exception {
+		
+		try {
+			repository.deleteAll(repository.getListFromAlbum(i, s));
+			return true;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	@Override
 	public Boolean deleteByUser(String s) throws Exception {
 
 		try {

@@ -661,7 +661,7 @@ public class UserController {
 		try {
 			int id_a = Integer.parseInt(id);
 			keyLista kl = new keyLista(id_a,user);
-			Cancion c = new Cancion(kl, -1, "nombre", "genero", file.getBytes()); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			Cancion c = new Cancion(kl, -1, nombre, "genero", file.getBytes()); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
 			if(!cancionService.createCancion( kl, c )) {
 				throw new Exception("No se ha podido guardar la cancion");

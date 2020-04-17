@@ -11,4 +11,5 @@ public interface CancionService {
 	public Boolean deleteCancion(int i, String s, int c) throws Exception;
 	public Boolean deleteByUser(String s) throws Exception;
 	public Cancion[] listSongs(String email, int id) throws Exception;
+	public Boolean deleteAllFromAlbum(int i, String s) throws Exception;
 }

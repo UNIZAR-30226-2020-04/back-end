@@ -20,4 +20,6 @@ public interface CancionRepository extends CrudRepository<Cancion,keyCancion> {
 	public Iterable<Cancion> getByUser(String s);
 	@Query(value = "SELECT * FROM cancion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
 	public Cancion[] listSongsInAlbumUser(int i, String s);
+	@Query(value = "SELECT * FROM cancion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
+	public Iterable<Cancion> getListFromAlbum(int i, String s);
 }
