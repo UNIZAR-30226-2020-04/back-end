@@ -655,7 +655,7 @@ public class UserController {
 	
 	@PostMapping(value = "/subirCancion", produces = "application/json")
 	@ResponseBody
-	public boolean subirCancion(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
+	public keyCancion subirCancion(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
 								@RequestParam("nombreC") String nombre, ModelMap model, HttpServletResponse response){
 		
 		try {
@@ -666,30 +666,49 @@ public class UserController {
 			if(!cancionService.createCancion( kl, c )) {
 				throw new Exception("No se ha podido guardar la cancion");
 			}
-			return true;
+			
+			String directory = Paths.get("").toAbsolutePath().toString();
+			
+			String path = directory + "\\src\\main\\resources\\files\\";
+			// Id Cancion + Id Album + Id Usuario
+			String songName = c.getIdCancion().getC_id() + c.getIdCancion().getL_id().getL_id() + 
+								c.getIdCancion().getL_id().getU() + ".mp3";
+			
+			FileOutputStream fos = new FileOutputStream(path + songName);
+			fos.write(file.getBytes());
+			fos.close();
+			
+			return c.getIdCancion();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
-		return false;
+		return null;
 	}
 	
 	
-	@PostMapping(value = "/uploadReact", produces = "application/json")
+	@PostMapping(value = "/URLCancion", produces = "application/json")
 	@ResponseBody
-	public boolean uploadReact(@RequestBody String u, ModelMap model, HttpServletResponse response){
+	public URL URLCancion(@RequestParam("idalbum") String id, @RequestParam("user") String user, 
+								@RequestParam("idcancion") String idc, ModelMap model, HttpServletResponse response){
 		
 		try {
-			URI uri = new URI(u);
-			File f = new File(uri);
-			InputStream fis = new FileInputStream(f);
-			byte[] b = null;
-			fis.read(b);
-			System.out.println("Bytes: " + b.toString());
+			String directory = Paths.get("").toAbsolutePath().toString();
+			
+			String path = directory + "\\src\\main\\resources\\files\\";
+			// Id Cancion + Id Album + Id Usuario
+			String songName = idc + id + user + ".mp3";
+			
+			File f = new File(path + songName);
+			
+			if(!f.exists()) {
+				throw new Exception("La cancion no existe");
+			}
+			
+			return f.toURI().toURL();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
-		
-		return false;
+		return null;
 	}
 	
 	@PostMapping(value = "/uploadSongs")

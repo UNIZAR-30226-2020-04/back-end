@@ -133,7 +133,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 			if(!u.getNick().equals(nick)) {
 				throw new Exception("El nick no es igual");
 			}
-			u.setNombre(newNick);
+			u.setNick(newNick);
 			u = repository.save(u);
 			return true;
 		}catch(Exception e) {
