@@ -761,6 +761,53 @@ public class UserController {
 		}
 		return url;
 	}
+
+	@GetMapping(value = "/getAlbumsByUser")
+	public Iterable<Album> getAlbums(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			
+			return albumService.getAlbumsByUser(user);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@GetMapping(value = "/getPodcastsByUser")
+	public Iterable<Podcast> getPodcasts(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			
+			return podService.getPodcastByUser(user);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+
+	@GetMapping(value = "/getPlaylistByUser")
+	public Iterable<Reproduccion> getPlaylists(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			
+			return repService.getPlaylistByUser(user);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
 	
 	
 }

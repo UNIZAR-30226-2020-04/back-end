@@ -9,5 +9,6 @@ public interface PodcastService {
 	public Podcast getPodcast(int i, String s) throws Exception;
 	public Boolean deletePodcast(int i, String s) throws Exception;
 	public Boolean deleteByUser(String s) throws Exception;
+	public Iterable<Podcast> getPodcastByUser(String s) throws Exception;
 	public Cancion[] listPodcast(int i, String s) throws Exception;
 }

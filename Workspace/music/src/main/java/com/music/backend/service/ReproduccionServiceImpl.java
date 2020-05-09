@@ -117,5 +117,14 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 		}
 		return null;
 	}
+
+	@Override
+	public Iterable<Reproduccion> getPlaylistByUser(String s) throws Exception{
+		try{
+			return repository.getByUser(s);
+		}catch(Exception e){
+			System.out.println(e);
+		}return null;
+	}
 	
 }
