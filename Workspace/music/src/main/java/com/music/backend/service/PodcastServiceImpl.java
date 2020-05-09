@@ -32,7 +32,7 @@ public class PodcastServiceImpl implements PodcastService {
 		
 		try {
 			
-			int id = repository.getNumber(p.getIdPodcast().getU()).length +1;
+			int id = repository.listPodcastsUser(p.getIdPodcast().getU()).length +1;
 			keyLista kl = new keyLista(id,p.getIdPodcast().getU());
 			p.setIdPodcast(kl);
 			LocalDate date = LocalDate.now();
@@ -96,9 +96,9 @@ public class PodcastServiceImpl implements PodcastService {
 	}
 
 	@Override
-	public Iterable<Podcast> getPodcastByUser(String s) throws Exception{
+	public Podcast[] getPodcastByUser(String s) throws Exception{
 		try{
-			return repository.getByUser(s);
+			return repository.listPodcastsUser(s);
 		}catch(Exception e){
 			System.out.println(e);
 		}

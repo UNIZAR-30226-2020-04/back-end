@@ -19,5 +19,5 @@ public interface PodcastRepository extends CrudRepository<Podcast,keyLista> {
 	@Query(value = "SELECT * FROM podcast WHERE usuario_id = ?1", nativeQuery = true)
 	public Iterable<Podcast> getByUser(String s);
 	@Query(value = "SELECT * FROM podcast WHERE usuario_id = ?1", nativeQuery = true)
-	public Podcast[] getNumber(String s);
+	public Podcast[] listPodcastsUser(String s);
 }
