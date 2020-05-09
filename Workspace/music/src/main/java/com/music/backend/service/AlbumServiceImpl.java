@@ -93,5 +93,16 @@ public class AlbumServiceImpl implements AlbumService{
 		}
 		return false;
 	}
+
+	@Override
+	public Iterable<Album> getAlbumsByUser(String s) throws Exception{
+		try{
+			return repository.getByUser(s);
+			
+		}catch(Exception e){
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 }

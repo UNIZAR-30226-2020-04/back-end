@@ -94,4 +94,14 @@ public class PodcastServiceImpl implements PodcastService {
 		}
 		return null;
 	}
+
+	@Override
+	public Iterable<Podcast> getPodcastByUser(String s) throws Exception{
+		try{
+			return repository.getByUser(s);
+		}catch(Exception e){
+			System.out.println(e);
+		}
+		return null;
+	}
 }

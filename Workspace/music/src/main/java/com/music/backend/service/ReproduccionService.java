@@ -15,4 +15,5 @@ public interface ReproduccionService {
 	public Boolean addSong(keyLista kl, keyCancion kc) throws Exception;
 	public Boolean deleteSongPlaylist(keyLista kl, keyCancion kc) throws Exception;
 	public Cancion[] listSongs(int i, String s) throws Exception;
+	public Iterable<Reproduccion> getPlaylistByUser(String s) throws Exception;
 }
