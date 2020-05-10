@@ -762,7 +762,9 @@ public class UserController {
 		return url;
 	}
 
-	@GetMapping(value = "/getAlbumsByUser")
+
+	@PostMapping(value = "/getAlbumsByUser", produces = "application/json")
+	@ResponseBody
 	public Album[] getAlbums(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -777,7 +779,8 @@ public class UserController {
 		return null;
 	}
 
-	@GetMapping(value = "/getPodcastsByUser")
+	@PostMapping(value = "/getPodcastsByUser", produces = "application/json")
+	@ResponseBody
 	public Podcast[] getPodcasts(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -792,8 +795,8 @@ public class UserController {
 		return null;
 	}
 
-
-	@GetMapping(value = "/getPlaylistByUser")
+	@PostMapping(value = "/getPlaylistByUser", produces = "application/json")
+	@ResponseBody
 	public Reproduccion[] getPlaylists(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
