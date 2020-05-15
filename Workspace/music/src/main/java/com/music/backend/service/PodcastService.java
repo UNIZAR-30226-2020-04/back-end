@@ -11,4 +11,5 @@ public interface PodcastService {
 	public Boolean deleteByUser(String s) throws Exception;
 	public Podcast[] getPodcastByUser(String s) throws Exception;
 	public Cancion[] listPodcast(int i, String s) throws Exception;
+	public Podcast[] getPodcastsBySearch(String nombre) throws Exception;
 }

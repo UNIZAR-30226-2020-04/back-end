@@ -126,5 +126,15 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 			System.out.println(e);
 		}return null;
 	}
+
+	@Override
+	public Reproduccion[] getPlaylistsBySearch(String nombre) throws Exception {
+		try {
+			return repository.getPlaylistsBySearch(nombre);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 }

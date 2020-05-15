@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.music.backend.entity.Reproduccion;
+import com.music.backend.entity.Usuario;
 import com.music.backend.entity.keyLista;
 
 @Repository
@@ -22,4 +23,6 @@ public interface ReproduccionRepository extends CrudRepository<Reproduccion,keyL
 	public Iterable<Reproduccion> getByUser(String s);
 	@Query(value = "SELECT * FROM reproduccion WHERE usuario_id = ?1", nativeQuery = true)
 	public Reproduccion[] listPlaylistsUser(String s);
+	@Query(value = "SELECT * FROM reproduccion WHERE nombre LIKE %?1%", nativeQuery = true)
+	public Reproduccion[] getPlaylistsBySearch(String nombre);
 }

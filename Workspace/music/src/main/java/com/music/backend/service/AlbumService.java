@@ -11,4 +11,5 @@ public interface AlbumService {
 	public Boolean deleteByUser(String s) throws Exception;
 	public keyLista createAlbum(String email, String name) throws Exception;
 	public Album[] getAlbumsByUser(String s) throws Exception;
+	public Album[] getAlbumsBySearch(String nombre) throws Exception;
 }

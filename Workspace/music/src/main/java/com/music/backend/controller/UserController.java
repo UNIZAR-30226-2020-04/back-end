@@ -813,7 +813,98 @@ public class UserController {
 		}
 		return null;
 	}
-
 	
+	//Métodos de búsqueda:
+	
+	@PostMapping(value = "/searchAlbum", produces = "application/json")
+	@ResponseBody
+	public Album[] searchAlbum(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try {
+			String[] divide = s.split("\"");
+			if(divide.length > 1) {
+				s = divide[1];
+			}else {
+				s = divide[0];
+			}
+			return albumService.getAlbumsBySearch(s);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+	
+	@PostMapping(value = "/searchUser", produces = "application/json")
+	@ResponseBody
+	public Usuario[] searchUser(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try {
+			String[] divide = s.split("\"");
+			if(divide.length > 1) {
+				s = divide[1];
+			}else {
+				s = divide[0];
+			}
+			
+			return usuarioService.getUsersBySearch(s);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+	
+	@PostMapping(value = "/searchPlaylist", produces = "application/json")
+	@ResponseBody
+	public Reproduccion[] searchPlaylist(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try {
+			String[] divide = s.split("\"");
+			if(divide.length > 1) {
+				s = divide[1];
+			}else {
+				s = divide[0];
+			}
+			return repService.getPlaylistsBySearch(s);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+	
+	@PostMapping(value = "/searchPodcast", produces = "application/json")
+	@ResponseBody
+	public Podcast[] searchPodcast(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try {
+			String[] divide = s.split("\"");
+			if(divide.length > 1) {
+				s = divide[1];
+			}else {
+				s = divide[0];
+			}
+			return podService.getPodcastsBySearch(s);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+	
+	
+	@PostMapping(value = "/searchSong", produces = "application/json")
+	@ResponseBody
+	public Cancion[] searchSong(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try {
+			String[] divide = s.split("\"");
+			if(divide.length > 1) {
+				s = divide[1];
+			}else {
+				s = divide[0];
+			}
+			return cancionService.getSongsBySearch(s);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
 	
 }

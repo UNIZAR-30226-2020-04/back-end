@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Podcast;
+import com.music.backend.entity.Reproduccion;
 import com.music.backend.entity.keyCancion;
 
 @Repository
@@ -22,4 +23,6 @@ public interface CancionRepository extends CrudRepository<Cancion,keyCancion> {
 	public Cancion[] listSongsInAlbumUser(int i, String s);
 	@Query(value = "SELECT * FROM cancion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
 	public Iterable<Cancion> getListFromAlbum(int i, String s);
+	@Query(value = "SELECT * FROM cancion WHERE nombre LIKE %?1%", nativeQuery = true)
+	public Cancion[] getSongsBySearch(String nombre);
 }
