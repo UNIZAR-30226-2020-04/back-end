@@ -671,7 +671,7 @@ public class UserController {
 			
 			String path = directory + "\\src\\main\\resources\\files\\";
 			// Id Cancion + Id Album + Id Usuario
-			String songName = c.getIdCancion().getC_id() + c.getIdCancion().getL_id().getL_id() + 
+			String songName = String.valueOf(c.getIdCancion().getC_id()) + String.valueOf(c.getIdCancion().getL_id().getL_id()) + 
 								c.getIdCancion().getL_id().getU() + ".mp3";
 			
 			FileOutputStream fos = new FileOutputStream(path + songName);
@@ -688,7 +688,7 @@ public class UserController {
 	
 	@PostMapping(value = "/URLCancion", produces = "application/json")
 	@ResponseBody
-	public URL URLCancion(@RequestParam("idalbum") String id, @RequestParam("user") String user, 
+	public String URLCancion(@RequestParam("idalbum") String id, @RequestParam("user") String user, 
 								@RequestParam("idcancion") String idc, ModelMap model, HttpServletResponse response){
 		
 		try {
@@ -700,11 +700,13 @@ public class UserController {
 			
 			File f = new File(path + songName);
 			
+			System.out.println("Path: " + f.getPath());
+			
 			if(!f.exists()) {
 				throw new Exception("La cancion no existe");
 			}
 			
-			return f.toURI().toURL();
+			return f.toURI().toURL().toString();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -738,7 +740,7 @@ public class UserController {
 		return false;
 	}
 	
-	@GetMapping(value = "/getSong")
+	@GetMapping(value = "/getSong",  produces = "application/json")
 	public URL getSong(ModelMap model, HttpServletResponse response){
 		URL url = null;
 		try {
@@ -755,6 +757,7 @@ public class UserController {
 			fos.write(c.getMp3());
 			File f = new File(directory + songName);
 			url = f.toURI().toURL();
+			String u;
 			return url;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
