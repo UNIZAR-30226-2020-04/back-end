@@ -764,6 +764,56 @@ public class UserController {
 		}
 		return url;
 	}
+
+
+	@PostMapping(value = "/getAlbumsByUser", produces = "application/json")
+	@ResponseBody
+	public Album[] getAlbumsByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			
+			return albumService.getAlbumsByUser(user);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/getPodcastsByUser", produces = "application/json")
+	@ResponseBody
+	public Podcast[] getPodcastsByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			
+			return podService.getPodcastByUser(user);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/getPlaylistByUser", produces = "application/json")
+	@ResponseBody
+	public Reproduccion[] getPlaylistByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			
+			return repService.getPlaylistByUser(user);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
 	
 	
 }

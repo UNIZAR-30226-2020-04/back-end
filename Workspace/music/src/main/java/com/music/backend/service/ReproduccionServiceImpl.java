@@ -33,7 +33,7 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	@Override
 	public Boolean createReproduccion(Reproduccion r) throws Exception{
 		try {
-			int id = repository.getNumber(r.getIdRep().getU()).length +1;
+			int id = repository.listPlaylistsUser(r.getIdRep().getU()).length +1;
 			keyLista kl = new keyLista(id, r.getIdRep().getU());
 			r.setIdRep(kl);
 			LocalDate date = LocalDate.now();
@@ -116,6 +116,15 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 			System.out.println(e);
 		}
 		return null;
+	}
+
+	@Override
+	public Reproduccion[] getPlaylistByUser(String s) throws Exception{
+		try{
+			return repository.listPlaylistsUser(s);
+		}catch(Exception e){
+			System.out.println(e);
+		}return null;
 	}
 	
 }
