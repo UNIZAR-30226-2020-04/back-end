@@ -765,7 +765,6 @@ public class UserController {
 		return url;
 	}
 
-
 	@PostMapping(value = "/getAlbumsByUser", produces = "application/json")
 	@ResponseBody
 	public Album[] getAlbumsByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
@@ -803,7 +802,6 @@ public class UserController {
 	public Reproduccion[] getPlaylistByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			
 			String user = lhm.get("user");
 			
 			return repService.getPlaylistByUser(user);
