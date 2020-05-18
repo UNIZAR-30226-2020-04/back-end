@@ -104,4 +104,14 @@ public class PodcastServiceImpl implements PodcastService {
 		}
 		return null;
 	}
+
+	@Override
+	public Podcast[] getPodcastsBySearch(String nombre) throws Exception {
+		try {
+			return repository.getPodcastsBySearch(nombre);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 }

@@ -163,4 +163,15 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return false;
 	}
 	
+	@Override
+	public Usuario[] getUsersBySearch(String nombre) {
+		
+		try {
+			return repository.getUsersBySearch(nombre);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+	
 }

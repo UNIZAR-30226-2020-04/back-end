@@ -13,4 +13,5 @@ public interface UsuarioService {
 	public Boolean changeName(String user, String name, String newName) throws Exception;
 	public Boolean changeNick(String user, String nick, String newNick) throws Exception;
 	public Boolean changePass(String correo, String pass, String newPass) throws Exception;
+	public Usuario[] getUsersBySearch(String nombre) throws Exception;
 }

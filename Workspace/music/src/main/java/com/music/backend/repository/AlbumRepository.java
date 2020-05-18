@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.music.backend.entity.Album;
 import com.music.backend.entity.Podcast;
+import com.music.backend.entity.Usuario;
 import com.music.backend.entity.keyLista;
 
 
@@ -21,4 +22,6 @@ public interface AlbumRepository extends CrudRepository<Album,keyLista> {
 	public Iterable<Album> getByUser(String s);
 	@Query(value = "SELECT * FROM album WHERE usuario_id = ?1", nativeQuery = true)
 	public Album[] listAlbumsUser(String s);
+	@Query(value = "SELECT * FROM album WHERE nombre LIKE %?1%", nativeQuery = true)
+	public Album[] getAlbumsBySearch(String nombre);
 }

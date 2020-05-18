@@ -104,5 +104,15 @@ public class AlbumServiceImpl implements AlbumService{
 		}
 		return null;
 	}
+
+	@Override
+	public Album[] getAlbumsBySearch(String nombre) throws Exception {
+		try {
+			return repository.getAlbumsBySearch(nombre);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 }

@@ -101,4 +101,14 @@ public class CancionServiceImpl implements CancionService{
 		}
 		return null;
 	}
+
+	@Override
+	public Cancion[] getSongsBySearch(String nombre) throws Exception {
+		try {
+			return repository.getSongsBySearch(nombre);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 }
