@@ -100,7 +100,7 @@ public class UserController {
 			//Album
 			keyLista kLa = new keyLista(3,correo);
 			
-			Album a = new Album(kLa, "Album", null, "fechaPublicacion");
+			Album a = new Album(kLa, "Album", "Autor", null, "fechaPublicacion");
 			
 			if(!albumService.createAlbum(a)) {
 				throw new Exception("INSERT album mal hecho");
