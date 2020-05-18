@@ -17,4 +17,5 @@ public interface ReproduccionService {
 	public Cancion[] listSongs(int i, String s) throws Exception;
 	public Reproduccion[] getPlaylistByUser(String s) throws Exception;
 	public Reproduccion[] getPlaylistsBySearch(String nombre) throws Exception;
+	public Reproduccion[] getPlaylistsContainsSong(int i) throws Exception;
 }

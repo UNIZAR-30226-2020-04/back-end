@@ -136,5 +136,15 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 		}
 		return null;
 	}
+
+	@Override
+	public Reproduccion[] getPlaylistsContainsSong(int i) throws Exception{
+		try{
+			return repository.getPlaylistsContainsSong(i);
+		}catch(Exception e){
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 }

@@ -41,13 +41,13 @@ public class AlbumServiceImpl implements AlbumService{
 	}
 	
 	@Override
-	public keyLista createAlbum(String email, String name) throws Exception{
+	public keyLista createAlbum(String email, String name, String autor) throws Exception{
 		
 		try {
 			LocalDate date = LocalDate.now();
 			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
 			int id = repository.listAlbumsUser(email).length + 1;
-			Album a = new Album(id, email, name, null, fechaPub);
+			Album a = new Album(id, email, name, autor, null, fechaPub);
 			repository.save(a);
 			return a.getIdAlbum();
 		}catch(Exception e) {

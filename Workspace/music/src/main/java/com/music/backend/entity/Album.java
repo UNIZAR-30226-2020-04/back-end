@@ -21,6 +21,9 @@ public class Album implements Serializable{
 	@Column(name = "Nombre", nullable = false,length=100)
 	@NotBlank
 	private String Nombre;
+
+	@Column(name = "Autor", nullable = false, length =100)
+	private String Autor;
 	
 	@Column(name = "Foto",length=1024)
 	private byte[] Foto;
@@ -32,18 +35,20 @@ public class Album implements Serializable{
 		super();
 	}
 
-	public Album(keyLista idAlbum, String nombre, byte[] foto, String fechaPublicacion) {
+	public Album(keyLista idAlbum, String nombre, String autor, byte[] foto, String fechaPublicacion) {
 		super();
 		this.idAlbum = idAlbum;
 		Nombre = nombre;
+		Autor = autor;
 		Foto = foto;
 		FechaPublicacion = fechaPublicacion;
 	}
 	
-	public Album(int id, String u, String nombre, byte[] foto, String fechaPublicacion) {
+	public Album(int id, String u, String nombre, String autor, byte[] foto, String fechaPublicacion) {
 		super();
 		this.idAlbum = new keyLista(id,u);
 		Nombre = nombre;
+		Autor = autor;
 		Foto = foto;
 		FechaPublicacion = fechaPublicacion;
 	}
@@ -62,6 +67,14 @@ public class Album implements Serializable{
 
 	public void setNombre(String nombre) {
 		Nombre = nombre;
+	}
+
+	public String getAutor() {
+		return Autor;
+	}
+
+	public void setAutor(String autor) {
+		Autor = autor;
 	}
 
 	public byte[] getFoto() {

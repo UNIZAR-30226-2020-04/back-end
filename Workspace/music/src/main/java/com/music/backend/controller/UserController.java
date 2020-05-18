@@ -291,8 +291,9 @@ public class UserController {
 			
 			String e = lhm.get("email");
 			String n = lhm.get("name");
+			String a = usuarioService.getUser(e).getNombre();
 			
-			return albumService.createAlbum(e, n);
+			return albumService.createAlbum(e, n, a);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -518,6 +519,36 @@ public class UserController {
 		}
 		return null;
 	}
+
+	@PostMapping(value = "/deleteCancion", produces = "application/json")
+	@ResponseBody
+	public Boolean deleteCancion(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
+			int id_c = Integer.parseInt(lhm.get("idcancion"));
+
+			Boolean cancion = cancionService.deleteCancion(id_a, user, id_c);
+			Boolean success = true; 
+
+			Reproduccion[] playlists = repService.getPlaylistsContainsSong(id_c);
+			keyCancion kc = new keyCancion(new keyLista(id_a, user), id_c);
+
+			for(int i=0; playlists[i] != null && success; i++){
+				keyLista kl = playlists[i].getIdRep();
+				repService.deleteSongPlaylist(kl, kc);
+			}
+
+			return cancion && success;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+
 	
 	
 	@PostMapping(value = "/deleteAlbum", produces = "application/json")
@@ -769,9 +800,11 @@ public class UserController {
 	@ResponseBody
 	public Album[] getAlbumsByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			//LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			
-			String user = lhm.get("user");
+			//String user = lhm.get("correo");
+			String user = (String) u;
+			System.out.println("Correo" + user);
 			
 			return albumService.getAlbumsByUser(user);
 			
@@ -785,9 +818,9 @@ public class UserController {
 	@ResponseBody
 	public Podcast[] getPodcastsByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			//LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			
-			String user = lhm.get("user");
+			String user = (String) u;
 			
 			return podService.getPodcastByUser(user);
 			
@@ -801,8 +834,10 @@ public class UserController {
 	@ResponseBody
 	public Reproduccion[] getPlaylistByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("user");
+			//LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			//String user = lhm.get("user");
+			String user = (String) u;
 			
 			return repService.getPlaylistByUser(user);
 			
