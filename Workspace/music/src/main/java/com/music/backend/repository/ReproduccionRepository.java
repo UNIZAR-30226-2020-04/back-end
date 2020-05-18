@@ -25,4 +25,6 @@ public interface ReproduccionRepository extends CrudRepository<Reproduccion,keyL
 	public Reproduccion[] listPlaylistsUser(String s);
 	@Query(value = "SELECT * FROM reproduccion WHERE nombre LIKE %?1%", nativeQuery = true)
 	public Reproduccion[] getPlaylistsBySearch(String nombre);
+	@Query(value = "SELECT * FROM reproduccion WHERE cancion_id LIKE ?1", nativeQuery = true)
+	public Reproduccion[] getPlaylistsContainsSong(int i);
 }

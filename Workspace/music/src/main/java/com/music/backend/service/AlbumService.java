@@ -9,7 +9,7 @@ public interface AlbumService {
 	public Album getAlbum(int i, String s) throws Exception;
 	public Boolean deleteAlbum(int i, String s) throws Exception;
 	public Boolean deleteByUser(String s) throws Exception;
-	public keyLista createAlbum(String email, String name) throws Exception;
+	public keyLista createAlbum(String email, String name, String autor) throws Exception;
 	public Album[] getAlbumsByUser(String s) throws Exception;
 	public Album[] getAlbumsBySearch(String nombre) throws Exception;
 }
