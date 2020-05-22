@@ -1,6 +1,7 @@
 package com.music.backend.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +60,12 @@ public class CancionServiceImpl implements CancionService{
 	public Boolean deleteCancion(int i, String s, int c) throws Exception {
 		
 		try {
+			String path = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
+			String songName = c + i + s + ".mp3";
+			File f = new File(path + songName);
+			if(!f.delete()) {
+				throw new Exception("No se ha podido borrar la canción");
+			}
 			repository.delete(repository.findById(i, s, c));
 			return true;
 		}catch(Exception e) {

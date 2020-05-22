@@ -6,9 +6,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
@@ -27,8 +30,10 @@ import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -302,7 +307,7 @@ public class UserController {
 	
 	@PostMapping(value = "/createPlaylist", produces = "application/json")
 	@ResponseBody
-	public Boolean createPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -316,11 +321,15 @@ public class UserController {
 			keyLista kl = new keyLista(-1,user);
 			r.setIdRep(kl);
 			r.setNombre(p);
-			return repService.createReproduccion(r);
+			if(!repService.createReproduccion(r)) {
+				throw new Exception("No se ha podido crear la playlist");
+			}
+			return  r.getIdRep();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
-		return false;
+		
+		return null;
 	}
 	
 	
@@ -372,25 +381,25 @@ public class UserController {
 	
 	@PostMapping(value = "/createPodcast", produces = "application/json")
 	@ResponseBody
-	public Boolean createPodcast(@RequestParam("user") String u, @RequestParam("nombre") String n, @RequestParam("nombrecap") String nC,
-			@RequestParam("file") MultipartFile f, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createPodcast(@RequestBody Object u, @RequestParam("nombre") String n, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
-			Podcast p = new Podcast(-1, u, n, null, null);
+			
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("user");
+			String nombre = lhm.get("podcast");
+
+			
+			Podcast p = new Podcast(-1, user, nombre, null, null);
 			if(!podService.createPodcast(p)) {
 				throw new Exception("No se ha podido crear el Podcast");
 			}
 			
-			Cancion c = new Cancion(p.getIdPodcast(), -1, nC, "CapituloPodcast", f.getBytes()) ;
-			if(!cancionService.createCancion(p.getIdPodcast(),c)) {
-				throw new Exception("No se ha podido crear el capitulo del Podcast");
-			}
-			
-			return true;
+			return p.getIdPodcast();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
-		return false;
+		return null;
 	}
 	
 	
@@ -684,6 +693,7 @@ public class UserController {
 	}
 	
 	
+	/*
 	@PostMapping(value = "/subirCancion", produces = "application/json")
 	@ResponseBody
 	public keyCancion subirCancion(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
@@ -692,7 +702,7 @@ public class UserController {
 		try {
 			int id_a = Integer.parseInt(id);
 			keyLista kl = new keyLista(id_a,user);
-			Cancion c = new Cancion(kl, -1, nombre, "genero", file.getBytes()); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			Cancion c = new Cancion(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
 			if(!cancionService.createCancion( kl, c )) {
 				throw new Exception("No se ha podido guardar la cancion");
@@ -700,8 +710,13 @@ public class UserController {
 			
 			String directory = Paths.get("").toAbsolutePath().toString();
 			
-			String path = directory + "\\src\\main\\resources\\files\\";
+			//String path = directory + "/src/main/resources/files/";
+			//String path = "\\app\\app\\src\\main\\resources\\static\\assets\\";
+			//String songsPath = directory + "/src/main/resources/static/assets/";
+			//String path = songsPath;
 			// Id Cancion + Id Album + Id Usuario
+			System.out.println("Es del tipo: " + file.getContentType());
+			String path = directory + "/src/main/resources/static/assets/";
 			String songName = String.valueOf(c.getIdCancion().getC_id()) + String.valueOf(c.getIdCancion().getL_id().getL_id()) + 
 								c.getIdCancion().getL_id().getU() + ".mp3";
 			
@@ -715,19 +730,64 @@ public class UserController {
 		}
 		return null;
 	}
+	*/
+	
+	@PostMapping(value = "/subirCancion", produces = "application/json")
+	@ResponseBody
+	public keyCancion subirCancion(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
+								@RequestParam("nombreC") String nombre, ModelMap model, HttpServletResponse response){
+		
+		try {
+			int id_a = Integer.parseInt(id);
+			keyLista kl = new keyLista(id_a,user);
+			Cancion c = new Cancion(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
+			if(!cancionService.createCancion( kl, c )) {
+				throw new Exception("No se ha podido guardar la cancion");
+			}
+			
+			String directory = Paths.get("").toAbsolutePath().toString();
+			System.out.println("Directorio de Trabajoooooo: " + System.getProperty("user.dir"));
+			String prueba = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
+			//String path = directory + "/src/main/resources/files/";
+			//String path = "\\app\\app\\src\\main\\resources\\static\\assets\\";
+			//String songsPath = directory + "/src/main/resources/static/assets/";
+			//String path = songsPath;
+			// Id Cancion + Id Album + Id Usuario
+			String path = "./src/main/resources/static/assets/";
+			String songName = String.valueOf(c.getIdCancion().getC_id()) + String.valueOf(c.getIdCancion().getL_id().getL_id()) + 
+								c.getIdCancion().getL_id().getU() + ".mp3";
+			
+			FileOutputStream fos = new FileOutputStream(path + songName);
+			fos.write(file.getBytes());
+			fos.close();
+			File f = new File(path + songName);
+			if(!f.exists()) {
+				System.out.println("No existeeeeeeee!!!");
+			}
+			return c.getIdCancion();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 	
+	/*
 	@PostMapping(value = "/URLCancion", produces = "application/json")
 	@ResponseBody
-	public String URLCancion(@RequestParam("idalbum") String id, @RequestParam("user") String user, 
+	public File URLCancion(@RequestParam("idalbum") String id, @RequestParam("user") String user, 
 								@RequestParam("idcancion") String idc, ModelMap model, HttpServletResponse response){
 		
 		try {
 			String directory = Paths.get("").toAbsolutePath().toString();
-			
-			String path = directory + "\\src\\main\\resources\\files\\";
+			System.out.println("Directorio: " + directory);
+			String songsPath = "/src/main/resources/static/assets/";
+			//String path = directory.concat(songsPath);
+			//String path = "\\app\\app\\src\\main\\resources\\static\\assets\\";
 			// Id Cancion + Id Album + Id Usuario
 			String songName = idc + id + user + ".mp3";
+			String path = directory + "/src/main/resources/static/assets/";
 			
 			File f = new File(path + songName);
 			
@@ -736,12 +796,57 @@ public class UserController {
 			if(!f.exists()) {
 				throw new Exception("La cancion no existe");
 			}
-			
-			return f.toURI().toURL().toString();
+			System.out.println("URL: " + f.toURI().toURL().toString());
+			System.out.println("URI: " + f.toURI().toString());
+			System.out.println("getAbsolutePath: " + f.getAbsolutePath());
+			System.out.println("getCanonicalPath: " + f.getCanonicalPath());
+			System.out.println("getPath: " + f.getPath());
+			f.setReadable(true);
+			return f;
 		}catch(Exception e) {
 			System.out.println(e);
 		}
 		return null;
+	}
+	*/
+	
+	@PostMapping(value = "/URLCancion", produces = "application/json")
+	@ResponseBody
+	public String URLCancion(@RequestParam("idalbum") String id, @RequestParam("user") String user, 
+								@RequestParam("idcancion") String idc, ModelMap model, HttpServletResponse response){
+		
+		try {
+			String directory = Paths.get("").toAbsolutePath().toString();
+			System.out.println("Directorio: " + directory);
+			String songsPath = "/src/main/resources/static/assets/";
+			//String path = directory.concat(songsPath);
+			//String path = "\\app\\app\\src\\main\\resources\\static\\assets\\";
+			// Id Cancion + Id Album + Id Usuario
+			String songName = "Cancion?idsong=";
+			songName = songName + idc + id + user + ".mp3";
+			System.out.println("songName: " + songName);
+			return songName;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+	
+	@GetMapping(value = "/Cancion", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@ResponseBody
+	public ResponseEntity requestSong(@RequestParam("idsong") String song, ModelMap model, HttpServletResponse response) throws IOException{
+		
+		try {
+			System.out.println("Cancion con id: " + song);
+			String path = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
+			
+			InputStreamResource isr = new InputStreamResource(new FileInputStream(path + song));
+			
+			return new ResponseEntity(isr, HttpStatus.OK);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
 	}
 	
 	@PostMapping(value = "/uploadSongs")
