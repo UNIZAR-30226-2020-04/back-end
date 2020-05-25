@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -16,8 +17,10 @@ import org.springframework.stereotype.Service;
 
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Podcast;
+import com.music.backend.entity.Usuario;
 import com.music.backend.entity.keyCancion;
 import com.music.backend.entity.keyLista;
+import com.music.backend.entity.Album;
 import com.music.backend.repository.CancionRepository;
 import com.music.backend.repository.UsuarioRepository;
 
@@ -26,6 +29,11 @@ public class CancionServiceImpl implements CancionService{
 
 	@Autowired
 	CancionRepository repository;
+
+	@Autowired
+	AlbumService albumService;
+	@Autowired
+	UsuarioService usuarioService;
 	
 	@Override
 	public Boolean createCancion(keyLista a, Cancion c) throws Exception{
@@ -116,6 +124,44 @@ public class CancionServiceImpl implements CancionService{
 		}catch(Exception e) {
 			System.out.println(e);
 		}
+		return null;
+	}
+
+	public Album[] getAlbumsBySongs(Cancion[] canciones) throws Exception{
+		try {
+			List<Album> albumes = new ArrayList<>();
+
+			for(Cancion i : canciones){
+				Album actual = albumService.getAlbum(i.getIdCancion().getL_id().getL_id(), i.getIdCancion().getL_id().getU());
+				if(!albumes.contains(actual)){
+					albumes.add(actual);
+				}
+			}
+			return (Album[]) albumes.toArray();
+
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
+		return null;
+	}
+
+	public Usuario[] getUsersBySongs(Cancion[] canciones) throws Exception{
+		try {
+			List<Usuario> usuarios = new ArrayList<>();
+
+			for(Cancion i : canciones){
+				Usuario actual = usuarioService.getUser(i.getIdCancion().getL_id().getU());
+				if(!usuarios.contains(actual)){
+					usuarios.add(actual);
+				}
+			}
+			return (Usuario[]) usuarios.toArray();
+
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		
 		return null;
 	}
 }

@@ -359,26 +359,6 @@ public class UserController {
 		return false;
 	}
 	
-	@PostMapping(value = "/suscribeUser", produces = "application/json")
-	@ResponseBody
-	public Boolean suscribeUser(@RequestBody Object u,
-				ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("user");
-			String user_p = lhm.get("userpodcast");
-			int id_p = Integer.parseInt(lhm.get("idpodcast"));
-			
-			keyLista kl = new keyLista(id_p, user_p);
-			
-			return usuarioService.suscribe(user, kl);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return false;
-	}
-	
 	@PostMapping(value = "/createPodcast", produces = "application/json")
 	@ResponseBody
 	public keyLista createPodcast(@RequestBody Object u, @RequestParam("nombre") String n, ModelMap model, HttpServletResponse response, BindingResult result){
@@ -609,7 +589,220 @@ public class UserController {
 		}
 		return false;
 	}
-	
+
+	@PostMapping(value = "/subscribeUser", produces = "application/json")
+	@ResponseBody
+	public Boolean subscribeUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("user");
+			String user_p = lhm.get("userpodcast");
+			int id_p = Integer.parseInt(lhm.get("idpodcast"));
+			
+			keyLista kl = new keyLista(id_p, user_p);
+			
+			return usuarioService.subscribePodcast(user, kl);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	@PostMapping(value = "/unsubscribeUser", produces = "application/json")
+	@ResponseBody
+	public Boolean unsubscribeUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("user");
+			String user_p = lhm.get("userpodcast");
+			int id_p = Integer.parseInt(lhm.get("idpodcast"));
+			
+			keyLista kl = new keyLista(id_p, user_p);
+			
+			return usuarioService.unsubscribePodcast(user, kl);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	@PostMapping(value = "/checkSubscription", produces = "application/json")
+	@ResponseBody
+	public Boolean checkSubscription(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("user");
+			String user_p = lhm.get("userpodcast");
+			int id_p = Integer.parseInt(lhm.get("idpodcast"));
+			
+			keyLista kl = new keyLista(id_p, user_p);
+			
+			return usuarioService.checkSubscription(user, kl);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	@PostMapping(value = "/listSubscriptions", produces = "application/json")
+	@ResponseBody
+	public Podcast[] listSubscriptions(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			String user = (String) u;
+			
+			return usuarioService.listSubscriptions(user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/followPlayList", produces = "application/json")
+	@ResponseBody
+	public Boolean followPlayList(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try{
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("correo");
+			int id_r = Integer.parseInt(lhm.get("idplaylist"));
+			return usuarioService.followPlaylist(user, id_r);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/unfollowPlayList", produces = "application/json")
+	@ResponseBody
+	public Boolean unfollowPlayList(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try{
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("correo");
+			int id_r = Integer.parseInt(lhm.get("idplaylist"));
+			return usuarioService.unfollowPlaylist(user, id_r);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/checkFollow", produces = "application/json")
+	@ResponseBody
+	public Boolean checkFollow(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try{
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("correo");
+			int id_r = Integer.parseInt(lhm.get("idplaylist"));
+			return usuarioService.checkFollow(user, id_r);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/listFollows", produces = "application/json")
+	@ResponseBody
+	public Reproduccion[] listFollows(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			String user = (String) u;
+			
+			return usuarioService.listFollows(user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/likeSong", produces = "application/json")
+	@ResponseBody
+	public Boolean likeSong(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try{
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("correo");
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
+			int id_c = Integer.parseInt(lhm.get("idcancion"));
+			return usuarioService.likeSong(id_a, user, id_c);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/unlikeSong", produces = "application/json")
+	@ResponseBody
+	public Boolean unlikeSong(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try{
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("correo");
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
+			int id_c = Integer.parseInt(lhm.get("idcancion"));
+			return usuarioService.unlikeSong(id_a, user, id_c);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/checkLike", produces = "application/json")
+	@ResponseBody
+	public Boolean checkLike(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+		try{
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String user = lhm.get("correo");
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
+			int id_c = Integer.parseInt(lhm.get("idcancion"));
+			return usuarioService.checkLike(user, id_c, id_a);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/listLikes", produces = "application/json")
+	@ResponseBody
+	public Cancion[] listLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			String user = (String) u;
+			
+			return usuarioService.listLikes(user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/listAlbumsLikes", produces = "application/json")
+	@ResponseBody
+	public Album[] listAlbumsLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			String user = (String) u;
+			
+			return usuarioService.listAlbumsLikes(user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/listUsersLikes", produces = "application/json")
+	@ResponseBody
+	public Usuario[] listUsersLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			String user = (String) u;
+			
+			return usuarioService.listUsersLikes(user);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 	@PostMapping(value = "/deleteSongPlaylist", produces = "application/json")
 	@ResponseBody
@@ -638,7 +831,7 @@ public class UserController {
 	
 	@PostMapping(value = "/uploadSong", produces = "application/json")
 	@ResponseBody
-	public boolean uploadSong(@RequestParam("file") MultipartFile file, ModelMap model, HttpServletResponse response){
+	public Boolean uploadSong(@RequestParam("file") MultipartFile file, ModelMap model, HttpServletResponse response){
 		System.out.println("Entro en uploadSong");
 		try {
 			/*if(!f.getContentType().equals("MIME_AUDIO_MPEG")) {
@@ -1044,5 +1237,7 @@ public class UserController {
 		}
 		return null;
 	}
+
+
 	
 }
