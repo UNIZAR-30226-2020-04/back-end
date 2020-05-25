@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -36,6 +37,9 @@ public class Podcast implements Serializable{
 									@JoinColumn(name = "cancion.lista_id", nullable = false, updatable = false),
 									@JoinColumn(name = "cancion.usuario_id", nullable = false, updatable = false)})
 	public Set<Cancion> capitulos = new HashSet<Cancion>(0);
+
+	@ManyToMany(mappedBy = "suscripciones")
+	private List<Usuario> suscritos;
 
 	public Podcast() {
 		super();

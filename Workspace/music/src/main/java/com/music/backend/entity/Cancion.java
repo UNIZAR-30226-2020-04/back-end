@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -28,6 +29,9 @@ public class Cancion implements Serializable{
 	@Column(name = "mp3", length = 50000000)
 	//@NotBlank
 	private byte[] mp3;
+
+	@ManyToMany(mappedBy = "likes")
+	private List<Usuario> suscritos;
 
 	public Cancion() {
 		super();
