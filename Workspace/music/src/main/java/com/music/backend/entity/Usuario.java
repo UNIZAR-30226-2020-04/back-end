@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -38,15 +40,107 @@ public class Usuario implements Serializable{
 	private String fNacimiento;
 	
 	
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "PodcastUsuario", joinColumns = { 
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "usuarioSuscritoPodcast", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
 			inverseJoinColumns = { @JoinColumn(name = "podcast.lista_id", nullable = false, updatable = false),
 									@JoinColumn(name = "podcast.usuario_id", nullable = false, updatable = false)})
-	public Set<Podcast> podcasts = new HashSet<Podcast>(0);
+	public List<Podcast> suscripciones = new ArrayList<>();
+
+	public Boolean addPodcast(Podcast podcast){
+        if(suscripciones == null){
+            suscripciones = new ArrayList<>();
+        }
+		suscripciones.add(podcast);
+		return true;
+	}
+	
+	public Boolean removePodcast(Podcast podcast){
+		if(suscripciones == null){
+			return false;
+		}else{
+			suscripciones.remove(podcast);
+			return true;
+		}
+	}
+
+	public Boolean findPodcast(Podcast podcast){
+		return suscripciones.contains(podcast);
+	}
+
+	public Podcast[] listSubscriptions(){
+		return (Podcast[]) suscripciones.toArray();
+	}
+
+	@JoinTable(
+        name = "userSiguePlaylist",
+        joinColumns = @JoinColumn(name = "correo", nullable = false),
+        inverseJoinColumns = @JoinColumn(name="idRep", nullable = false)
+    )
+	@ManyToMany(cascade = CascadeType.ALL)
+	private List<Reproduccion> seguidas = new ArrayList<>();
+
+	public Boolean addPlayList(Reproduccion playlist){
+        if(seguidas == null){
+            seguidas = new ArrayList<>();
+        }
+		seguidas.add(playlist);
+		return true;
+	}
+	
+	public Boolean removePlayList(Reproduccion playlist){
+		if(seguidas == null){
+			return false;
+		}else{
+			seguidas.remove(playlist);
+			return true;
+		}
+	}
+
+	public Boolean findPlaylist(Reproduccion playlist){
+		return seguidas.contains(playlist);
+	}
+
+	public Reproduccion[] listFollows(){
+		return (Reproduccion[]) seguidas.toArray();
+	}
+
+	@JoinTable(
+        name = "userLikeSong",
+        joinColumns = @JoinColumn(name = "correo", nullable = false),
+        inverseJoinColumns = @JoinColumn(name="idCancion", nullable = false)
+    )
+	@ManyToMany(cascade = CascadeType.ALL)
+	private List<Cancion> likes = new ArrayList<>();
+
+	public Boolean addSong(Cancion cancion){
+		if(likes == null){
+			likes = new ArrayList<>();
+		}
+		likes.add(cancion);
+		return true;
+	}
+
+	public Boolean removeSong(Cancion cancion){
+		if(likes == null){
+			return null;
+		}else{
+			likes.remove(cancion);
+			return true;
+		}
+	}
+
+	public Boolean findSong(Cancion cancion){
+		return likes.contains(cancion);
+	}
+
+	public Cancion[] listLikes(){
+		return (Cancion[]) likes.toArray();
+	}
 
 	public Usuario() {
 		super();
+
 	}
 
 	public Usuario(@NotBlank @Email String correo, String nombre, byte[] foto, @NotBlank String pass,
