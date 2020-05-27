@@ -1,9 +1,6 @@
 package com.music.backend.entity;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +22,8 @@ public class Usuario implements Serializable{
 	@Column(name = "Nombre", nullable = false,length=100)
 	private String Nombre;
 	
-	@Column(name = "Foto",length=1024)
-	private byte[] Foto;
+	@Column(name = "URLFoto",length=1024)
+	private String URLFoto;
 	
 	@Column(name = "Pass", nullable = false,length=100)
 	@NotBlank
@@ -143,12 +140,12 @@ public class Usuario implements Serializable{
 
 	}
 
-	public Usuario(@NotBlank @Email String correo, String nombre, byte[] foto, @NotBlank String pass,
+	public Usuario(@NotBlank @Email String correo, String nombre, String URLFoto, @NotBlank String pass,
 			@NotBlank String nick, String fNacimiento) {
 		super();
 		Correo = correo;
 		Nombre = nombre;
-		Foto = foto;
+		this.URLFoto = URLFoto;
 		Pass = pass;
 		Nick = nick;
 		this.fNacimiento = fNacimiento;
@@ -170,12 +167,12 @@ public class Usuario implements Serializable{
 		Nombre = nombre;
 	}
 
-	public byte[] getFoto() {
-		return Foto;
+	public String getURLFoto() {
+		return URLFoto;
 	}
 
-	public void setFoto(byte[] foto) {
-		Foto = foto;
+	public void setFoto(String URLFoto) {
+		this.URLFoto = URLFoto;
 	}
 
 	public String getPass() {
@@ -207,7 +204,7 @@ public class Usuario implements Serializable{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((Correo == null) ? 0 : Correo.hashCode());
-		result = prime * result + Arrays.hashCode(Foto);
+		result = prime * result + ((URLFoto == null) ? 0 : URLFoto.hashCode());
 		result = prime * result + ((Nick == null) ? 0 : Nick.hashCode());
 		result = prime * result + ((Nombre == null) ? 0 : Nombre.hashCode());
 		result = prime * result + ((Pass == null) ? 0 : Pass.hashCode());
@@ -229,17 +226,20 @@ public class Usuario implements Serializable{
 				return false;
 		} else if (!Correo.equals(other.Correo))
 			return false;
-		if (!Arrays.equals(Foto, other.Foto))
-			return false;
+		if (Nombre == null) {
+				if (other.Nombre != null)
+					return false;
+			} else if (!Nombre.equals(other.Nombre))
+				return false;
 		if (Nick == null) {
 			if (other.Nick != null)
 				return false;
 		} else if (!Nick.equals(other.Nick))
 			return false;
-		if (Nombre == null) {
-			if (other.Nombre != null)
+		if (URLFoto == null) {
+			if (other.URLFoto != null)
 				return false;
-		} else if (!Nombre.equals(other.Nombre))
+		} else if (!URLFoto.equals(other.URLFoto))
 			return false;
 		if (Pass == null) {
 			if (other.Pass != null)
@@ -256,8 +256,8 @@ public class Usuario implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Usuario [Correo=" + Correo + ", Nombre=" + Nombre + ", Foto=" + Arrays.toString(Foto) + ", Pass=" + Pass
+		return "Usuario [Correo=" + Correo + ", Nombre=" + Nombre + ", URLFoto=" + URLFoto + ", Pass=" + Pass
 				+ ", Nick=" + Nick + ", fNacimiento=" + fNacimiento + "]";
-	}
+	} 
 	
 }

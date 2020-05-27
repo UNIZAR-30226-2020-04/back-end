@@ -25,8 +25,8 @@ public class Album implements Serializable{
 	@Column(name = "Autor", nullable = false, length =100)
 	private String Autor;
 	
-	@Column(name = "Foto",length=1024)
-	private byte[] Foto;
+	@Column(name = "URLFoto",length=1024)
+	private String URLFoto;
 	
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
 	private String FechaPublicacion;
@@ -35,21 +35,21 @@ public class Album implements Serializable{
 		super();
 	}
 
-	public Album(keyLista idAlbum, String nombre, String autor, byte[] foto, String fechaPublicacion) {
+	public Album(keyLista idAlbum, String nombre, String autor, String URLFoto, String fechaPublicacion) {
 		super();
 		this.idAlbum = idAlbum;
 		Nombre = nombre;
 		Autor = autor;
-		Foto = foto;
+		this.URLFoto = URLFoto;
 		FechaPublicacion = fechaPublicacion;
 	}
 	
-	public Album(int id, String u, String nombre, String autor, byte[] foto, String fechaPublicacion) {
+	public Album(int id, String u, String nombre, String autor, String URLFoto, String fechaPublicacion) {
 		super();
 		this.idAlbum = new keyLista(id,u);
 		Nombre = nombre;
 		Autor = autor;
-		Foto = foto;
+		this.URLFoto = URLFoto;
 		FechaPublicacion = fechaPublicacion;
 	}
 
@@ -77,12 +77,12 @@ public class Album implements Serializable{
 		Autor = autor;
 	}
 
-	public byte[] getFoto() {
-		return Foto;
+	public String getURLFoto() {
+		return URLFoto;
 	}
 
-	public void setFoto(byte[] foto) {
-		Foto = foto;
+	public void setURLFoto(String URLFoto) {
+		this.URLFoto = URLFoto;
 	}
 
 	public String getFechaPublicacion() {
@@ -98,7 +98,7 @@ public class Album implements Serializable{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((FechaPublicacion == null) ? 0 : FechaPublicacion.hashCode());
-		result = prime * result + Arrays.hashCode(Foto);
+		result = prime * result + ((URLFoto == null) ? 0 : URLFoto.hashCode());
 		result = prime * result + ((Nombre == null) ? 0 : Nombre.hashCode());
 		result = prime * result + ((idAlbum == null) ? 0 : idAlbum.hashCode());
 		return result;
@@ -118,8 +118,11 @@ public class Album implements Serializable{
 				return false;
 		} else if (!FechaPublicacion.equals(other.FechaPublicacion))
 			return false;
-		if (!Arrays.equals(Foto, other.Foto))
-			return false;
+		if (URLFoto == null) {
+			if (other.URLFoto != null)
+				return false;
+		} else if (!URLFoto.equals(other.URLFoto))
+				return false;
 		if (Nombre == null) {
 			if (other.Nombre != null)
 				return false;
@@ -135,7 +138,7 @@ public class Album implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Album [idAlbum=" + idAlbum + ", Nombre=" + Nombre + ", Foto=" + Arrays.toString(Foto)
+		return "Album [idAlbum=" + idAlbum + ", Nombre=" + Nombre + ", URLFoto=" + URLFoto
 				+ ", FechaPublicacion=" + FechaPublicacion + "]";
 	}
 	

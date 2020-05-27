@@ -1,28 +1,18 @@
 package com.music.backend.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
-
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.music.backend.entity.Cancion;
-import com.music.backend.entity.Podcast;
 import com.music.backend.entity.Usuario;
 import com.music.backend.entity.keyCancion;
 import com.music.backend.entity.keyLista;
 import com.music.backend.entity.Album;
 import com.music.backend.repository.CancionRepository;
-import com.music.backend.repository.UsuarioRepository;
 
 @Service
 public class CancionServiceImpl implements CancionService{

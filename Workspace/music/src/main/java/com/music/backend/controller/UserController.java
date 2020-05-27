@@ -98,7 +98,7 @@ public class UserController {
 			
 			Podcast p = new Podcast(kLp, "Podcast", null, "fechaPublicacion");
 			
-			if(!podService.createPodcast(p)) {
+			if(!podService.createPodcast(p, null)) {
 				throw new Exception("INSERT podcast mal hecho");
 			}
 			
@@ -244,13 +244,25 @@ public class UserController {
 	public Boolean register(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 
 		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String name = lhm.get("name");
-			String surname = lhm.get("surname");
-			String username = lhm.get("username");
-			String email = lhm.get("email");
-			String password = lhm.get("password");
-			String dateOfBirth = lhm.get("dateOfBirth");
+			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
+			String name = (String) lhm.get("name");
+			String surname = (String) lhm.get("surname");
+			String username = (String) lhm.get("username");
+			String email = (String) lhm.get("email");
+			String password = (String) lhm.get("password");
+			String dateOfBirth = (String) lhm.get("dateOfBirth");
+			File f = (File) lhm.get("image");
+			byte[] b = Files.readAllBytes(f.toPath());
+
+			String path = "./src/main/resources/static/assets/images";
+			String imageName = String.valueOf("usr" + email + ".jpg");
+
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+
+			fos.write(b);
+			fos.close();
+
+			String URLFoto = String.valueOf("pruebaslistenit.herokuapp.com/Image?idfoto=" + imageName);
 			
 			System.out.println("name: " + name);
 			System.out.println("surname: " + surname);
@@ -259,7 +271,7 @@ public class UserController {
 			System.out.println("password: " + password);
 			System.out.println("dateOfBirth: " + dateOfBirth);
 		    
-		    Usuario user = new Usuario(email, name, null, password, username, dateOfBirth);
+		    Usuario user = new Usuario(email, name, URLFoto, password, username, dateOfBirth);
 		    System.out.println(user.toString());
 			return usuarioService.createUser(user);
 		}catch(Exception e) {
@@ -289,16 +301,20 @@ public class UserController {
 	
 	@PostMapping(value = "/createAlbum", produces = "application/json")
 	@ResponseBody
-	public keyLista createAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createAlbum( @RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+
+			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
 			
-			String e = lhm.get("email");
-			String n = lhm.get("name");
+			String e = (String) lhm.get("email");
+			String n = (String) lhm.get("name");
 			String a = usuarioService.getUser(e).getNombre();
+			File f = (File) lhm.get("image");
+
 			
-			return albumService.createAlbum(e, n, a);
+			
+			return albumService.createAlbum(e, n, a, f);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -310,9 +326,14 @@ public class UserController {
 	public keyLista createPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("user");
-			String p = lhm.get("playlist");
+			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
+			String user = (String) lhm.get("user");
+			String p = (String) lhm.get("playlist");
+
+			File f = (File) lhm.get("image");
+			byte[] b = Files.readAllBytes(f.toPath());
+
+
 			
 			System.out.println("u: " + u);
 			System.out.println("p: " + p);
@@ -321,6 +342,18 @@ public class UserController {
 			keyLista kl = new keyLista(-1,user);
 			r.setIdRep(kl);
 			r.setNombre(p);
+
+			String path = "./src/main/resources/static/assets/images";
+			String imageName = String.valueOf("pl" + kl.getL_id() + kl.getU() + ".jpg");
+
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+
+			String URLFoto = String.valueOf("pruebaslistenit.herokuapp.com/Image?idfoto=" + imageName);
+			r.setURLFoto(URLFoto);
+
+			fos.write(b);
+			fos.close();
+
 			if(!repService.createReproduccion(r)) {
 				throw new Exception("No se ha podido crear la playlist");
 			}
@@ -365,13 +398,15 @@ public class UserController {
 		
 		try {
 			
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("user");
-			String nombre = lhm.get("podcast");
-
+			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
+			String user = (String) lhm.get("user");
+			String nombre = (String) lhm.get("podcast");
+			File f = (File) lhm.get("image");
+			byte[] b = Files.readAllBytes(f.toPath());
+			
 			
 			Podcast p = new Podcast(-1, user, nombre, null, null);
-			if(!podService.createPodcast(p)) {
+			if(!podService.createPodcast(p, b)) {
 				throw new Exception("No se ha podido crear el Podcast");
 			}
 			
@@ -1024,6 +1059,82 @@ public class UserController {
 		}
 		return null;
 	}
+
+	@PostMapping(value = "/URLFotoUsuario", produces = "application/json")
+	@ResponseBody
+	public String URLFotoUsuario(@RequestBody Object u, ModelMap model, HttpServletResponse response){
+		
+		try {
+
+			String user = (String) u;
+			Usuario usuario = usuarioService.getUser(user);
+
+			return usuario.getURLFoto();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/URLFotoAlbum", produces = "application/json")
+	@ResponseBody
+	public String URLFotoAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response){
+		
+		try {
+
+			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
+			
+			int i = (int) lhm.get("list_id");
+			String s = (String) lhm.get("email");
+			
+			Album album = albumService.getAlbum(i, s);
+
+			return album.getURLFoto();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/URLFotoPodcast", produces = "application/json")
+	@ResponseBody
+	public String URLFotoPodcast(@RequestBody Object u, ModelMap model, HttpServletResponse response){
+		
+		try {
+
+			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
+			
+			int i = (int) lhm.get("list_id");
+			String s = (String) lhm.get("email");
+			
+			Podcast podcast = podService.getPodcast(i, s);
+
+			return podcast.getURLFoto();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/URLFotoPlaylist", produces = "application/json")
+	@ResponseBody
+	public String URLFotoPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response){
+		
+		try {
+
+			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
+			
+			int i = (int) lhm.get("list_id");
+			String s = (String) lhm.get("email");
+			
+			Reproduccion playlist = repService.getReproduccion(i, s);
+
+			return playlist.getURLFoto();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 	@GetMapping(value = "/Cancion", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	@ResponseBody
@@ -1034,6 +1145,23 @@ public class UserController {
 			String path = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
 			
 			InputStreamResource isr = new InputStreamResource(new FileInputStream(path + song));
+			
+			return new ResponseEntity(isr, HttpStatus.OK);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+	}
+
+	@GetMapping(value = "/Image", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@ResponseBody
+	public ResponseEntity requestFoto(@RequestParam("idfoto") String foto, ModelMap model, HttpServletResponse response) throws IOException{
+		
+		try {
+			System.out.println("Foto con id: " + foto);
+			String path = System.getProperty("user.dir") + "/src/main/resources/static/assets/images";
+			
+			InputStreamResource isr = new InputStreamResource(new FileInputStream(path + foto));
 			
 			return new ResponseEntity(isr, HttpStatus.OK);
 		}catch(Exception e) {
