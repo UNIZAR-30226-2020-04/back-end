@@ -68,6 +68,8 @@ public class UserController {
 	CancionService cancionService;
 	@Autowired
 	AlbumService albumService;
+	@Autowired
+	CapituloService capService;
 	
 	
 	@GetMapping(value = "/pruebasBD")
@@ -494,15 +496,15 @@ public class UserController {
 	
 	@PostMapping(value = "/listPodcast", produces = "application/json")
 	@ResponseBody
-	public Cancion[] listPodcast(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Capitulo[] listPodcast(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			
 			String user = lhm.get("user");
-			int id_p = Integer.parseInt(lhm.get("idpodcast"));
+			int id_a = Integer.parseInt(lhm.get("idalbum"));
 			
-			return podService.listPodcast(id_p, user);
+			return capService.listSongs(user, id_a);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -883,7 +885,7 @@ public class UserController {
 		return false;
 	}
 	
-	@PostMapping(value = "/unLikeSong", produces = "application/json")
+	@PostMapping(value = "/unlikeSong", produces = "application/json")
 	@ResponseBody
 	public Boolean unlikeSong(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
 		try{
@@ -1016,10 +1018,6 @@ public class UserController {
 			String directory = Paths.get("").toAbsolutePath().toString();
 			System.out.println("Directorio de Trabajoooooo: " + System.getProperty("user.dir"));
 			String prueba = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
-			//String path = directory + "/src/main/resources/files/";
-			//String path = "\\app\\app\\src\\main\\resources\\static\\assets\\";
-			//String songsPath = directory + "/src/main/resources/static/assets/";
-			//String path = songsPath;
 			// Id Cancion + Id Album + Id Usuario
 			String path = "./src/main/resources/static/assets/";
 			String songName = String.valueOf(c.getIdCancion().getC_id()) + String.valueOf(c.getIdCancion().getL_id().getL_id()) + 
@@ -1039,6 +1037,42 @@ public class UserController {
 		return null;
 	}
 	
+	
+	@PostMapping(value = "/subirCapitulo", produces = "application/json")
+	@ResponseBody
+	public keyCancion subirCapitulo(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
+								@RequestParam("nombreC") String nombre, ModelMap model, HttpServletResponse response){
+		
+		try {
+			int id_a = Integer.parseInt(id);
+			keyLista kl = new keyLista(id_a,user);
+			Capitulo c = new Capitulo(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
+			if(!capService.createCapitulo( kl, c )) {
+				throw new Exception("No se ha podido guardar el capitulo");
+			}
+			
+			String directory = Paths.get("").toAbsolutePath().toString();
+			System.out.println("Directorio de Trabajoooooo: " + System.getProperty("user.dir"));
+			String prueba = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
+			// Id Cancion + Id Album + Id Usuario
+			String path = "./src/main/resources/static/assets/";
+			String songName = "capitulo_" + String.valueOf(c.getIdCapitulo().getC_id()) + String.valueOf(c.getIdCapitulo().getL_id().getL_id()) + 
+								c.getIdCapitulo().getL_id().getU() + ".mp3";
+			
+			FileOutputStream fos = new FileOutputStream(path + songName);
+			fos.write(file.getBytes());
+			fos.close();
+			File f = new File(path + songName);
+			if(!f.exists()) {
+				System.out.println("No existeeeeeeee!!!");
+			}
+			return c.getIdCapitulo();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 	/*
 	@PostMapping(value = "/URLCancion", produces = "application/json")
