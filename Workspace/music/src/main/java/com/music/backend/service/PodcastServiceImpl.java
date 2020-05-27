@@ -1,6 +1,7 @@
 package com.music.backend.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +29,7 @@ public class PodcastServiceImpl implements PodcastService {
 	PodcastRepository repository;
 	
 	@Override
-	public Boolean createPodcast(Podcast p) throws Exception{
+	public Boolean createPodcast(Podcast p, byte[] b) throws Exception{
 		
 		try {
 			
@@ -38,6 +39,19 @@ public class PodcastServiceImpl implements PodcastService {
 			LocalDate date = LocalDate.now();
 			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
 			p.setFechaPublicacion(fechaPub);
+
+			String path = "./src/main/resources/static/assets/images";
+			String imageName = String.valueOf("pd" + kl.getL_id() + kl.getU() + ".jpg");
+
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+
+			String URLFoto = String.valueOf("pruebaslistenit.herokuapp.com/Image?idfoto=" + imageName);
+
+			p.setURLFoto(URLFoto);
+			
+			fos.write(b);
+			fos.close();
+
 			repository.save(p);
 			return true;
 		}catch(Exception e) {
