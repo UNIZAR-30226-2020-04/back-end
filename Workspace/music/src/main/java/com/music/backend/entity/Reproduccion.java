@@ -24,8 +24,8 @@ public class Reproduccion implements Serializable{
 	@NotBlank
 	private String Nombre;
 	
-	@Column(name = "Foto",length=1024)
-	private byte[] Foto;
+	@Column(name = "URLFoto",length=1024)
+	private String URLFoto;
 	
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
 	private String FechaPublicacion;
@@ -54,19 +54,19 @@ public class Reproduccion implements Serializable{
 		super();
 	}
 
-	public Reproduccion(@NotBlank keyLista idRep, @NotBlank String nombre, byte[] foto, String fechaPublicacion) {
+	public Reproduccion(@NotBlank keyLista idRep, @NotBlank String nombre, String URLFoto, String fechaPublicacion) {
 		super();
 		this.idRep = idRep;
 		Nombre = nombre;
-		Foto = foto;
+		this.URLFoto = URLFoto;
 		FechaPublicacion = fechaPublicacion;
 	}
 	
-	public Reproduccion(int id, String u, String nombre, byte[] foto, String fechaPublicacion) {
+	public Reproduccion(int id, String u, String nombre, String URLFoto, String fechaPublicacion) {
 		super();
 		this.idRep = new keyLista(id,u);
 		Nombre = nombre;
-		Foto = foto;
+		this.URLFoto = URLFoto;
 		FechaPublicacion = fechaPublicacion;
 	}
 
@@ -86,12 +86,12 @@ public class Reproduccion implements Serializable{
 		Nombre = nombre;
 	}
 
-	public byte[] getFoto() {
-		return Foto;
+	public String getURLFoto() {
+		return URLFoto;
 	}
 
-	public void setFoto(byte[] foto) {
-		Foto = foto;
+	public void setURLFoto(String URLFoto) {
+		this.URLFoto = URLFoto;
 	}
 
 	public String getFechaPublicacion() {
@@ -107,7 +107,7 @@ public class Reproduccion implements Serializable{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((FechaPublicacion == null) ? 0 : FechaPublicacion.hashCode());
-		result = prime * result + Arrays.hashCode(Foto);
+		result = prime * result + ((URLFoto == null) ? 0 : URLFoto.hashCode());
 		result = prime * result + ((Nombre == null) ? 0 : Nombre.hashCode());
 		result = prime * result + ((idRep == null) ? 0 : idRep.hashCode());
 		return result;
@@ -127,7 +127,10 @@ public class Reproduccion implements Serializable{
 				return false;
 		} else if (!FechaPublicacion.equals(other.FechaPublicacion))
 			return false;
-		if (!Arrays.equals(Foto, other.Foto))
+		if (URLFoto == null) {
+			if (other.URLFoto != null)
+				return false;
+		} else if (!URLFoto.equals(other.URLFoto))
 			return false;
 		if (Nombre == null) {
 			if (other.Nombre != null)
@@ -144,7 +147,7 @@ public class Reproduccion implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Reproduccion [idRep=" + idRep + ", Nombre=" + Nombre + ", Foto=" + Arrays.toString(Foto)
+		return "Reproduccion [idRep=" + idRep + ", Nombre=" + Nombre + ", URLFoto=" + URLFoto
 				+ ", FechaPublicacion=" + FechaPublicacion + "]";
 	}
 	

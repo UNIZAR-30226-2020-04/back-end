@@ -1,24 +1,17 @@
 package com.music.backend.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.music.backend.entity.Album;
-import com.music.backend.entity.Cancion;
 import com.music.backend.entity.keyLista;
 import com.music.backend.repository.AlbumRepository;
-import com.music.backend.repository.CancionRepository;
 
 @Service
 public class AlbumServiceImpl implements AlbumService{
@@ -41,13 +34,25 @@ public class AlbumServiceImpl implements AlbumService{
 	}
 	
 	@Override
-	public keyLista createAlbum(String email, String name, String autor) throws Exception{
+	public keyLista createAlbum(String email, String name, String autor, File foto) throws Exception{
 		
 		try {
 			LocalDate date = LocalDate.now();
 			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
 			int id = repository.listAlbumsUser(email).length + 1;
-			Album a = new Album(id, email, name, autor, null, fechaPub);
+
+			String path = "./src/main/resources/static/assets/images";
+			String imageName = String.valueOf("alb" + id + email + ".jpg");
+
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+			byte[] b = Files.readAllBytes(foto.toPath());
+
+			fos.write(b);
+			fos.close();
+
+			String URLFoto = String.valueOf("pruebaslistenit.herokuapp.com/Image?idfoto=" + imageName);
+
+			Album a = new Album(id, email, name, autor, URLFoto, fechaPub);
 			repository.save(a);
 			return a.getIdAlbum();
 		}catch(Exception e) {
@@ -56,6 +61,8 @@ public class AlbumServiceImpl implements AlbumService{
 		return null;
 	}
 	
+
+
 	@Override
 	public Album getAlbum(int i, String s) throws Exception{
 		
@@ -114,5 +121,4 @@ public class AlbumServiceImpl implements AlbumService{
 		}
 		return null;
 	}
-	
 }
