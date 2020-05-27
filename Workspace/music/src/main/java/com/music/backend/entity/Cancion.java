@@ -30,8 +30,8 @@ public class Cancion implements Serializable{
 	//@NotBlank
 	private byte[] mp3;
 
-	@ManyToMany(mappedBy = "likes")
-	private List<Usuario> suscritos;
+	//@ManyToMany(mappedBy = "likes")
+	//private List<Usuario> suscritos;
 
 	public Cancion() {
 		super();

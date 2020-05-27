@@ -46,7 +46,22 @@ public class Usuario implements Serializable{
 			inverseJoinColumns = { @JoinColumn(name = "podcast.lista_id", nullable = false, updatable = false),
 									@JoinColumn(name = "podcast.usuario_id", nullable = false, updatable = false)})
 	public List<Podcast> suscripciones = new ArrayList<>();
-
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "usersFollowPlaylist", joinColumns = { 
+			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
+			inverseJoinColumns = { @JoinColumn(name = "reproduccion.lista_id", nullable = false, updatable = false), 
+					@JoinColumn(name = "reproduccion.usuario_id", nullable = false, updatable = false)})
+	public List<Reproduccion> usersFollow = new ArrayList<>();
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "likedSongs", joinColumns = { 
+			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
+			inverseJoinColumns = { @JoinColumn(name = "cancion.cancion_id", nullable = false, updatable = false),
+					@JoinColumn(name = "cancion.lista_id", nullable = false, updatable = false),
+					@JoinColumn(name = "cancion.usuario_id", nullable = false, updatable = false)})
+	public List<Cancion> likedSongs = new ArrayList<>();
+	/*
 	public Boolean addPodcast(Podcast podcast){
         if(suscripciones == null){
             suscripciones = new ArrayList<>();
@@ -137,7 +152,7 @@ public class Usuario implements Serializable{
 	public Cancion[] listLikes(){
 		return (Cancion[]) likes.toArray();
 	}
-
+*/
 	public Usuario() {
 		super();
 

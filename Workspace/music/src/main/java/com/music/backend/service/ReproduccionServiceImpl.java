@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Reproduccion;
+import com.music.backend.entity.Usuario;
 import com.music.backend.entity.keyCancion;
 import com.music.backend.entity.keyLista;
 import com.music.backend.repository.ReproduccionRepository;
@@ -145,6 +146,28 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 			System.out.println(e);
 		}
 		return null;
+	}
+
+	@Override
+	public Boolean followByUser(Usuario u, Reproduccion r) throws Exception {
+		try {
+			u.usersFollow.add(r);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean unFollowByUser(Usuario u, Reproduccion r) throws Exception {
+		try {
+			u.usersFollow.remove(r);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 }

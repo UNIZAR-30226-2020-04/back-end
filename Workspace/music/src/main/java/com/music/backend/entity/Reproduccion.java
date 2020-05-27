@@ -1,6 +1,7 @@
 package com.music.backend.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,7 +9,7 @@ import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.persistence.EmbeddedId;
+
 import com.music.backend.entity.keyLista;
 
 @SuppressWarnings("serial")
@@ -37,9 +38,17 @@ public class Reproduccion implements Serializable{
 									@JoinColumn(name = "cancion.lista_id", nullable = false, updatable = false),
 									@JoinColumn(name = "cancion.usuario_id", nullable = false, updatable = false)})
 	public Set<Cancion> canciones = new HashSet<Cancion>(0);
+	
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "PlaylistFollowedByUsers", joinColumns = { 
+			@JoinColumn(name = "reproduccion.lista_id", nullable = false, updatable = false), 
+			@JoinColumn(name = "reproduccion.usuario_id", nullable = false, updatable = false) }, 
+			inverseJoinColumns = { @JoinColumn(name = "usuario.correo", nullable = false, updatable = false)})
+	public List<Usuario> suscripciones = new ArrayList<>();
 
-	@ManyToMany(mappedBy = "seguidas")
-		private List<Usuario> siguen;
+	//@ManyToMany(mappedBy = "seguidas")
+	//	private List<Usuario> siguen;
 
 	public Reproduccion() {
 		super();

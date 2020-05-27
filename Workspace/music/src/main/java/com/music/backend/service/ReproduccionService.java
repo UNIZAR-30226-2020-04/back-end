@@ -18,4 +18,6 @@ public interface ReproduccionService {
 	public Reproduccion[] getPlaylistByUser(String s) throws Exception;
 	public Reproduccion[] getPlaylistsBySearch(String nombre) throws Exception;
 	public Reproduccion[] getPlaylistsContainsSong(int i) throws Exception;
+	public Boolean followByUser(Usuario u, Reproduccion r) throws Exception;
+	public Boolean unFollowByUser(Usuario u, Reproduccion r) throws Exception;
 }

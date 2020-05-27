@@ -94,7 +94,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		}
 		return false;
 	}
-
+	/*
 	@Override
 	public Boolean subscribePodcast(String user, keyLista kl) throws Exception {
 		
@@ -108,6 +108,8 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return false;
 	}
 
+	
+	
 	@Override
 	public Boolean unsubscribePodcast(String user, keyLista kl) throws Exception{
 				
@@ -262,7 +264,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		}
 		return null;
 	}
-
+	*/
 	@Override
 	public Boolean changeName(String user, String name, String newName) throws Exception {
 		try {
@@ -329,6 +331,52 @@ public class UsuarioServiceImpl implements UsuarioService{
 			System.out.println(e);
 		}
 		return null;
+	}
+
+	@Override
+	public Boolean followPlaylist(String correo, Reproduccion r) throws Exception {
+		try {
+			Usuario u = repository.findByEmail(correo);
+			r.suscripciones.add(u);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean unFollowPlaylist(String correo, Reproduccion r) throws Exception {
+		try {
+			Usuario u = repository.findByEmail(correo);
+			r.suscripciones.remove(u);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean likeSong(Usuario u, Cancion c) throws Exception {
+		try {
+			u.likedSongs.add(c);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@Override
+	public Boolean unlikeSong(Usuario u, Cancion c) throws Exception {
+		try {
+			u.likedSongs.remove(c);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 }
