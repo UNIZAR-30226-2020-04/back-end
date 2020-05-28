@@ -498,5 +498,50 @@ public class UsuarioServiceImpl implements UsuarioService{
 		}
 		return null;
 	}
+
+	public Boolean followUser(String sessionUser, String targetUser) throws Exception{
+		try {
+			Usuario u1 = repository.findByEmail(sessionUser);
+			Usuario u2 = repository.findByEmail(targetUser);
+			u1.followedUsers.add(u2);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public Boolean unFollowUser(String sessionUser, String targetUser) throws Exception{
+		try {
+			Usuario u1 = repository.findByEmail(sessionUser);
+			Usuario u2 = repository.findByEmail(targetUser);
+			u1.followedUsers.remove(u2);
+			return true;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	public Usuario[] listFollowedUsers(String sessionUser) throws Exception{
+		try {
+			Usuario u = repository.findByEmail(sessionUser);
+			return (Usuario[]) u.likedSongs.toArray();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	public Boolean checkFollowedUser(String sessionUser, String targetUser) throws Exception{
+		try {
+			Usuario u1 = repository.findByEmail(sessionUser);
+			Usuario u2 = repository.findByEmail(targetUser);
+			return u1.followedUsers.contains(u2);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
 	
 }

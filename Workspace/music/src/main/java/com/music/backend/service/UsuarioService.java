@@ -51,4 +51,8 @@ public interface UsuarioService {
 	public Album[] listAlbumsLikes(String user) throws Exception;
 	public Usuario[] listUsersLikes(String user) throws Exception;
 
+	public Boolean followUser(String sessionUser, String targetUser) throws Exception;
+	public Boolean unFollowUser(String sessionUser, String targetUser) throws Exception;
+	public Usuario[] listFollowedUsers(String sessionUser) throws Exception;
+	public Boolean checkFollowedUser(String sessionUser, String targetUser) throws Exception;
 }
