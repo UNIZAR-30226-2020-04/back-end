@@ -212,18 +212,6 @@ public class UserController {
 	}
 	
 	
-	@PostMapping(value = "/p")
-	public ResponseEntity<Usuario> p(ModelMap model, HttpServletResponse response){
-
-		try {
-			return null;
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	
-	
 	/*
 		Método Register:
 		/registerUser
@@ -1000,15 +988,56 @@ public class UserController {
 		}
 		return false;
 	}
-
-	@PostMapping(value = "/listFollows", produces = "application/json")
+	
+	@PostMapping(value = "/unfollowUser", produces = "application/json")
 	@ResponseBody
-	public Reproduccion[] listFollows(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean unfollowUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String sessionUser = lhm.get("sessionUser");
+			String targetUser = lhm.get("targetUser");
+			return usuarioService.unfollowUser(sessionUser, targetUser);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@PostMapping(value = "/listFollowingUsers", produces = "application/json")
+	@ResponseBody
+	public Usuario[] listFollowingUsers(@RequestBody String u, ModelMap model, HttpServletResponse response, BindingResult result){
+	
+		try {
+			
+			return usuarioService.listFollowedUsers(u);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@PostMapping(value = "/listFollowers", produces = "application/json")
+	@ResponseBody
+	public Usuario[] listFollowers(@RequestBody String u, ModelMap model, HttpServletResponse response, BindingResult result){
+	
+		try {
+			
+			return usuarioService.listFollowedUsers(u);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@PostMapping(value = "/listFollowsPlaylists", produces = "application/json")
+	@ResponseBody
+	public Reproduccion[] listFollowsPlaylists(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
 			String user = (String) u;
 			
-			return usuarioService.listFollows(user);
+			return usuarioService.listFollowsPlaylists(user);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -1256,6 +1285,11 @@ public class UserController {
 			keyLista kl = new keyLista(id_a,user);
 			Capitulo c = new Capitulo(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
+			String path = "./src/main/resources/static/assets/";
+			String songName = "capitulo_" + String.valueOf(c.getIdCapitulo().getC_id()) + String.valueOf(c.getIdCapitulo().getL_id().getL_id()) + 
+								c.getIdCapitulo().getL_id().getU() + ".mp3";
+			String urlsong = "Cancion?idsong=" + songName;
+			c.setMp3(urlsong);
 			if(!capService.createCapitulo( kl, c )) {
 				throw new Exception("No se ha podido guardar el capitulo");
 			}
@@ -1264,17 +1298,11 @@ public class UserController {
 			System.out.println("Directorio de Trabajoooooo: " + System.getProperty("user.dir"));
 			String prueba = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
 			// Id Cancion + Id Album + Id Usuario
-			String path = "./src/main/resources/static/assets/";
-			String songName = "capitulo_" + String.valueOf(c.getIdCapitulo().getC_id()) + String.valueOf(c.getIdCapitulo().getL_id().getL_id()) + 
-								c.getIdCapitulo().getL_id().getU() + ".mp3";
+			
 			
 			FileOutputStream fos = new FileOutputStream(path + songName);
 			fos.write(file.getBytes());
 			fos.close();
-			File f = new File(path + songName);
-			if(!f.exists()) {
-				System.out.println("No existeeeeeeee!!!");
-			}
 			return c.getIdCapitulo();
 		}catch(Exception e) {
 			System.out.println(e);

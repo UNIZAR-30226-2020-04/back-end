@@ -28,7 +28,7 @@ public class Capitulo implements Serializable{
 	
 	@Column(name = "mp3", length = 50000000)
 	//@NotBlank
-	private byte[] mp3;
+	private String mp3;
 
 	//@ManyToMany(mappedBy = "likes")
 	//private List<Usuario> suscritos;
@@ -37,7 +37,7 @@ public class Capitulo implements Serializable{
 		super();
 	}
 
-	public Capitulo(@NotBlank keyCancion idCapitulo, @NotBlank String nombre, String genero, byte[] mp3) {
+	public Capitulo(@NotBlank keyCancion idCapitulo, @NotBlank String nombre, String genero, String mp3) {
 		super();
 		this.idCapitulo = idCapitulo;
 		Nombre = nombre;
@@ -45,7 +45,7 @@ public class Capitulo implements Serializable{
 		this.mp3 = mp3;
 	}
 	
-	public Capitulo(keyLista kl, int c, @NotBlank String nombre, String genero, byte[] mp3) {
+	public Capitulo(keyLista kl, int c, @NotBlank String nombre, String genero, String mp3) {
 		super();
 		this.idCapitulo = new keyCancion(kl,c);
 		Nombre = nombre;
@@ -53,7 +53,7 @@ public class Capitulo implements Serializable{
 		this.mp3 = mp3;
 	}
 	
-	public Capitulo(int l, String u, int c, @NotBlank String nombre, String genero, byte[] mp3) {
+	public Capitulo(int l, String u, int c, @NotBlank String nombre, String genero, String mp3) {
 		super();
 		this.idCapitulo = new keyCancion(new keyLista(l,u), c);
 		Nombre = nombre;
@@ -85,11 +85,11 @@ public class Capitulo implements Serializable{
 		Genero = genero;
 	}
 
-	public byte[] getMp3() {
+	public String getMp3() {
 		return mp3;
 	}
 
-	public void setMp3(byte[] mp3) {
+	public void setMp3(String mp3) {
 		this.mp3 = mp3;
 	}
 
@@ -100,7 +100,7 @@ public class Capitulo implements Serializable{
 		result = prime * result + ((Genero == null) ? 0 : Genero.hashCode());
 		result = prime * result + ((Nombre == null) ? 0 : Nombre.hashCode());
 		result = prime * result + ((idCapitulo == null) ? 0 : idCapitulo.hashCode());
-		result = prime * result + Arrays.hashCode(mp3);
+		result = prime * result + ((mp3 == null) ? 0 : mp3.hashCode());
 		return result;
 	}
 
@@ -128,7 +128,7 @@ public class Capitulo implements Serializable{
 				return false;
 		} else if (!idCapitulo.equals(other.idCapitulo))
 			return false;
-		if (!Arrays.equals(mp3, other.mp3))
+		if (!mp3.equals(other.mp3))
 			return false;
 		return true;
 	}
@@ -136,7 +136,7 @@ public class Capitulo implements Serializable{
 	@Override
 	public String toString() {
 		return "Capitulo [idCapitulo=" + idCapitulo + ", Nombre=" + Nombre + ", Genero=" + Genero + ", mp3="
-				+ Arrays.toString(mp3) + "]";
+				+ mp3 + "]";
 	}
 }
 

@@ -408,7 +408,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 	}
 
 	@Override
-	public Reproduccion[] listFollows(String user) throws Exception{
+	public Reproduccion[] listFollowsPlaylists(String user) throws Exception{
 		try {
 			Usuario u = repository.findByEmail(user);
 			return (Reproduccion[]) u.usersFollow.toArray();
@@ -512,11 +512,12 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return false;
 	}
 
-	public Boolean unFollowUser(String sessionUser, String targetUser) throws Exception{
+	public Boolean unfollowUser(String sessionUser, String targetUser) throws Exception{
 		try {
 			Usuario u1 = repository.findByEmail(sessionUser);
 			Usuario u2 = repository.findByEmail(targetUser);
 			u1.followedUsers.remove(u2);
+			u2.usersFollowingMe.remove(u1);
 			return true;
 		}catch(Exception e) {
 			System.out.println(e);
@@ -530,6 +531,16 @@ public class UsuarioServiceImpl implements UsuarioService{
 			return (Usuario[]) u.likedSongs.toArray();
 		}catch(Exception e) {
 			System.out.println(e);
+		}
+		return null;
+	}
+	
+	public Usuario[] followers(String user) throws Exception{
+		try {
+			Usuario u = repository.findByEmail(user);
+			return (Usuario[]) u.usersFollowingMe.toArray();
+		}catch(Exception e) {
+			
 		}
 		return null;
 	}

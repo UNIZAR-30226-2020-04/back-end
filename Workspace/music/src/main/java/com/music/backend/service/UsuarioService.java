@@ -41,7 +41,7 @@ public interface UsuarioService {
 	
 	public Boolean followPlaylist(String correo, Reproduccion r) throws Exception;
 	public Boolean unFollowPlaylist(String correo, Reproduccion r) throws Exception;
-	public Reproduccion[] listFollows(String user) throws Exception;
+	public Reproduccion[] listFollowsPlaylists(String user) throws Exception;
 	public Boolean checkFollow(String user, int i) throws Exception;
 
 	public Boolean likeSong(Usuario u, Cancion c) throws Exception;
@@ -52,7 +52,8 @@ public interface UsuarioService {
 	public Usuario[] listUsersLikes(String user) throws Exception;
 
 	public Boolean followUser(String sessionUser, String targetUser) throws Exception;
-	public Boolean unFollowUser(String sessionUser, String targetUser) throws Exception;
+	public Boolean unfollowUser(String sessionUser, String targetUser) throws Exception;
 	public Usuario[] listFollowedUsers(String sessionUser) throws Exception;
+	public Usuario[] followers(String user) throws Exception;
 	public Boolean checkFollowedUser(String sessionUser, String targetUser) throws Exception;
 }
