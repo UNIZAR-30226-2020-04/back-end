@@ -50,7 +50,9 @@ public class PodcastServiceImpl implements PodcastService {
 			p.setURLFoto(URLFoto);
 
 			repository.save(p);
-			fos.write(b);
+			if(b!=null) {
+				fos.write(b);
+			}
 			fos.close();
 			return true;
 		}catch(Exception e) {

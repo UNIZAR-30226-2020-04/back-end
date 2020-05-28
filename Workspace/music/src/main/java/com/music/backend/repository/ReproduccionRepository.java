@@ -17,14 +17,14 @@ import com.music.backend.entity.keyLista;
 @Repository
 public interface ReproduccionRepository extends CrudRepository<Reproduccion,keyLista> {
 
-	@Query(value = "SELECT * FROM reproduccion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzreproduccion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
 	public Reproduccion findById(int i, String s);
-	@Query(value = "SELECT * FROM reproduccion WHERE usuario_id = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzreproduccion WHERE usuario_id = ?1", nativeQuery = true)
 	public Iterable<Reproduccion> getByUser(String s);
-	@Query(value = "SELECT * FROM reproduccion WHERE usuario_id = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzreproduccion WHERE usuario_id = ?1", nativeQuery = true)
 	public Reproduccion[] listPlaylistsUser(String s);
-	@Query(value = "SELECT * FROM reproduccion WHERE nombre LIKE %?1%", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzreproduccion WHERE nombre LIKE %?1%", nativeQuery = true)
 	public Reproduccion[] getPlaylistsBySearch(String nombre);
-	@Query(value = "SELECT * FROM reproduccion WHERE cancion_id LIKE ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzreproduccion WHERE cancion_id LIKE ?1", nativeQuery = true)
 	public Reproduccion[] getPlaylistsContainsSong(int i);
 }

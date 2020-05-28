@@ -46,8 +46,9 @@ public class AlbumServiceImpl implements AlbumService{
 			String imageName = String.valueOf("alb" + id + email + ".jpg");
 
 			FileOutputStream fos = new FileOutputStream(path + imageName);
-
-			fos.write(foto.getBytes());
+			if(foto!=null) {
+				fos.write(foto.getBytes());
+			}
 			fos.close();
 
 			String URLFoto = String.valueOf("Image?idfoto=" + imageName);

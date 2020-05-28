@@ -1,55 +1,40 @@
 package com.music.backend.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.Inflater;
+import java.util.Properties;
+import java.util.Random;
 
-import javax.servlet.http.Cookie;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import javax.activation.*;
 
 import com.music.backend.entity.*;
 import com.music.backend.service.*;
@@ -70,6 +55,10 @@ public class UserController {
 	AlbumService albumService;
 	@Autowired
 	CapituloService capService;
+	
+	
+	@Autowired
+    public JavaMailSender emailSender;
 	
 	
 	@GetMapping(value = "/pruebasBD")
@@ -246,7 +235,7 @@ public class UserController {
 	public Boolean register(@RequestParam("name") String name, @RequestParam("surname") String surname,
 			@RequestParam("username") String username, @RequestParam("email") String email,
 			@RequestParam("password") String password, @RequestParam("dateOfBirth") String dateOfBirth, 
-			@RequestParam("foto") MultipartFile f , ModelMap model, HttpServletResponse response){
+			@RequestParam(name = "foto", required = false) MultipartFile f , ModelMap model, HttpServletResponse response){
 			System.out.println("Entro en el register");
 		try {
 			//LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
@@ -262,6 +251,49 @@ public class UserController {
 			
 			FileOutputStream fos = new FileOutputStream(path + imageName);
 			fos.write(f.getBytes());
+			fos.close();
+
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
+			
+			System.out.println("name: " + name);
+			System.out.println("surname: " + surname);
+			System.out.println("username: " + username);
+			System.out.println("email: " + email);
+			System.out.println("password: " + password);
+			System.out.println("dateOfBirth: " + dateOfBirth);
+		    
+		    Usuario user = new Usuario(email, name, URLFoto, password, username, dateOfBirth);
+		    System.out.println(user.toString());
+			return usuarioService.createUser(user);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	//Función para que los de móvil puedan seguir haciendo cosas
+	//Sin necesidad de meter las fotos
+	@PostMapping(value = "/registerUser1", produces = "application/json")
+	@ResponseBody
+	public Boolean register1(@RequestParam("name") String name, @RequestParam("surname") String surname,
+			@RequestParam("username") String username, @RequestParam("email") String email,
+			@RequestParam("password") String password, @RequestParam("dateOfBirth") String dateOfBirth,
+			ModelMap model, HttpServletResponse response){
+			System.out.println("Entro en el register");
+		try {
+			//LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
+			//String name = (String) lhm.get("name");
+			//String surname = (String) lhm.get("surname");
+			//String username = (String) lhm.get("username");
+			//String email = (String) lhm.get("email");
+			//String password = (String) lhm.get("password");
+			//String dateOfBirth = (String) lhm.get("dateOfBirth");
+
+			String path = "./src/main/resources/static/assets/images/";
+			String imageName = String.valueOf("usr" + email + ".jpg");
+			
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+			//fos.write(null);
 			fos.close();
 
 			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
@@ -303,7 +335,7 @@ public class UserController {
 	
 	@PostMapping(value = "/createAlbum", produces = "application/json")
 	@ResponseBody
-	public keyLista createAlbum( @RequestParam("foto") MultipartFile f, @RequestParam("email") String e,
+	public keyLista createAlbum( @RequestParam(name = "foto", required = false) MultipartFile f, @RequestParam("email") String e,
 			@RequestParam("name") String n, ModelMap model, HttpServletResponse response){
 		
 		try {
@@ -317,8 +349,8 @@ public class UserController {
 	
 	@PostMapping(value = "/createPlaylist", produces = "application/json")
 	@ResponseBody
-	public keyLista createPlaylist(@RequestParam("foto") MultipartFile f, @RequestParam("email") String user,
-			@RequestParam("playlist") String p, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createPlaylist(@RequestParam(name = "foto", required = false) MultipartFile f, @RequestParam("email") String user,
+			@RequestParam("playlist") String p, ModelMap model, HttpServletResponse response){
 		
 		try {
 			
@@ -338,7 +370,9 @@ public class UserController {
 			if(!repService.createReproduccion(r)) {
 				throw new Exception("No se ha podido crear la playlist");
 			}
-			fos.write(f.getBytes());
+			if(f!=null) {
+				fos.write(f.getBytes());
+			}
 			fos.close();
 			
 			return  r.getIdRep();
@@ -378,15 +412,22 @@ public class UserController {
 	
 	@PostMapping(value = "/createPodcast", produces = "application/json")
 	@ResponseBody
-	public keyLista createPodcast(@RequestParam("foto") MultipartFile f, @RequestParam("email") String user,
-			@RequestParam("podcast") String nombre, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createPodcast(@RequestParam(name = "foto", required = false) MultipartFile f, @RequestParam("email") String user,
+			@RequestParam("podcast") String nombre, ModelMap model, HttpServletResponse response){
 		
 		try {
 			
 			Podcast p = new Podcast(-1, user, nombre, null, null);
-			if(!podService.createPodcast(p, f.getBytes())) {
-				throw new Exception("No se ha podido crear el Podcast");
+			if(f!=null) {
+				if(!podService.createPodcast(p, f.getBytes())) {
+					throw new Exception("No se ha podido crear el Podcast");
+				}
+			}else {
+				if(!podService.createPodcast(p, null)) {
+					throw new Exception("No se ha podido crear el Podcast");
+				}
 			}
+			
 			
 			return p.getIdPodcast();
 		}catch(Exception e) {
@@ -1254,6 +1295,47 @@ public class UserController {
 			System.out.println(e);
 		}
 		return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+	}
+	
+	@PostMapping(value = "/recoverEmail", produces = "application/json")
+	@ResponseBody
+	public Boolean recoverEmail(@RequestBody String u, ModelMap model, HttpServletResponse response){
+		try {
+			String to = u;
+			
+			int leftLimit = 97; // letter 'a'
+	        int rightLimit = 122; // letter 'z'
+	        int targetStringLength = 10;
+	        Random random = new Random();
+	     
+	        String generatedString = random.ints(leftLimit, rightLimit + 1)
+	          .limit(targetStringLength)
+	          .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+	          .toString();
+	        
+	        System.out.println("Cambiando la contraseña a: " + generatedString);
+	        Usuario user = usuarioService.getUser(to);
+	        
+			
+			//String to = "email@gmail.com";//change accordingly
+			
+			String subject = "ListenIt Recuperación de la Contraseña";
+			String text = "Este correo se te ha enviado porque has pedido la recuperación de la contraseña, tu nueva contraseña generada aleatoriamente es la siguiente: ";
+			text = text + generatedString;
+	        SimpleMailMessage message = new SimpleMailMessage(); 
+	        message.setTo(to); 
+	        message.setSubject(subject); 
+	        message.setText(text);
+	        emailSender.send(message);
+	        System.out.println("message sent successfully....");  
+	        user.setPass(generatedString);
+	        
+	       
+	        return true;
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
 	}
 	
 	@PostMapping(value = "/uploadSongs")

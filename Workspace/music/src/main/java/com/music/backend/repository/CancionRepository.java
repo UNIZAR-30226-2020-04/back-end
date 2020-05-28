@@ -15,14 +15,14 @@ import com.music.backend.entity.keyCancion;
 @Repository
 public interface CancionRepository extends CrudRepository<Cancion,keyCancion> {
 
-	@Query(value = "SELECT * FROM cancion WHERE lista_id = ?1 AND usuario_id = ?2 AND cancion_id = ?3", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzcancion WHERE lista_id = ?1 AND usuario_id = ?2 AND cancion_id = ?3", nativeQuery = true)
 	public Cancion findById(int i, String s, int c);
-	@Query(value = "SELECT * FROM cancion WHERE usuario_id = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzcancion WHERE usuario_id = ?1", nativeQuery = true)
 	public Iterable<Cancion> getByUser(String s);
-	@Query(value = "SELECT * FROM cancion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzcancion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
 	public Cancion[] listSongsInAlbumUser(int i, String s);
-	@Query(value = "SELECT * FROM cancion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzcancion WHERE lista_id = ?1 AND usuario_id = ?2", nativeQuery = true)
 	public Iterable<Cancion> getListFromAlbum(int i, String s);
-	@Query(value = "SELECT * FROM cancion WHERE nombre LIKE %?1%", nativeQuery = true)
+	@Query(value = "SELECT * FROM zzcancion WHERE nombre LIKE %?1%", nativeQuery = true)
 	public Cancion[] getSongsBySearch(String nombre);
 }
