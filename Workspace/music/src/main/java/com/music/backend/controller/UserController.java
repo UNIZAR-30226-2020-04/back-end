@@ -241,30 +241,30 @@ public class UserController {
 		Parámetro: Usuario
 		Devuelve true si se ha podido hacer el registro, sino false
 	*/
-	@PostMapping(value = "/registerUser", produces = "application/json", consumes = "application/json")
+	@PostMapping(value = "/registerUser", produces = "application/json")
 	@ResponseBody
-	public Boolean register(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-
+	public Boolean register(@RequestParam("name") String name, @RequestParam("surname") String surname,
+			@RequestParam("username") String username, @RequestParam("email") String email,
+			@RequestParam("password") String password, @RequestParam("dateOfBirth") String dateOfBirth, 
+			@RequestParam("foto") MultipartFile f , ModelMap model, HttpServletResponse response){
+			System.out.println("Entro en el register");
 		try {
-			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
-			String name = (String) lhm.get("name");
-			String surname = (String) lhm.get("surname");
-			String username = (String) lhm.get("username");
-			String email = (String) lhm.get("email");
-			String password = (String) lhm.get("password");
-			String dateOfBirth = (String) lhm.get("dateOfBirth");
-			File f = (File) lhm.get("image");
-			byte[] b = Files.readAllBytes(f.toPath());
+			//LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
+			//String name = (String) lhm.get("name");
+			//String surname = (String) lhm.get("surname");
+			//String username = (String) lhm.get("username");
+			//String email = (String) lhm.get("email");
+			//String password = (String) lhm.get("password");
+			//String dateOfBirth = (String) lhm.get("dateOfBirth");
 
-			String path = "./src/main/resources/static/assets/images";
+			String path = "./src/main/resources/static/assets/images/";
 			String imageName = String.valueOf("usr" + email + ".jpg");
-
+			
 			FileOutputStream fos = new FileOutputStream(path + imageName);
-
-			fos.write(b);
+			fos.write(f.getBytes());
 			fos.close();
 
-			String URLFoto = String.valueOf("pruebaslistenit.herokuapp.com/Image?idfoto=" + imageName);
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
 			
 			System.out.println("name: " + name);
 			System.out.println("surname: " + surname);
@@ -277,7 +277,7 @@ public class UserController {
 		    System.out.println(user.toString());
 			return usuarioService.createUser(user);
 		}catch(Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -303,62 +303,44 @@ public class UserController {
 	
 	@PostMapping(value = "/createAlbum", produces = "application/json")
 	@ResponseBody
-	public keyLista createAlbum( @RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createAlbum( @RequestParam("foto") MultipartFile f, @RequestParam("email") String e,
+			@RequestParam("name") String n, ModelMap model, HttpServletResponse response){
 		
 		try {
-
-			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
-			
-			String e = (String) lhm.get("email");
-			String n = (String) lhm.get("name");
-			String a = usuarioService.getUser(e).getNombre();
-			File f = (File) lhm.get("image");
-
-			
-			
+			String a = usuarioService.getUser(e).getNick();
 			return albumService.createAlbum(e, n, a, f);
-		}catch(Exception e) {
-			System.out.println(e);
+		}catch(Exception ex) {
+			System.out.println(ex);
 		}
 		return null;
 	}
 	
 	@PostMapping(value = "/createPlaylist", produces = "application/json")
 	@ResponseBody
-	public keyLista createPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createPlaylist(@RequestParam("foto") MultipartFile f, @RequestParam("email") String user,
+			@RequestParam("playlist") String p, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
-			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
-			String user = (String) lhm.get("user");
-			String p = (String) lhm.get("playlist");
-
-			File f = (File) lhm.get("image");
-			byte[] b = Files.readAllBytes(f.toPath());
-
-
-			
-			System.out.println("u: " + u);
-			System.out.println("p: " + p);
 			
 			Reproduccion r = new Reproduccion();
 			keyLista kl = new keyLista(-1,user);
 			r.setIdRep(kl);
 			r.setNombre(p);
 
-			String path = "./src/main/resources/static/assets/images";
+			String path = "./src/main/resources/static/assets/images/";
 			String imageName = String.valueOf("pl" + kl.getL_id() + kl.getU() + ".jpg");
 
 			FileOutputStream fos = new FileOutputStream(path + imageName);
 
-			String URLFoto = String.valueOf("pruebaslistenit.herokuapp.com/Image?idfoto=" + imageName);
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
 			r.setURLFoto(URLFoto);
-
-			fos.write(b);
-			fos.close();
 
 			if(!repService.createReproduccion(r)) {
 				throw new Exception("No se ha podido crear la playlist");
 			}
+			fos.write(f.getBytes());
+			fos.close();
+			
 			return  r.getIdRep();
 		}catch(Exception e) {
 			System.out.println(e);
@@ -396,19 +378,13 @@ public class UserController {
 	
 	@PostMapping(value = "/createPodcast", produces = "application/json")
 	@ResponseBody
-	public keyLista createPodcast(@RequestBody Object u, @RequestParam("nombre") String n, ModelMap model, HttpServletResponse response, BindingResult result){
+	public keyLista createPodcast(@RequestParam("foto") MultipartFile f, @RequestParam("email") String user,
+			@RequestParam("podcast") String nombre, ModelMap model, HttpServletResponse response, BindingResult result){
 		
 		try {
 			
-			LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
-			String user = (String) lhm.get("user");
-			String nombre = (String) lhm.get("podcast");
-			File f = (File) lhm.get("image");
-			byte[] b = Files.readAllBytes(f.toPath());
-			
-			
 			Podcast p = new Podcast(-1, user, nombre, null, null);
-			if(!podService.createPodcast(p, b)) {
+			if(!podService.createPodcast(p, f.getBytes())) {
 				throw new Exception("No se ha podido crear el Podcast");
 			}
 			
@@ -971,7 +947,7 @@ public class UserController {
 			System.out.println("He pillado los bytes");
       */
 			keyLista kLa = new keyLista(1,"usuario");
-			Cancion c = new Cancion(kLa, 1, "nombre", "genero", b); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			Cancion c = new Cancion(kLa, 1, "nombre", "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
 			if(!cancionService.createCancion( kLa, c )) {
 				throw new Exception("No se ha podido guardar la cancion");
@@ -1065,6 +1041,8 @@ public class UserController {
 			if(!f.exists()) {
 				System.out.println("No existeeeeeeee!!!");
 			}
+			songName = "Cancion?idsong=" + songName;
+			c.setMp3(songName);
 			return c.getIdCancion();
 		}catch(Exception e) {
 			System.out.println(e);
@@ -1267,7 +1245,7 @@ public class UserController {
 		
 		try {
 			System.out.println("Foto con id: " + foto);
-			String path = System.getProperty("user.dir") + "/src/main/resources/static/assets/images";
+			String path = System.getProperty("user.dir") + "/src/main/resources/static/assets/images/";
 			
 			InputStreamResource isr = new InputStreamResource(new FileInputStream(path + foto));
 			
@@ -1291,7 +1269,7 @@ public class UserController {
 				byte[] b = f_.getBytes();
 				
 				keyLista kLa = new keyLista(1,"usuario");
-				Cancion c = new Cancion(kLa, 1, "nombre", "genero", b);
+				Cancion c = new Cancion(kLa, 1, "nombre", "genero", null);
 				
 				if(!cancionService.createCancion(kLa, c)) {
 					throw new Exception("No se ha podido guardar la cancion");
@@ -1319,7 +1297,7 @@ public class UserController {
 			String songName = c.getNombre() + c.getIdCancion().getL_id().getU() + ".mp3";
 			
 			FileOutputStream fos = new FileOutputStream(directory + songName);
-			fos.write(c.getMp3());
+			//fos.write(c.getMp3());
 			File f = new File(directory + songName);
 			url = f.toURI().toURL();
 			String u;

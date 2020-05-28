@@ -40,19 +40,18 @@ public class PodcastServiceImpl implements PodcastService {
 			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
 			p.setFechaPublicacion(fechaPub);
 
-			String path = "./src/main/resources/static/assets/images";
+			String path = "./src/main/resources/static/assets/images/";
 			String imageName = String.valueOf("pd" + kl.getL_id() + kl.getU() + ".jpg");
 
 			FileOutputStream fos = new FileOutputStream(path + imageName);
 
-			String URLFoto = String.valueOf("pruebaslistenit.herokuapp.com/Image?idfoto=" + imageName);
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
 
 			p.setURLFoto(URLFoto);
-			
-			fos.write(b);
-			fos.close();
 
 			repository.save(p);
+			fos.write(b);
+			fos.close();
 			return true;
 		}catch(Exception e) {
 			System.out.println(e);

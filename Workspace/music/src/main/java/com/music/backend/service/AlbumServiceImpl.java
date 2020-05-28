@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.music.backend.entity.Album;
 import com.music.backend.entity.keyLista;
@@ -34,23 +35,22 @@ public class AlbumServiceImpl implements AlbumService{
 	}
 	
 	@Override
-	public keyLista createAlbum(String email, String name, String autor, File foto) throws Exception{
+	public keyLista createAlbum(String email, String name, String autor, MultipartFile foto) throws Exception{
 		
 		try {
 			LocalDate date = LocalDate.now();
 			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
 			int id = repository.listAlbumsUser(email).length + 1;
 
-			String path = "./src/main/resources/static/assets/images";
+			String path = "./src/main/resources/static/assets/images/";
 			String imageName = String.valueOf("alb" + id + email + ".jpg");
 
 			FileOutputStream fos = new FileOutputStream(path + imageName);
-			byte[] b = Files.readAllBytes(foto.toPath());
 
-			fos.write(b);
+			fos.write(foto.getBytes());
 			fos.close();
 
-			String URLFoto = String.valueOf("pruebaslistenit.herokuapp.com/Image?idfoto=" + imageName);
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
 
 			Album a = new Album(id, email, name, autor, URLFoto, fechaPub);
 			repository.save(a);

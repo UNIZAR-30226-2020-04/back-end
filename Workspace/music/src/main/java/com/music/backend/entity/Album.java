@@ -12,7 +12,7 @@ import com.music.backend.entity.keyLista;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "Album")
+@Table(name = "ZZAlbum")
 public class Album implements Serializable{
 	
 	@EmbeddedId

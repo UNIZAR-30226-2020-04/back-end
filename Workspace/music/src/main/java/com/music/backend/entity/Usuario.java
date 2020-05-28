@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "Usuario")
+@Table(name = "ZZUsuario")
 public class Usuario implements Serializable{
 	
 	@Id
