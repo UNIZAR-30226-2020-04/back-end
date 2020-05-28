@@ -1,5 +1,7 @@
 package com.music.backend.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Podcast;
 
@@ -12,4 +14,5 @@ public interface PodcastService {
 	public Podcast[] getPodcastByUser(String s) throws Exception;
 	public Cancion[] listPodcast(int i, String s) throws Exception;
 	public Podcast[] getPodcastsBySearch(String nombre) throws Exception;
+	public Boolean changeImage(MultipartFile f, String correo, int id) throws Exception;
 }

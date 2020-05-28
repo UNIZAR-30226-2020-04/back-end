@@ -480,6 +480,58 @@ public class UserController {
 		return false;
 	}
 	
+	@PostMapping(value = "/cambiarFotoUsuario", produces = "application/json")
+	@ResponseBody
+	public Boolean cambiarFotoUsuario(@RequestParam("foto")MultipartFile f, @RequestParam("correo")String correo,
+								ModelMap model, HttpServletResponse response){
+		
+		try {
+			return usuarioService.changeImage(f, correo);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	@PostMapping(value = "/cambiarFotoAlbum", produces = "application/json")
+	@ResponseBody
+	public Boolean cambiarFotoAlbum(@RequestParam("foto")MultipartFile f, @RequestParam("correo")String correo,
+								@RequestParam("idalbum")String id, ModelMap model, HttpServletResponse response){
+		
+		try {
+			return albumService.changeImage(f, correo, Integer.parseInt(id));
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	@PostMapping(value = "/cambiarFotoRep", produces = "application/json")
+	@ResponseBody
+	public Boolean cambiarFotoRep(@RequestParam("foto")MultipartFile f, @RequestParam("correo")String correo,
+			@RequestParam("idplaylist")String id, ModelMap model, HttpServletResponse response){
+		
+		try {
+			return repService.changeImage(f, correo, Integer.parseInt(id));
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	@PostMapping(value = "/cambiarFotoPod", produces = "application/json")
+	@ResponseBody
+	public Boolean cambiarFotoPod(@RequestParam("foto")MultipartFile f, @RequestParam("correo")String correo,
+			@RequestParam("idpodcast")String id, ModelMap model, HttpServletResponse response){
+		
+		try {
+			return podService.changeImage(f, correo, Integer.parseInt(id));
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
 	
 	@PostMapping(value = "/listSongsAlbum", produces = "application/json")
 	@ResponseBody
@@ -563,6 +615,24 @@ public class UserController {
 		return false;
 	}
 
+	
+	@PostMapping(value = "/deleteCapitulo", produces = "application/json")
+	@ResponseBody
+	public Boolean deleteCapitulo(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+		
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			
+			String user = lhm.get("user");
+			int id_a = Integer.parseInt(lhm.get("idpodcast"));
+			int id_c = Integer.parseInt(lhm.get("idcapitulo"));
+
+			return capService.deleteCapitulo(id_a, user, id_c);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
 	
 	
 	@PostMapping(value = "/deleteAlbum", produces = "application/json")

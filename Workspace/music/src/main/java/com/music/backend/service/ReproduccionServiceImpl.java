@@ -2,6 +2,7 @@ package com.music.backend.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +15,9 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.music.backend.entity.Album;
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Reproduccion;
 import com.music.backend.entity.Usuario;
@@ -164,6 +167,26 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	public Boolean unFollowByUser(Usuario u, Reproduccion r) throws Exception {
 		try {
 			u.usersFollow.remove(r);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@Override
+	public Boolean changeImage(MultipartFile f, String correo, int id) throws Exception{
+		try {
+			Reproduccion r = repository.findById(id, correo);
+			String path = "./src/main/resources/static/assets/images/";
+			String imageName = String.valueOf("pl" + id + correo + ".jpg");
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
+			r.setURLFoto(URLFoto);
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+			if(f!=null) {
+				fos.write(f.getBytes());
+			}
+			fos.close();
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();

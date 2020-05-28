@@ -1,6 +1,7 @@
 package com.music.backend.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.music.backend.entity.*;
 import com.music.backend.repository.AlbumRepository;
@@ -323,6 +325,27 @@ public class UsuarioServiceImpl implements UsuarioService{
 	}
 	
 	@Override
+	public Boolean changeImage(MultipartFile f, String correo) throws Exception {
+		try {
+			Usuario u = repository.findByEmail(correo);
+			String path = "./src/main/resources/static/assets/images/";
+			String imageName = String.valueOf("usr" + correo + ".jpg");
+			
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+			fos.write(f.getBytes());
+			fos.close();
+
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
+			u.setFoto(URLFoto);
+			u = repository.save(u);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@Override
 	public Usuario[] getUsersBySearch(String nombre) {
 		
 		try {
@@ -555,5 +578,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		}
 		return false;
 	}
+
+
 	
 }

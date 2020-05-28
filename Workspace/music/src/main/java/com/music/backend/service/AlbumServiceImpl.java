@@ -122,4 +122,23 @@ public class AlbumServiceImpl implements AlbumService{
 		}
 		return null;
 	}
+
+	@Override
+	public Boolean changeImage(MultipartFile f, String correo, int id) throws Exception {
+		try {
+			Album a = repository.findById(id, correo);
+			String path = "./src/main/resources/static/assets/images/";
+			String imageName = String.valueOf("alb" + id + correo + ".jpg");
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
+			a.setURLFoto(URLFoto);
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+			if(f!=null) {
+				fos.write(f.getBytes());
+			}
+			fos.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

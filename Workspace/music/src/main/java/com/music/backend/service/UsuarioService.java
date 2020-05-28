@@ -5,6 +5,9 @@ import com.music.backend.entity.Reproduccion;
 import com.music.backend.entity.Usuario;
 import com.music.backend.entity.keyLista;
 import com.music.backend.entity.Cancion;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.music.backend.entity.Album;
 
 public interface UsuarioService {
@@ -32,6 +35,7 @@ public interface UsuarioService {
 	public Boolean changeName(String user, String name, String newName) throws Exception;
 	public Boolean changeNick(String user, String nick, String newNick) throws Exception;
 	public Boolean changePass(String correo, String pass, String newPass) throws Exception;
+	public Boolean changeImage(MultipartFile f, String correo) throws Exception;
 	public Usuario[] getUsersBySearch(String nombre) throws Exception;
 
 	public Boolean subscribePodcast(String user, keyLista kl) throws Exception;

@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Podcast;
@@ -128,5 +129,25 @@ public class PodcastServiceImpl implements PodcastService {
 			System.out.println(e);
 		}
 		return null;
+	}
+	
+	@Override
+	public Boolean changeImage(MultipartFile f, String correo, int id) throws Exception{
+		try {
+			Podcast p = repository.findById(id, correo);
+			String path = "./src/main/resources/static/assets/images/";
+			String imageName = String.valueOf("pd" + id + correo + ".jpg");
+			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
+			p.setURLFoto(URLFoto);
+			FileOutputStream fos = new FileOutputStream(path + imageName);
+			if(f!=null) {
+				fos.write(f.getBytes());
+			}
+			fos.close();
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

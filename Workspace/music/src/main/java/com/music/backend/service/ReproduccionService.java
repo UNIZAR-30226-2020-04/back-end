@@ -2,6 +2,8 @@ package com.music.backend.service;
 
 import java.io.File;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.music.backend.entity.Usuario;
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Reproduccion;
@@ -23,4 +25,5 @@ public interface ReproduccionService {
 	public Reproduccion[] getPlaylistsContainsSong(int i) throws Exception;
 	public Boolean followByUser(Usuario u, Reproduccion r) throws Exception;
 	public Boolean unFollowByUser(Usuario u, Reproduccion r) throws Exception;
+	public Boolean changeImage(MultipartFile f, String correo, int id) throws Exception;
 }

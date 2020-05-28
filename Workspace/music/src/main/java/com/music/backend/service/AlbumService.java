@@ -16,4 +16,5 @@ public interface AlbumService {
 	public keyLista createAlbum(String email, String name, String autor, MultipartFile foto) throws Exception;
 	public Album[] getAlbumsByUser(String s) throws Exception;
 	public Album[] getAlbumsBySearch(String nombre) throws Exception;
+	public Boolean changeImage(MultipartFile f, String correo, int id) throws Exception;
 }
