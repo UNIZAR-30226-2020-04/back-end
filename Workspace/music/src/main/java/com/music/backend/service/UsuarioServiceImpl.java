@@ -334,6 +334,56 @@ public class UsuarioServiceImpl implements UsuarioService{
 	}
 
 	@Override
+	public Boolean subscribePodcast(String user, keyLista kl) throws Exception {
+		
+		try {
+			Usuario u = repository.findByEmail(user);
+			Podcast p = podService.getPodcast(kl.getL_id(), kl.getU());
+			return u.suscripciones.add(p);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+	
+	@Override
+	public Boolean unsubscribePodcast(String user, keyLista kl) throws Exception{
+				
+		try {
+			Usuario u = repository.findByEmail(user);
+			Podcast p = podService.getPodcast(kl.getL_id(), kl.getU());
+			return u.suscripciones.remove(p);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean checkSubscription(String user, keyLista kl) throws Exception{
+				
+		try {
+			Usuario u = repository.findByEmail(user);
+			Podcast p = podService.getPodcast(kl.getL_id(), kl.getU());
+			return u.suscripciones.contains(p);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	@Override
+	public Podcast[] listSubscriptions(String user) throws Exception{
+		try {
+			Usuario u = repository.findByEmail(user);
+			return (Podcast[]) u.suscripciones.toArray();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@Override
 	public Boolean followPlaylist(String correo, Reproduccion r) throws Exception {
 		try {
 			Usuario u = repository.findByEmail(correo);
@@ -358,6 +408,29 @@ public class UsuarioServiceImpl implements UsuarioService{
 	}
 
 	@Override
+	public Reproduccion[] listFollows(String user) throws Exception{
+		try {
+			Usuario u = repository.findByEmail(user);
+			return (Reproduccion[]) u.usersFollow.toArray();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	@Override
+	public Boolean checkFollow(String user, int i) throws Exception {
+		try{
+			Usuario u = repository.findByEmail(user);
+			Reproduccion r = repService.getReproduccion(i, user);
+			return u.usersFollow.contains(r);
+		}catch(Exception e){
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	@Override
 	public Boolean likeSong(Usuario u, Cancion c) throws Exception {
 		try {
 			u.likedSongs.add(c);
@@ -377,6 +450,53 @@ public class UsuarioServiceImpl implements UsuarioService{
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	@Override
+	public Boolean checkLike(String user, int cancion, int idLista) throws Exception{
+		try{
+			Usuario u = repository.findByEmail(user);
+			Cancion c = cancionService.getCancion(idLista, user, cancion);
+			return u.likedSongs.contains(c);
+		}catch(Exception e){
+			System.out.println(e);
+		}
+		return false;
+	}
+
+	@Override
+	public Cancion[] listLikes(String user) throws Exception{
+		try {
+			Usuario u = repository.findByEmail(user);
+			return (Cancion[]) u.likedSongs.toArray();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	public Album[] listAlbumsLikes(String user) throws Exception {
+		try {
+			Usuario u = repository.findByEmail(user);
+			Cancion[] likes = (Cancion[]) u.likedSongs.toArray();
+
+			return cancionService.getAlbumsBySongs(likes);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
+	public Usuario[] listUsersLikes(String user) throws Exception {
+		try {
+			Usuario u = repository.findByEmail(user);
+			Cancion[] likes = (Cancion[]) u.likedSongs.toArray();
+
+			return cancionService.getUsersBySongs(likes);
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return null;
 	}
 	
 }

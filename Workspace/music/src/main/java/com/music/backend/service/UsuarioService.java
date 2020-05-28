@@ -33,10 +33,22 @@ public interface UsuarioService {
 	public Boolean changeNick(String user, String nick, String newNick) throws Exception;
 	public Boolean changePass(String correo, String pass, String newPass) throws Exception;
 	public Usuario[] getUsersBySearch(String nombre) throws Exception;
+
+	public Boolean subscribePodcast(String user, keyLista kl) throws Exception;
+	public Boolean unsubscribePodcast(String user, keyLista kl) throws Exception;
+	public Boolean checkSubscription(String user, keyLista kl) throws Exception;
+	public Podcast[] listSubscriptions(String user) throws Exception;
 	
 	public Boolean followPlaylist(String correo, Reproduccion r) throws Exception;
 	public Boolean unFollowPlaylist(String correo, Reproduccion r) throws Exception;
+	public Reproduccion[] listFollows(String user) throws Exception;
+	public Boolean checkFollow(String user, int i) throws Exception;
+
 	public Boolean likeSong(Usuario u, Cancion c) throws Exception;
 	public Boolean unlikeSong(Usuario u, Cancion c) throws Exception;
+	public Boolean checkLike(String user, int idLista, int cancion) throws Exception;
+	public Cancion[] listLikes(String user) throws Exception;
+	public Album[] listAlbumsLikes(String user) throws Exception;
+	public Usuario[] listUsersLikes(String user) throws Exception;
 
 }
