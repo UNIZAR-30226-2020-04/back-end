@@ -363,12 +363,11 @@ public class UserController {
 		try {
 			
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("user");
-			String nombre = lhm.get("nombre");
-			String user_c = lhm.get("usercancion");
-			int id_a = Integer.parseInt(lhm.get("idalbum"));
-			int id_p = Integer.parseInt(lhm.get("idplaylist"));
-			int id_c = Integer.parseInt(lhm.get("idcancion"));
+			String user = lhm.get("user");	//Usuario dueño de la playlist
+			String user_c = lhm.get("usercancion");	//Usuario dueño de la canción
+			int id_a = Integer.parseInt(lhm.get("idalbum"));	//ID del álbum al que pertenece la canción
+			int id_p = Integer.parseInt(lhm.get("idplaylist"));	//ID de la playlist a la que añadir la canción
+			int id_c = Integer.parseInt(lhm.get("idcancion"));	//ID de la canción que añadir
 			
 			keyLista kl = new keyLista(id_p,user);
 			keyCancion kc = new keyCancion(id_a, user_c, id_c);
@@ -1581,7 +1580,7 @@ public class UserController {
 	        emailSender.send(message);
 	        System.out.println("message sent successfully....");  
 	        user.setPass(generatedString);
-	        
+	        usuarioService.saveUser(user);
 	       
 	        return true;
 		}catch(Exception e) {

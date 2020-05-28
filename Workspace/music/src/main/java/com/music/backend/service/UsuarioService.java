@@ -60,4 +60,6 @@ public interface UsuarioService {
 	public Usuario[] listFollowedUsers(String sessionUser) throws Exception;
 	public Usuario[] followers(String user) throws Exception;
 	public Boolean checkFollowedUser(String sessionUser, String targetUser) throws Exception;
+	
+	public Boolean saveUser(Usuario u) throws Exception;
 }

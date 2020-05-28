@@ -498,6 +498,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return null;
 	}
 
+	@Override
 	public Album[] listAlbumsLikes(String user) throws Exception {
 		try {
 			Usuario u = repository.findByEmail(user);
@@ -510,6 +511,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return null;
 	}
 
+	@Override
 	public Usuario[] listUsersLikes(String user) throws Exception {
 		try {
 			Usuario u = repository.findByEmail(user);
@@ -522,6 +524,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return null;
 	}
 
+	@Override
 	public Boolean followUser(String sessionUser, String targetUser) throws Exception{
 		try {
 			Usuario u1 = repository.findByEmail(sessionUser);
@@ -535,6 +538,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return false;
 	}
 
+	@Override
 	public Boolean unfollowUser(String sessionUser, String targetUser) throws Exception{
 		try {
 			Usuario u1 = repository.findByEmail(sessionUser);
@@ -548,6 +552,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return false;
 	}
 
+	@Override
 	public Usuario[] listFollowedUsers(String sessionUser) throws Exception{
 		try {
 			Usuario u = repository.findByEmail(sessionUser);
@@ -558,6 +563,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return null;
 	}
 	
+	@Override
 	public Usuario[] followers(String user) throws Exception{
 		try {
 			Usuario u = repository.findByEmail(user);
@@ -568,6 +574,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return null;
 	}
 
+	@Override
 	public Boolean checkFollowedUser(String sessionUser, String targetUser) throws Exception{
 		try {
 			Usuario u1 = repository.findByEmail(sessionUser);
@@ -579,6 +586,15 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return false;
 	}
 
-
+	@Override
+	public Boolean saveUser(Usuario u) throws Exception{
+		try {
+			u = repository.save(u);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 	
 }
