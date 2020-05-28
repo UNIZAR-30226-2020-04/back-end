@@ -63,6 +63,11 @@ public class Usuario implements Serializable{
 	@JoinTable(name = "followedUsers", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)})
 	public List<Usuario> followedUsers = new ArrayList<>();
+	
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "usersFollowingMe", joinColumns = { 
+			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)})
+	public List<Usuario> usersFollowingMe = new ArrayList<>();
 
 	/*
 	public Boolean addPodcast(Podcast podcast){

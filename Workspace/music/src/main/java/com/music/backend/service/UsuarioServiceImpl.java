@@ -504,6 +504,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 			Usuario u1 = repository.findByEmail(sessionUser);
 			Usuario u2 = repository.findByEmail(targetUser);
 			u1.followedUsers.add(u2);
+			u2.usersFollowingMe.add(u1);
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();

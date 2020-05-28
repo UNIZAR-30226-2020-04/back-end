@@ -232,7 +232,7 @@ public class UserController {
 	*/
 	@PostMapping(value = "/registerUser", produces = "application/json")
 	@ResponseBody
-	public Boolean register(@RequestParam("name") String name, @RequestParam("surname") String surname,
+	public Usuario register(@RequestParam("name") String name, @RequestParam("surname") String surname,
 			@RequestParam("username") String username, @RequestParam("email") String email,
 			@RequestParam("password") String password, @RequestParam("dateOfBirth") String dateOfBirth, 
 			@RequestParam(name = "foto", required = false) MultipartFile f , ModelMap model, HttpServletResponse response){
@@ -264,11 +264,12 @@ public class UserController {
 		    
 		    Usuario user = new Usuario(email, name, URLFoto, password, username, dateOfBirth);
 		    System.out.println(user.toString());
-			return usuarioService.createUser(user);
+		    usuarioService.createUser(user);
+			return user;
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 	
 	//Función para que los de móvil puedan seguir haciendo cosas
@@ -312,24 +313,6 @@ public class UserController {
 			e.printStackTrace();
 		}
 		return false;
-	}
-	
-	
-	@PostMapping(value = "/pruebaReact", produces = "application/json")
-	@ResponseBody
-	public void pruebaReact(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			
-			String c = lhm.get("email");
-			String p = lhm.get("password");
-			System.out.println("Correo: " + c);
-			System.out.println("Password: " + p);
-			
-		}catch(Exception e) {
-			System.out.println("Excepcion en PruebaReact");
-			System.out.println(e);
-		}
 	}
 	
 	
@@ -1002,6 +985,21 @@ public class UserController {
 		}
 		return null;
 	}
+	
+	@PostMapping(value = "/followUser", produces = "application/json")
+	@ResponseBody
+	public Boolean followUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String sessionUser = lhm.get("sessionUser");
+			String targetUser = lhm.get("targetUser");
+			return usuarioService.followUser(sessionUser, targetUser);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	@PostMapping(value = "/listFollows", produces = "application/json")
 	@ResponseBody
@@ -1217,6 +1215,10 @@ public class UserController {
 			keyLista kl = new keyLista(id_a,user);
 			Cancion c = new Cancion(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
+			String songName = String.valueOf(c.getIdCancion().getC_id()) + String.valueOf(c.getIdCancion().getL_id().getL_id()) + 
+					c.getIdCancion().getL_id().getU() + ".mp3";
+			String urlsong = "Cancion?idsong=" + songName;
+			c.setMp3(urlsong);
 			if(!cancionService.createCancion( kl, c )) {
 				throw new Exception("No se ha podido guardar la cancion");
 			}
@@ -1226,8 +1228,7 @@ public class UserController {
 			String prueba = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
 			// Id Cancion + Id Album + Id Usuario
 			String path = "./src/main/resources/static/assets/";
-			String songName = String.valueOf(c.getIdCancion().getC_id()) + String.valueOf(c.getIdCancion().getL_id().getL_id()) + 
-								c.getIdCancion().getL_id().getU() + ".mp3";
+			
 			
 			FileOutputStream fos = new FileOutputStream(path + songName);
 			fos.write(file.getBytes());
@@ -1236,8 +1237,7 @@ public class UserController {
 			if(!f.exists()) {
 				System.out.println("No existeeeeeeee!!!");
 			}
-			songName = "Cancion?idsong=" + songName;
-			c.setMp3(songName);
+			
 			return c.getIdCancion();
 		}catch(Exception e) {
 			System.out.println(e);
