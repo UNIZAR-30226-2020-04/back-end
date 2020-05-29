@@ -1310,12 +1310,12 @@ public class UserController {
 	@PostMapping(value = "/subirCancion", produces = "application/json")
 	@ResponseBody
 	public keyCancion subirCancion(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
-								@RequestParam("nombreC") String nombre, ModelMap model, HttpServletResponse response){
+								@RequestParam("nombreC") String nombre, @RequestParam("genero") String gen, ModelMap model, HttpServletResponse response){
 		
 		try {
 			int id_a = Integer.parseInt(id);
 			keyLista kl = new keyLista(id_a,user);
-			Cancion c = new Cancion(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			Cancion c = new Cancion(kl, -1, nombre, gen, null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
 			keyCancion kc = cancionService.createCancion( kl, c );
 			if(kc == null) {
