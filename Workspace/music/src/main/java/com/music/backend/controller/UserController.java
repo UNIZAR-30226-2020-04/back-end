@@ -54,125 +54,6 @@ public class UserController {
 	@Autowired
     public JavaMailSender emailSender;
 	
-	
-	@GetMapping(value = "/pruebasBD")
-	public void pruebasBD(ModelMap model, HttpServletResponse response){
-		
-		try {
-			//Pruebas de INSERT
-			
-			//Usuario
-			String correo = "a@a.com";
-			Usuario u = new Usuario(correo, "Usuario", null, "pass", "nick", "fNacimiento");
-			
-			if(!usuarioService.createUser(u)) {
-				throw new Exception("INSERT usuario mal hecho");
-			}
-			
-			//Reproduccion
-			keyLista kLr = new keyLista(1,correo);
-			
-			Reproduccion r = new Reproduccion(kLr, "Reproduccion", null, "fechaPublicacion");
-			
-			if(!repService.createReproduccion(r)) {
-				throw new Exception("INSERT reproduccion mal hecho");
-			}
-			
-			//Podcast
-			keyLista kLp = new keyLista(2,correo);
-			
-			Podcast p = new Podcast(kLp, "Podcast", null, "fechaPublicacion");
-			
-			if(!podService.createPodcast(p, null)) {
-				throw new Exception("INSERT podcast mal hecho");
-			}
-			
-			//Album
-			keyLista kLa = new keyLista(3,correo);
-			
-			Album a = new Album(kLa, "Album", "Autor", null, "fechaPublicacion");
-			
-			if(!albumService.createAlbum(a)) {
-				throw new Exception("INSERT album mal hecho");
-			}
-			
-			//Cancion
-			
-			Cancion c = new Cancion(kLa, 1, "Cancion", "Genero", null);
-			keyCancion kc = cancionService.createCancion( kLa, c);
-			if(kc == null) {
-				throw new Exception("INSERT cancion mal hecho");
-			}
-			
-			//Pruebas de SELECT
-			
-			//Usuario
-			Usuario _u = usuarioService.getUser(u.getCorreo());
-			if(!u.equals(_u)) {
-				throw new Exception("SELECT usuario mal hecho");
-			}
-			
-			//Reproduccion
-			Reproduccion _r = repService.getReproduccion(r.getIdRep().getL_id(), r.getIdRep().getU());
-			if(!r.equals(_r)) {
-				throw new Exception("SELECT reproduccion mal hecho");
-			}
-			
-			//Podcast
-			Podcast _p = podService.getPodcast(p.getIdPodcast().getL_id(), p.getIdPodcast().getU());
-			if(!p.equals(_p)) {
-				throw new Exception("SELECT podcast mal hecho");
-			}
-			
-			//Album
-			Album _a = albumService.getAlbum(a.getIdAlbum().getL_id(), a.getIdAlbum().getU());
-			if(!a.equals(_a)) {
-				throw new Exception("SELECT album mal hecho");
-			}
-			
-			//Cancion
-			Cancion _c = cancionService.getCancion(c.getIdCancion().getL_id().getL_id(), c.getIdCancion().getL_id().getU(), c.getIdCancion().getC_id());
-			if(!c.equals(_c)) {
-				throw new Exception("SELECT cancion mal hecho");
-			}
-			
-			
-			//Pruebas de DELETE
-			
-			//Usuario
-			//if(!usuarioService.deleteUser(u.getCorreo())) {
-			//	throw new Exception("DELETE usuario mal hecho");
-			//}
-			/*
-			//Cancion
-			if(!cancionService.deleteCancion(c.getIdCancion().getL_id().getL_id(), c.getIdCancion().getL_id().getU(), c.getIdCancion().getC_id())) {
-				throw new Exception("DELETE cancion mal hecho");
-			}
-			
-			//Reproduccion
-			if(!repService.deleteReproduccion(r.getIdRep().getL_id(), r.getIdRep().getU())) {
-				throw new Exception("DELETE reproduccion mal hecho");
-			}
-			
-			//Podcast
-			if(!podService.deletePodcast(p.getIdPodcast().getL_id(),  p.getIdPodcast().getU())) {
-				throw new Exception("DELETE podcast mal hecho");
-			}
-			
-			//Album
-			if(!albumService.deleteAlbum(a.getIdAlbum().getL_id(), a.getIdAlbum().getU())) {
-				throw new Exception("DELETE album mal hecho");
-			}
-			*/
-			System.out.println("Prueba pasada");
-			
-		} catch (Exception e) {
-			System.out.println("Error:");
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-	
 	/*
 		Método Login:
 		/loginUser
@@ -249,6 +130,7 @@ public class UserController {
 		    usuarioService.createUser(user);
 		    
 		    //Creación de la Playlist de "Me gusta"
+		    /*
 		    Reproduccion r = new Reproduccion();
 		    
 		    int id = 1;
@@ -260,7 +142,7 @@ public class UserController {
 			r.setNombre("PlaylistMeGusta");
 			r.setURLFoto(null);
 		    repService.saveRep(r);
-		    
+		    */
 			return user;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -332,7 +214,7 @@ public class UserController {
 			@RequestParam("playlist") String p, ModelMap model, HttpServletResponse response){
 		
 		try {
-			
+			Usuario usuario = usuarioService.getUser(user);
 			Reproduccion r = new Reproduccion();
 			keyLista kl = new keyLista(-1,user);
 			r.setIdRep(kl);
@@ -345,6 +227,7 @@ public class UserController {
 
 			String URLFoto = String.valueOf("Image?idfoto=" + imageName);
 			r.setURLFoto(URLFoto);
+			r.setAutor(usuario.getNick());
 
 			if(!repService.createReproduccion(r)) {
 				throw new Exception("No se ha podido crear la playlist");
@@ -394,8 +277,8 @@ public class UserController {
 			@RequestParam("podcast") String nombre, ModelMap model, HttpServletResponse response){
 		
 		try {
-			
-			Podcast p = new Podcast(-1, user, nombre, null, null);
+			Usuario usuario = usuarioService.getUser(user);
+			Podcast p = new Podcast(-1, user, nombre, null, null, usuario.getNick());
 			if(f!=null) {
 				if(!podService.createPodcast(p, f.getBytes())) {
 					throw new Exception("No se ha podido crear el Podcast");
@@ -1804,169 +1687,6 @@ public class UserController {
 			System.out.println(e.getMessage());
 		}
 		return null;
-	}
-
-
-	@GetMapping(value = "/pruebaRep")
-	@ResponseBody
-	public void pruebaRep(ModelMap model, HttpServletResponse response) throws Exception {
-		
-		try {
-			
-			//Usuario
-			Usuario u1 = new Usuario("a@a.com", "Usuario", null, "pass", "nick", "fNacimiento");
-			
-			if(!usuarioService.createUser(u1)) {
-				throw new Exception("INSERT usuario mal hecho");
-			}
-			
-			//Usuario
-			Usuario u2 = new Usuario("b@b.com", "Usuario", null, "pass", "nick", "fNacimiento");
-			
-			if(!usuarioService.createUser(u2)) {
-				throw new Exception("INSERT usuario mal hecho");
-			}
-			System.out.println("He acabado de crear los Usuarios");
-			//Album
-			keyLista kLa = new keyLista(3,"CorreoAlbu");
-			
-			Album a = new Album(kLa, "Album", "Autor", null, "fechaPublicacion");
-			
-			if(!albumService.createAlbum(a)) {
-				throw new Exception("INSERT album mal hecho");
-			}
-			System.out.println("He acabado de crear el Álbum");
-			//Cancion
-			
-			Cancion c1 = new Cancion(kLa, 1, "Cancion1", "Genero", null);
-			
-			cancionService.createCancion( kLa, c1);
-			
-			Cancion c2 = new Cancion(kLa, 2, "Cancion2", "Genero", null);
-			
-			cancionService.createCancion( kLa, c2);
-			
-			Cancion c3 = new Cancion(kLa, 3, "Cancion3", "Genero", null);
-			
-			cancionService.createCancion( kLa, c3);
-			System.out.println("He acabado de crear las Canciones");
-			//Reproduccion
-			keyLista kLr = new keyLista(1,"CorreoRep1");
-			
-			Reproduccion r = new Reproduccion(kLr, "Reproduccion", null, "fechaPublicacion");
-			
-			if(!repService.createReproduccion(r)) {
-				throw new Exception("INSERT reproduccion mal hecho");
-			}
-			
-			//Reproduccion
-			keyLista kLr2 = new keyLista(1,"CorreoRep2");
-			
-			Reproduccion r2 = new Reproduccion(kLr2, "Reproduccion", null, "fechaPublicacion");
-			
-			if(!repService.createReproduccion(r2)) {
-				throw new Exception("INSERT reproduccion mal hecho");
-			}
-			
-			
-			System.out.println("He acabado de crear las Reproducciones");
-			
-			if(!repService.addSong(r.getIdRep(), c1.getIdCancion())) {
-				throw new Exception("Primer add mal");
-			}
-			if(!repService.addSong(r.getIdRep(), c3.getIdCancion())) {
-				throw new Exception("Segundo add mal");
-			}
-			
-			if(!repService.addSong(r2.getIdRep(), c1.getIdCancion())) {
-				throw new Exception("Tercer add mal");
-			}
-			if(!repService.addSong(r2.getIdRep(), c2.getIdCancion())) {
-				throw new Exception("Cuarto add mal");
-			}if(!repService.addSong(r2.getIdRep(), c3.getIdCancion())) {
-				throw new Exception("Quinto add mal");
-			}
-			
-			System.out.println("He acabado de añadir las canciones");
-			
-			for(Cancion cc : repService.listSongs(r.getIdRep().getL_id(), r.getIdRep().getU())) {
-				System.out.println("Cancion de la primera playlist:");
-				System.out.println(cc.toString());
-			}
-			
-			for(Cancion cc : repService.listSongs(r2.getIdRep().getL_id(), r2.getIdRep().getU())) {
-				System.out.println("Cancion de la segunda playlist:");
-				System.out.println(cc.toString());
-			}
-			
-			
-			System.out.println("Prueba importante: ");
-			
-			Cancion c22 = new Cancion(kLa, 2, "Cancion2", "Genero", null);
-			
-			if(!r.canciones.contains(c22)) {
-				System.out.println("r no debería tener c22, bien");
-			}else {
-				System.out.println("r no debería tener c22, mal");
-			}
-			
-			if(!r2.canciones.contains(c22)) {
-				System.out.println("r2 no debería tener c22, mal");
-			}else {
-				System.out.println("r2 no debería tener c22, bien");
-			}
-			System.out.println("Size antes: " + u1.likedSongs.size());
-			
-			if(!usuarioService.likeSong(u1.getCorreo(), c1.getIdCancion().getL_id().getU(), 
-					 c1.getIdCancion().getC_id(), c1.getIdCancion().getL_id().getL_id())) {
-				System.out.println("NO SE HA AÑADIDO");
-			}else {
-				System.out.println("Numero: " + u1.likedSongs.size());
-			}
-			
-			
-			usuarioService.likeSong(u1.getCorreo(), c3.getIdCancion().getL_id().getU(), 
-					 c3.getIdCancion().getC_id(), c3.getIdCancion().getL_id().getL_id());
-			
-			
-			if(usuarioService.checkLike(u1.getCorreo(), c1.getIdCancion().getL_id().getU(), 
-						 c1.getIdCancion().getC_id(), c1.getIdCancion().getL_id().getL_id())) {
-				System.out.println("Bien");
-			}else {
-				System.out.println("Mal");
-			}
-			
-			if(!usuarioService.checkLike(u1.getCorreo(), c2.getIdCancion().getL_id().getU(), 
-					 c2.getIdCancion().getC_id(), c2.getIdCancion().getL_id().getL_id())) {
-				System.out.println("Bien");
-			}else {
-				System.out.println("Mal");
-			}
-			
-			if(usuarioService.checkLike(u1.getCorreo(), c3.getIdCancion().getL_id().getU(), 
-					 c3.getIdCancion().getC_id(), c3.getIdCancion().getL_id().getL_id())) {
-				System.out.println("Bien");
-			}else {
-				System.out.println("Mal");
-			}
-			
-			
-			usuarioService.likeSong(u1.getCorreo(), c2.getIdCancion().getL_id().getU(), 
-					 c2.getIdCancion().getC_id(), c2.getIdCancion().getL_id().getL_id());
-			if(usuarioService.checkLike(u1.getCorreo(), c22.getIdCancion().getL_id().getU(), 
-					 c22.getIdCancion().getC_id(), c22.getIdCancion().getL_id().getL_id())) {
-				System.out.println("Perfe");
-			}else {
-				System.out.println("Muy mal");
-			}
-			
-			Usuario usuario = usuarioService.getUser(u1.getCorreo());
-			
-			System.out.println("Fin: " + usuario.likedSongs.size());
-			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 }

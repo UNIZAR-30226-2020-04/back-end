@@ -27,6 +27,9 @@ public class Podcast implements Serializable{
 	@Column(name = "URLFoto",length=1024)
 	private String URLFoto;
 	
+	@Column(name = "Autor", nullable = false, length =100)
+	private String Autor;
+	
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
 	private String FechaPublicacion;
 	
@@ -45,20 +48,22 @@ public class Podcast implements Serializable{
 		super();
 	}
 
-	public Podcast(@NotBlank keyLista idPodcast, @NotBlank String nombre, String URLFoto, String fechaPublicacion) {
+	public Podcast(@NotBlank keyLista idPodcast, @NotBlank String nombre, String URLFoto, String fechaPublicacion, String autor) {
 		super();
 		this.idPodcast = idPodcast;
 		Nombre = nombre;
 		this.URLFoto = URLFoto;
 		FechaPublicacion = fechaPublicacion;
+		this.Autor = autor;
 	}
 	
-	public Podcast(int id, String u, String nombre, String URLFoto, String fechaPublicacion) {
+	public Podcast(int id, String u, String nombre, String URLFoto, String fechaPublicacion, String autor) {
 		super();
 		this.idPodcast = new keyLista(id,u);
 		Nombre = nombre;
 		this.URLFoto = URLFoto;
 		FechaPublicacion = fechaPublicacion;
+		this.Autor = autor;
 	}
 
 	public keyLista getIdPodcast() {
@@ -81,8 +86,16 @@ public class Podcast implements Serializable{
 		return URLFoto;
 	}
 
-	public void setURLFoto(String URLFoto) {
-		this.URLFoto = URLFoto;
+	public void setURLFoto(String uRLFoto) {
+		URLFoto = uRLFoto;
+	}
+
+	public String getAutor() {
+		return Autor;
+	}
+
+	public void setAutor(String autor) {
+		Autor = autor;
 	}
 
 	public String getFechaPublicacion() {
@@ -93,13 +106,23 @@ public class Podcast implements Serializable{
 		FechaPublicacion = fechaPublicacion;
 	}
 
+	public Set<Cancion> getCapitulos() {
+		return capitulos;
+	}
+
+	public void setCapitulos(Set<Cancion> capitulos) {
+		this.capitulos = capitulos;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((Autor == null) ? 0 : Autor.hashCode());
 		result = prime * result + ((FechaPublicacion == null) ? 0 : FechaPublicacion.hashCode());
-		result = prime * result + ((URLFoto == null) ? 0 : URLFoto.hashCode());
 		result = prime * result + ((Nombre == null) ? 0 : Nombre.hashCode());
+		result = prime * result + ((URLFoto == null) ? 0 : URLFoto.hashCode());
+		result = prime * result + ((capitulos == null) ? 0 : capitulos.hashCode());
 		result = prime * result + ((idPodcast == null) ? 0 : idPodcast.hashCode());
 		return result;
 	}
@@ -113,20 +136,30 @@ public class Podcast implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Podcast other = (Podcast) obj;
+		if (Autor == null) {
+			if (other.Autor != null)
+				return false;
+		} else if (!Autor.equals(other.Autor))
+			return false;
 		if (FechaPublicacion == null) {
 			if (other.FechaPublicacion != null)
 				return false;
 		} else if (!FechaPublicacion.equals(other.FechaPublicacion))
+			return false;
+		if (Nombre == null) {
+			if (other.Nombre != null)
+				return false;
+		} else if (!Nombre.equals(other.Nombre))
 			return false;
 		if (URLFoto == null) {
 			if (other.URLFoto != null)
 				return false;
 		} else if (!URLFoto.equals(other.URLFoto))
 			return false;
-		if (Nombre == null) {
-			if (other.Nombre != null)
+		if (capitulos == null) {
+			if (other.capitulos != null)
 				return false;
-		} else if (!Nombre.equals(other.Nombre))
+		} else if (!capitulos.equals(other.capitulos))
 			return false;
 		if (idPodcast == null) {
 			if (other.idPodcast != null)
@@ -138,8 +171,10 @@ public class Podcast implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Podcast [idPodcast=" + idPodcast + ", Nombre=" + Nombre + ", URLFoto=" + URLFoto
-				+ ", FechaPublicacion=" + FechaPublicacion + "]";
+		return "Podcast [idPodcast=" + idPodcast + ", Nombre=" + Nombre + ", URLFoto=" + URLFoto + ", Autor=" + Autor
+				+ ", FechaPublicacion=" + FechaPublicacion + ", capitulos=" + capitulos + "]";
 	}
+
+	
 	
 }
