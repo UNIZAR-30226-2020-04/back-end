@@ -2,7 +2,9 @@ package com.music.backend.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -120,7 +122,7 @@ public class CancionServiceImpl implements CancionService{
 
 	public Album[] getAlbumsBySongs(Cancion[] canciones) throws Exception{
 		try {
-			List<Album> albumes = new ArrayList<>();
+			Set<Album> albumes = new HashSet<>(0);
 
 			for(Cancion i : canciones){
 				Album actual = albumService.getAlbum(i.getIdCancion().getL_id().getL_id(), i.getIdCancion().getL_id().getU());
@@ -128,7 +130,7 @@ public class CancionServiceImpl implements CancionService{
 					albumes.add(actual);
 				}
 			}
-			return (Album[]) albumes.toArray();
+			return albumes.toArray( new Album[albumes.size()]);
 
 		}catch(Exception e) {
 			System.out.println(e);
@@ -139,7 +141,7 @@ public class CancionServiceImpl implements CancionService{
 
 	public Usuario[] getUsersBySongs(Cancion[] canciones) throws Exception{
 		try {
-			List<Usuario> usuarios = new ArrayList<>();
+			Set<Usuario> usuarios = new HashSet<>(0);
 
 			for(Cancion i : canciones){
 				Usuario actual = usuarioService.getUser(i.getIdCancion().getL_id().getU());
@@ -147,7 +149,7 @@ public class CancionServiceImpl implements CancionService{
 					usuarios.add(actual);
 				}
 			}
-			return (Usuario[]) usuarios.toArray();
+			return usuarios.toArray( new Usuario[usuarios.size()]);
 
 		}catch(Exception e) {
 			System.out.println(e);

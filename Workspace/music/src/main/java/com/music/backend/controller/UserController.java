@@ -1566,7 +1566,7 @@ public class UserController {
 	public Boolean recoverEmail(@RequestBody String u, ModelMap model, HttpServletResponse response){
 		try {
 			String to = u;
-			
+			System.out.println("El correo: " + u + "quiere recuperar la contraseña");
 			int leftLimit = 97; // letter 'a'
 	        int rightLimit = 122; // letter 'z'
 	        int targetStringLength = 10;
@@ -1579,6 +1579,8 @@ public class UserController {
 	        
 	        System.out.println("Cambiando la contraseña a: " + generatedString);
 	        Usuario user = usuarioService.getUser(to);
+	        
+	        System.out.println("El Objeto Usuario: " + user.toString());
 	        
 			
 			//String to = "email@gmail.com";//change accordingly
@@ -1595,7 +1597,7 @@ public class UserController {
 	        usuarioService.changePass(user.getCorreo(), user.getPass(), generatedString);
 	        return true;
 		}catch(Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		return false;
 	}
