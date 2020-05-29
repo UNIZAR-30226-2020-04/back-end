@@ -1,6 +1,8 @@
 package com.music.backend.service;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
@@ -64,9 +66,8 @@ public class CancionServiceImpl implements CancionService{
 			String songName = String.valueOf(c) + String.valueOf(i) + s + ".mp3";
 			File f = new File(path + songName);
 			System.out.println("Intentando borrar la canción: " + path + songName);
-			if(!f.delete()) {
-				throw new Exception("No se ha podido borrar la canción");
-			}
+			Path p = f.toPath();
+			Files.delete(p);
 			repository.delete(repository.findById(i, s, c));
 			return true;
 		}catch(Exception e) {
