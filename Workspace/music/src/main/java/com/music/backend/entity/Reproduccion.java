@@ -28,7 +28,7 @@ public class Reproduccion implements Serializable{
 	@Column(name = "URLFoto",length=1024)
 	private String URLFoto;
 	
-	@Column(name = "Autor", nullable = false, length =100)
+	@Column(name = "Autor", length =100)
 	private String Autor;
 	
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
