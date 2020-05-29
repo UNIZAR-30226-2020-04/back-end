@@ -26,4 +26,5 @@ public interface ReproduccionService {
 	public Boolean followByUser(Usuario u, Reproduccion r) throws Exception;
 	public Boolean unFollowByUser(Usuario u, Reproduccion r) throws Exception;
 	public Boolean changeImage(MultipartFile f, String correo, int id) throws Exception;
+	public Boolean saveRep(Reproduccion r) throws Exception;
 }

@@ -30,7 +30,7 @@ public class Reproduccion implements Serializable{
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
 	private String FechaPublicacion;
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "CancionesPlaylist", joinColumns = { 
 			@JoinColumn(name = "reproduccion.lista_id", nullable = false, updatable = false), 
 			@JoinColumn(name = "reproduccion.usuario_id", nullable = false, updatable = false) }, 
@@ -40,12 +40,12 @@ public class Reproduccion implements Serializable{
 	public Set<Cancion> canciones = new HashSet<Cancion>(0);
 	
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "PlaylistFollowedByUsers", joinColumns = { 
 			@JoinColumn(name = "reproduccion.lista_id", nullable = false, updatable = false), 
 			@JoinColumn(name = "reproduccion.usuario_id", nullable = false, updatable = false) }, 
 			inverseJoinColumns = { @JoinColumn(name = "usuario.correo", nullable = false, updatable = false)})
-	public List<Usuario> suscripciones = new ArrayList<>();
+	public Set<Usuario> suscripciones = new HashSet<Usuario>(0);
 
 	//@ManyToMany(mappedBy = "seguidas")
 	//	private List<Usuario> siguen;

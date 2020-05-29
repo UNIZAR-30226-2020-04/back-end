@@ -2,7 +2,9 @@ package com.music.backend.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -42,32 +44,32 @@ public class Usuario implements Serializable{
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
 			inverseJoinColumns = { @JoinColumn(name = "podcast.lista_id", nullable = false, updatable = false),
 									@JoinColumn(name = "podcast.usuario_id", nullable = false, updatable = false)})
-	public List<Podcast> suscripciones = new ArrayList<>();
+	public Set<Podcast> suscripciones = new HashSet<>(0);
 	
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "usersFollowPlaylist", joinColumns = { 
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "followingPlaylist", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
 			inverseJoinColumns = { @JoinColumn(name = "reproduccion.lista_id", nullable = false, updatable = false), 
 					@JoinColumn(name = "reproduccion.usuario_id", nullable = false, updatable = false)})
-	public List<Reproduccion> usersFollow = new ArrayList<>();
+	public Set<Reproduccion> followingPlaylist = new HashSet<>(0);
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "likedSongs", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
 			inverseJoinColumns = { @JoinColumn(name = "cancion.cancion_id", nullable = false, updatable = false),
 					@JoinColumn(name = "cancion.lista_id", nullable = false, updatable = false),
 					@JoinColumn(name = "cancion.usuario_id", nullable = false, updatable = false)})
-	public List<Cancion> likedSongs = new ArrayList<>();
+	public Set<Cancion> likedSongs = new HashSet<Cancion>(0);
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "followedUsers", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)})
-	public List<Usuario> followedUsers = new ArrayList<>();
+	public Set<Usuario> followedUsers = new HashSet<>(0);
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "usersFollowingMe", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)})
-	public List<Usuario> usersFollowingMe = new ArrayList<>();
+	public Set<Usuario> usersFollowingMe = new HashSet<>(0);
 
 	/*
 	public Boolean addPodcast(Podcast podcast){

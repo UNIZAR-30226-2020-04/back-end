@@ -155,7 +155,7 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	@Override
 	public Boolean followByUser(Usuario u, Reproduccion r) throws Exception {
 		try {
-			u.usersFollow.add(r);
+			u.followingPlaylist.add(r);
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -166,7 +166,7 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	@Override
 	public Boolean unFollowByUser(Usuario u, Reproduccion r) throws Exception {
 		try {
-			u.usersFollow.remove(r);
+			u.followingPlaylist.remove(r);
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -187,6 +187,17 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 				fos.write(f.getBytes());
 			}
 			fos.close();
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean saveRep(Reproduccion r) throws Exception {
+		try {
+			repository.save(r);
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();

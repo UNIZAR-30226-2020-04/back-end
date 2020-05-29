@@ -1125,7 +1125,8 @@ public class UserController {
 			int id_c = Integer.parseInt(lhm.get("idcancion"));
 			Usuario usuario = usuarioService.getUser(user);
 			Cancion c = cancionService.getCancion(id_a, correo_album, id_c);
-			return usuarioService.likeSong(usuario, c);
+			//return usuarioService.likeSong(usuario, c);
+			return false;
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -1143,7 +1144,8 @@ public class UserController {
 			int id_c = Integer.parseInt(lhm.get("idcancion"));
 			Usuario usuario = usuarioService.getUser(user);
 			Cancion c = cancionService.getCancion(id_a, correo_album, id_c);
-			return usuarioService.likeSong(usuario, c);
+			//return usuarioService.likeSong(usuario, c);
+			return false;
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -1156,9 +1158,10 @@ public class UserController {
 		try{
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("correo");
+			String useralbum = lhm.get("correoalbum");
 			int id_a = Integer.parseInt(lhm.get("idalbum"));
 			int id_c = Integer.parseInt(lhm.get("idcancion"));
-			return usuarioService.checkLike(user, id_c, id_a);
+			return usuarioService.checkLike(user,useralbum, id_c, id_a);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -1786,5 +1789,172 @@ public class UserController {
 	}
 
 
+	@GetMapping(value = "/pruebaRep")
+	@ResponseBody
+	public void pruebaRep(ModelMap model, HttpServletResponse response) throws Exception {
+		
+		try {
+			
+			//Usuario
+			Usuario u1 = new Usuario("a@a.com", "Usuario", null, "pass", "nick", "fNacimiento");
+			
+			if(!usuarioService.createUser(u1)) {
+				throw new Exception("INSERT usuario mal hecho");
+			}
+			
+			//Usuario
+			Usuario u2 = new Usuario("b@b.com", "Usuario", null, "pass", "nick", "fNacimiento");
+			
+			if(!usuarioService.createUser(u2)) {
+				throw new Exception("INSERT usuario mal hecho");
+			}
+			System.out.println("He acabado de crear los Usuarios");
+			//Album
+			keyLista kLa = new keyLista(3,"CorreoAlbu");
+			
+			Album a = new Album(kLa, "Album", "Autor", null, "fechaPublicacion");
+			
+			if(!albumService.createAlbum(a)) {
+				throw new Exception("INSERT album mal hecho");
+			}
+			System.out.println("He acabado de crear el Álbum");
+			//Cancion
+			
+			Cancion c1 = new Cancion(kLa, 1, "Cancion1", "Genero", null);
+			
+			if(!cancionService.createCancion( kLa, c1)) {
+				throw new Exception("INSERT cancion mal hecho");
+			}
+			
+			Cancion c2 = new Cancion(kLa, 2, "Cancion2", "Genero", null);
+			
+			if(!cancionService.createCancion( kLa, c2)) {
+				throw new Exception("INSERT cancion mal hecho");
+			}
+			
+			Cancion c3 = new Cancion(kLa, 3, "Cancion3", "Genero", null);
+			
+			if(!cancionService.createCancion( kLa, c3)) {
+				throw new Exception("INSERT cancion mal hecho");
+			}
+			System.out.println("He acabado de crear las Canciones");
+			//Reproduccion
+			keyLista kLr = new keyLista(1,"CorreoRep1");
+			
+			Reproduccion r = new Reproduccion(kLr, "Reproduccion", null, "fechaPublicacion");
+			
+			if(!repService.createReproduccion(r)) {
+				throw new Exception("INSERT reproduccion mal hecho");
+			}
+			
+			//Reproduccion
+			keyLista kLr2 = new keyLista(1,"CorreoRep2");
+			
+			Reproduccion r2 = new Reproduccion(kLr2, "Reproduccion", null, "fechaPublicacion");
+			
+			if(!repService.createReproduccion(r2)) {
+				throw new Exception("INSERT reproduccion mal hecho");
+			}
+			
+			
+			System.out.println("He acabado de crear las Reproducciones");
+			
+			if(!repService.addSong(r.getIdRep(), c1.getIdCancion())) {
+				throw new Exception("Primer add mal");
+			}
+			if(!repService.addSong(r.getIdRep(), c3.getIdCancion())) {
+				throw new Exception("Segundo add mal");
+			}
+			
+			if(!repService.addSong(r2.getIdRep(), c1.getIdCancion())) {
+				throw new Exception("Tercer add mal");
+			}
+			if(!repService.addSong(r2.getIdRep(), c2.getIdCancion())) {
+				throw new Exception("Cuarto add mal");
+			}if(!repService.addSong(r2.getIdRep(), c3.getIdCancion())) {
+				throw new Exception("Quinto add mal");
+			}
+			
+			System.out.println("He acabado de añadir las canciones");
+			
+			for(Cancion cc : repService.listSongs(r.getIdRep().getL_id(), r.getIdRep().getU())) {
+				System.out.println("Cancion de la primera playlist:");
+				System.out.println(cc.toString());
+			}
+			
+			for(Cancion cc : repService.listSongs(r2.getIdRep().getL_id(), r2.getIdRep().getU())) {
+				System.out.println("Cancion de la segunda playlist:");
+				System.out.println(cc.toString());
+			}
+			
+			
+			System.out.println("Prueba importante: ");
+			
+			Cancion c22 = new Cancion(kLa, 2, "Cancion2", "Genero", null);
+			
+			if(!r.canciones.contains(c22)) {
+				System.out.println("r no debería tener c22, bien");
+			}else {
+				System.out.println("r no debería tener c22, mal");
+			}
+			
+			if(!r2.canciones.contains(c22)) {
+				System.out.println("r2 no debería tener c22, mal");
+			}else {
+				System.out.println("r2 no debería tener c22, bien");
+			}
+			System.out.println("Size antes: " + u1.likedSongs.size());
+			
+			if(!usuarioService.likeSong(u1.getCorreo(), c1.getIdCancion().getL_id().getU(), 
+					 c1.getIdCancion().getC_id(), c1.getIdCancion().getL_id().getL_id())) {
+				System.out.println("NO SE HA AÑADIDO");
+			}else {
+				System.out.println("Numero: " + u1.likedSongs.size());
+			}
+			
+			
+			usuarioService.likeSong(u1.getCorreo(), c3.getIdCancion().getL_id().getU(), 
+					 c3.getIdCancion().getC_id(), c3.getIdCancion().getL_id().getL_id());
+			
+			
+			if(usuarioService.checkLike(u1.getCorreo(), c1.getIdCancion().getL_id().getU(), 
+						 c1.getIdCancion().getC_id(), c1.getIdCancion().getL_id().getL_id())) {
+				System.out.println("Bien");
+			}else {
+				System.out.println("Mal");
+			}
+			
+			if(!usuarioService.checkLike(u1.getCorreo(), c2.getIdCancion().getL_id().getU(), 
+					 c2.getIdCancion().getC_id(), c2.getIdCancion().getL_id().getL_id())) {
+				System.out.println("Bien");
+			}else {
+				System.out.println("Mal");
+			}
+			
+			if(usuarioService.checkLike(u1.getCorreo(), c3.getIdCancion().getL_id().getU(), 
+					 c3.getIdCancion().getC_id(), c3.getIdCancion().getL_id().getL_id())) {
+				System.out.println("Bien");
+			}else {
+				System.out.println("Mal");
+			}
+			
+			
+			usuarioService.likeSong(u1.getCorreo(), c2.getIdCancion().getL_id().getU(), 
+					 c2.getIdCancion().getC_id(), c2.getIdCancion().getL_id().getL_id());
+			if(usuarioService.checkLike(u1.getCorreo(), c22.getIdCancion().getL_id().getU(), 
+					 c22.getIdCancion().getC_id(), c22.getIdCancion().getL_id().getL_id())) {
+				System.out.println("Perfe");
+			}else {
+				System.out.println("Muy mal");
+			}
+			
+			Usuario usuario = usuarioService.getUser(u1.getCorreo());
+			
+			System.out.println("Fin: " + usuario.likedSongs.size());
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 }

@@ -48,9 +48,9 @@ public interface UsuarioService {
 	public Reproduccion[] listFollowsPlaylists(String user) throws Exception;
 	public Boolean checkFollow(String user, int i) throws Exception;
 
-	public Boolean likeSong(Usuario u, Cancion c) throws Exception;
-	public Boolean unlikeSong(Usuario u, Cancion c) throws Exception;
-	public Boolean checkLike(String user, int idLista, int cancion) throws Exception;
+	public Boolean likeSong(String user, String correoalbum, int cancion, int idLista) throws Exception;
+	public Boolean unlikeSong(String user, String correoalbum, int cancion, int idLista) throws Exception;
+	public Boolean checkLike(String user, String correoalbum, int idLista, int cancion) throws Exception;
 	public Cancion[] listLikes(String user) throws Exception;
 	public Album[] listAlbumsLikes(String user) throws Exception;
 	public Usuario[] listUsersLikes(String user) throws Exception;
