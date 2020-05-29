@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.music.backend.entity.Cancion;
 import com.music.backend.entity.Podcast;
 import com.music.backend.entity.Reproduccion;
+import com.music.backend.entity.Usuario;
 import com.music.backend.entity.keyLista;
 import com.music.backend.repository.PodcastRepository;
 import com.music.backend.repository.UsuarioRepository;
@@ -28,6 +29,9 @@ public class PodcastServiceImpl implements PodcastService {
 
 	@Autowired
 	PodcastRepository repository;
+	
+	@Autowired
+	UsuarioService userService;
 	
 	@Override
 	public Boolean createPodcast(Podcast p, byte[] b) throws Exception{
@@ -77,7 +81,17 @@ public class PodcastServiceImpl implements PodcastService {
 	public Boolean deletePodcast(int i, String s) throws Exception {
 		
 		try {
-			repository.delete(repository.findById(i, s));
+			Podcast p = repository.findById(i, s);
+			Usuario[] uu = userService.getAllUsers();
+			if(uu != null) {
+				for(Usuario u: uu) {
+					if(u.suscripciones.contains(p)) {
+						u.suscripciones.remove(p);
+						userService.saveUser(u);
+					}
+				}
+			}
+			repository.delete(p);
 			return true;
 		}catch(Exception e) {
 			System.out.println(e);

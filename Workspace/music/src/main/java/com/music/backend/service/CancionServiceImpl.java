@@ -62,6 +62,7 @@ public class CancionServiceImpl implements CancionService{
 	public Boolean deleteCancion(int i, String s, int c) throws Exception {
 		
 		try {
+			Cancion song = repository.findById(i, s, c);
 			String path = "./src/main/resources/static/assets/";
 			String songName = String.valueOf(c) + String.valueOf(i) + s + ".mp3";
 			File f = new File(path + songName);
@@ -69,7 +70,18 @@ public class CancionServiceImpl implements CancionService{
 			if(!f.delete()) {
 				throw new Exception("No se ha podido borrar la canción");
 			}
-			repository.delete(repository.findById(i, s, c));
+			
+			Usuario[] uu = usuarioService.getAllUsers();
+			if(uu != null) {
+				for(Usuario u: uu) {
+					if(u.likedSongs.contains(song)) {
+						u.likedSongs.remove(song);
+						usuarioService.saveUser(u);
+					}
+				}
+			}
+			
+			repository.delete(song);
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();

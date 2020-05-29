@@ -67,6 +67,20 @@ public class UsuarioServiceImpl implements UsuarioService{
 				throw new Exception("Ha habido un problema");
 			}
 			
+			Usuario[] uu = repository.getAllUsers();
+			
+			if(uu != null) {
+				for(Usuario x : uu) {
+					if(x.followedUsers.contains(user)) {
+						x.followedUsers.remove(user);
+						repository.save(x);
+					}
+					if(x.usersFollowingMe.contains(user)) {
+						x.usersFollowingMe.remove(user);
+						repository.save(x);
+					}
+				}	
+			}
 			repService.deleteByUser(u);
 			albumService.deleteByUser(u);
 			podService.deleteByUser(u);
