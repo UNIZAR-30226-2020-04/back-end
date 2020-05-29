@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 import java.util.Random;
@@ -253,6 +254,20 @@ public class UserController {
 		    Usuario user = new Usuario(email, name, URLFoto, password, username, dateOfBirth);
 		    System.out.println(user.toString());
 		    usuarioService.createUser(user);
+		    
+		    //Creación de la Playlist de "Me gusta"
+		    Reproduccion r = new Reproduccion();
+		    
+		    int id = 1;
+			keyLista kl = new keyLista(id, email);
+			r.setIdRep(kl);
+			LocalDate date = LocalDate.now();
+			String fechaPub = Integer.toString(date.getDayOfMonth()) + "/" + Integer.toString(date.getMonthValue()) + "/" + Integer.toString(date.getYear());
+			r.setFechaPublicacion(fechaPub);
+			r.setNombre("PlaylistMeGusta");
+			r.setURLFoto(null);
+		    repService.saveRep(r);
+		    
 			return user;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -1121,10 +1136,7 @@ public class UserController {
 			int id_a = Integer.parseInt(lhm.get("idalbum"));
 			String correo_album = lhm.get("correoalbum");
 			int id_c = Integer.parseInt(lhm.get("idcancion"));
-			Usuario usuario = usuarioService.getUser(user);
-			Cancion c = cancionService.getCancion(id_a, correo_album, id_c);
-			//return usuarioService.likeSong(usuario, c);
-			return false;
+			return usuarioService.likeSong(user, correo_album, id_c, id_a);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -1142,8 +1154,7 @@ public class UserController {
 			int id_c = Integer.parseInt(lhm.get("idcancion"));
 			Usuario usuario = usuarioService.getUser(user);
 			Cancion c = cancionService.getCancion(id_a, correo_album, id_c);
-			//return usuarioService.likeSong(usuario, c);
-			return false;
+			return usuarioService.unlikeSong(user, correo_album, id_c, id_a);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

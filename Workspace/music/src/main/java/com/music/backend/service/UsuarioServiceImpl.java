@@ -470,6 +470,9 @@ public class UsuarioServiceImpl implements UsuarioService{
 			Cancion c = cancionService.getCancion(idLista, correoalbum, cancion);
 			u.likedSongs.add(c);
 			u = repository.save(u);
+			Reproduccion r = repService.getReproduccion(1, user);
+			r.canciones.add(c);
+			repService.saveRep(r);
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -484,6 +487,9 @@ public class UsuarioServiceImpl implements UsuarioService{
 			Cancion c = cancionService.getCancion(idLista, correoalbum, cancion);
 			u.likedSongs.remove(c);
 			u = repository.save(u);
+			Reproduccion r = repService.getReproduccion(1, user);
+			r.canciones.remove(c);
+			repService.saveRep(r);
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();
