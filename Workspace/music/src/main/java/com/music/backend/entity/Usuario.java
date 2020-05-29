@@ -10,6 +10,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "ZZUsuario")
@@ -38,7 +40,7 @@ public class Usuario implements Serializable{
 	@Column(name = "fNacimiento", nullable = false,length=100)
 	private String fNacimiento;
 	
-	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "usuarioSuscritoPodcast", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
@@ -46,6 +48,7 @@ public class Usuario implements Serializable{
 									@JoinColumn(name = "podcast.usuario_id", nullable = false, updatable = false)})
 	public Set<Podcast> suscripciones = new HashSet<>(0);
 	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "followingPlaylist", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
@@ -53,6 +56,7 @@ public class Usuario implements Serializable{
 					@JoinColumn(name = "reproduccion.usuario_id", nullable = false, updatable = false)})
 	public Set<Reproduccion> followingPlaylist = new HashSet<>(0);
 	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "likedSongs", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)}, 
@@ -61,11 +65,13 @@ public class Usuario implements Serializable{
 					@JoinColumn(name = "cancion.usuario_id", nullable = false, updatable = false)})
 	public Set<Cancion> likedSongs = new HashSet<Cancion>(0);
 
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "followedUsers", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)})
 	public Set<Usuario> followedUsers = new HashSet<>(0);
 	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "usersFollowingMe", joinColumns = { 
 			@JoinColumn(name = "usuario.correo", nullable = false, updatable = false)})

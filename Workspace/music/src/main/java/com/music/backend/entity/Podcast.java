@@ -9,6 +9,7 @@ import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.music.backend.entity.keyLista;
 
 @SuppressWarnings("serial")
@@ -29,6 +30,7 @@ public class Podcast implements Serializable{
 	@Column(name = "FechaPublicacion", nullable = false,length=100)
 	private String FechaPublicacion;
 	
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "CapitulosPodcast", joinColumns = { 
 			@JoinColumn(name = "podcast.lista_id", nullable = false, updatable = false), 
