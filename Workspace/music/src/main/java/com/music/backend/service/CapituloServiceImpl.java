@@ -36,20 +36,20 @@ public class CapituloServiceImpl implements CapituloService{
 	UsuarioService usuarioService;
 	
 	@Override
-	public Boolean createCapitulo(keyLista a, Capitulo c) throws Exception{
+	public keyCancion createCapitulo(keyLista a, Capitulo c) throws Exception{
 		
 		try {
 			// Calculo el número de canción dentro del album
 			int c_id = repository.listSongsInAlbumUser(a.getL_id(), a.getU()).length + 1;
 			keyCancion idCapitulo = new keyCancion(a, c_id);
 			c.setIdCapitulo(idCapitulo);
-			repository.save(c);
-			return true;
+			c = repository.save(c);
+			return c.getIdCapitulo(); 
 		}catch(Exception e) {
 			System.out.println(e);
 		}
 
-		return false;
+		return null;
 	}
 	
 	@Override
@@ -163,5 +163,16 @@ public class CapituloServiceImpl implements CapituloService{
 		}
 		
 		return null;
+	}
+
+	@Override
+	public Boolean saveChapter(Capitulo c) throws Exception {
+		try {
+			c = repository.save(c);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

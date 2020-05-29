@@ -8,14 +8,8 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
-import java.util.Properties;
 import java.util.Random;
 
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import javax.activation.*;
 
 import com.music.backend.entity.*;
 import com.music.backend.service.*;
@@ -1339,9 +1332,8 @@ public class UserController {
 		try {
 			int id_a = Integer.parseInt(id);
 			keyLista kl = new keyLista(id_a,user);
-			Cancion c = new Cancion(kl, -1, nombre, gen, null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
-			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
-			keyCancion kc = cancionService.createCancion( kl, c );
+			Cancion c = new Cancion(kl, -1, nombre, gen, null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 																
+			keyCancion kc = cancionService.createCancion( kl, c );	// se actualiza en el metodo repository.createCancion()
 			if(kc == null) {
 				throw new Exception("No se ha podido guardar la cancion");
 			}
@@ -1354,7 +1346,6 @@ public class UserController {
 			if(!cancionService.saveSong(guardada)) {
 				throw new Exception("No se ha podido añadir el mp3 a la canción");
 			}
-			System.out.println("Directorio de Trabajoooooo: " + System.getProperty("user.dir"));
 			// Id Cancion + Id Album + Id Usuario
 			String path = "./src/main/resources/static/assets/";
 			
@@ -1363,7 +1354,6 @@ public class UserController {
 			fos.write(file.getBytes());
 			fos.close();
 			
-			System.out.println("LA ID QUE MANDO ES ESTA: " + guardada.getIdCancion().toString());
 			return guardada.getIdCancion();
 		}catch(Exception e) {
 			System.out.println(e);
@@ -1375,32 +1365,35 @@ public class UserController {
 	@PostMapping(value = "/subirCapitulo", produces = "application/json")
 	@ResponseBody
 	public keyCancion subirCapitulo(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
-								@RequestParam("nombreC") String nombre, ModelMap model, HttpServletResponse response){
+								@RequestParam("nombreC") String nombre, @RequestParam("genero") String gen, ModelMap model, HttpServletResponse response){
 		
 		try {
 			int id_a = Integer.parseInt(id);
 			keyLista kl = new keyLista(id_a,user);
-			Capitulo c = new Capitulo(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
+			Capitulo c = new Capitulo(kl, -1, nombre, gen, null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
-			String path = "./src/main/resources/static/assets/";
-			String songName = "capitulo_" + String.valueOf(c.getIdCapitulo().getC_id()) + String.valueOf(c.getIdCapitulo().getL_id().getL_id()) + 
-								c.getIdCapitulo().getL_id().getU() + ".mp3";
-			String urlsong = "Cancion?idsong=" + songName;
-			c.setMp3(urlsong);
-			if(!capService.createCapitulo( kl, c )) {
+			keyCancion kc = capService.createCapitulo( kl, c );
+			if(kc == null) {
 				throw new Exception("No se ha podido guardar el capitulo");
 			}
-			
-			String directory = Paths.get("").toAbsolutePath().toString();
-			System.out.println("Directorio de Trabajoooooo: " + System.getProperty("user.dir"));
-			String prueba = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
+			Capitulo guardado = capService.getCapitulo(kc.getL_id().getL_id(), kc.getL_id().getU(), kc.getC_id());
+			String path = "./src/main/resources/static/assets/";
+			String songName = "capitulo_" + String.valueOf(guardado.getIdCapitulo().getC_id()) + 
+								String.valueOf(guardado.getIdCapitulo().getL_id().getL_id()) + 
+								guardado.getIdCapitulo().getL_id().getU() + ".mp3";
+			String urlsong = "Cancion?idsong=" + songName;
+			guardado.setMp3(urlsong);
+			if(!capService.saveChapter(guardado)) {
+				throw new Exception("No se ha podido añadir el mp3 a la canción");
+			}
 			// Id Cancion + Id Album + Id Usuario
 			
 			
 			FileOutputStream fos = new FileOutputStream(path + songName);
 			fos.write(file.getBytes());
 			fos.close();
-			return c.getIdCapitulo();
+			
+			return guardado.getIdCapitulo();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
