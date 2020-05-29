@@ -22,7 +22,7 @@ public interface ReproduccionService {
 	public Cancion[] listSongs(int i, String s) throws Exception;
 	public Reproduccion[] getPlaylistByUser(String s) throws Exception;
 	public Reproduccion[] getPlaylistsBySearch(String nombre) throws Exception;
-	public Reproduccion[] getPlaylistsContainsSong(int i) throws Exception;
+	public Boolean deleteSongAllPlaylists(Cancion c) throws Exception;
 	public Boolean followByUser(Usuario u, Reproduccion r) throws Exception;
 	public Boolean unFollowByUser(Usuario u, Reproduccion r) throws Exception;
 	public Boolean changeImage(MultipartFile f, String correo, int id) throws Exception;

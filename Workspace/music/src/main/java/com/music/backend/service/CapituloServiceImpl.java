@@ -69,10 +69,10 @@ public class CapituloServiceImpl implements CapituloService{
 		
 		try {
 			String path = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
-			String songName = String.valueOf(c) + String.valueOf(i) + s + ".mp3";
+			String songName = "capitulo_" + String.valueOf(c) + String.valueOf(i) + s + ".mp3";
 			File f = new File(path + songName);
 			if(!f.delete()) {
-				throw new Exception("No se ha podido borrar la canción");
+				throw new Exception("No se ha podido borrar el capítulo");
 			}
 			repository.delete(repository.findById(i, s, c));
 			return true;

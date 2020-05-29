@@ -596,20 +596,18 @@ public class UserController {
 			int id_a = Integer.parseInt(lhm.get("idalbum"));
 			int id_c = Integer.parseInt(lhm.get("idcancion"));
 
-			Boolean cancion = cancionService.deleteCancion(id_a, user, id_c);
-			Boolean success = true; 
-
-			Reproduccion[] playlists = repService.getPlaylistsContainsSong(id_c);
 			keyCancion kc = new keyCancion(new keyLista(id_a, user), id_c);
 
-			for(int i=0; playlists[i] != null && success; i++){
-				keyLista kl = playlists[i].getIdRep();
-				repService.deleteSongPlaylist(kl, kc);
+			Cancion c = cancionService.getCancion(id_a, user, id_c);
+			
+			if(!repService.deleteSongAllPlaylists(c)) {
+				throw new Exception("No se ha podido borrar la Canción de las playlists");
 			}
-
-			return cancion && success;
+			
+			return cancionService.deleteCancion(id_a, user, id_c);
+			
 		}catch(Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -1583,9 +1581,7 @@ public class UserController {
 	        message.setText(text);
 	        emailSender.send(message);
 	        System.out.println("message sent successfully....");  
-	        user.setPass(generatedString);
-	        usuarioService.saveUser(user);
-	       
+	        usuarioService.changePass(user.getCorreo(), user.getPass(), generatedString);
 	        return true;
 		}catch(Exception e) {
 			System.out.println(e);

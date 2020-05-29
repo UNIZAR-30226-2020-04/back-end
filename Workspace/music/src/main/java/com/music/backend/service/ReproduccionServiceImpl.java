@@ -92,7 +92,9 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 		try {
 			Reproduccion r = repository.findById(kl.getL_id(), kl.getU());
 			Cancion c = canService.getCancion(kc.getL_id().getL_id(), kc.getL_id().getU(), kc.getC_id());
-			return r.canciones.add(c);
+			r.canciones.add(c);
+			r = repository.save(r);
+			return true;
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -104,7 +106,9 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 		try {
 			Reproduccion r = repository.findById(kl.getL_id(), kl.getU());
 			Cancion c = canService.getCancion(kc.getL_id().getL_id(), kc.getL_id().getU(), kc.getC_id());
-			return r.canciones.remove(c);
+			r.canciones.remove(c);
+			r = repository.save(r);
+			return true;
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -115,7 +119,7 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	public Cancion[] listSongs(int i, String s) throws Exception {
 		try {
 			Reproduccion r = repository.findById(i, s);
-			Cancion[] c = r.canciones.toArray(new Cancion[0]);
+			Cancion[] c = r.canciones.toArray(new Cancion[r.canciones.size()]);
 			return c;
 		}catch(Exception e) {
 			System.out.println(e);
@@ -143,19 +147,27 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	}
 
 	@Override
-	public Reproduccion[] getPlaylistsContainsSong(int i) throws Exception{
+	public  Boolean deleteSongAllPlaylists(Cancion c) throws Exception{
 		try{
-			return repository.getPlaylistsContainsSong(i);
+			Reproduccion[] allPl = repository.getAllPlaylists();
+			for(Reproduccion r : allPl) {
+				if(r.canciones.contains(c)) {
+					r.canciones.remove(c);
+					repository.save(r);
+				}
+			}
+			return true;
 		}catch(Exception e){
-			System.out.println(e);
+			e.printStackTrace();
 		}
-		return null;
+		return false;
 	}
 
 	@Override
 	public Boolean followByUser(Usuario u, Reproduccion r) throws Exception {
 		try {
 			u.followingPlaylist.add(r);
+			//TODO
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -167,6 +179,7 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	public Boolean unFollowByUser(Usuario u, Reproduccion r) throws Exception {
 		try {
 			u.followingPlaylist.remove(r);
+			//TODO
 			return true;
 		}catch(Exception e) {
 			e.printStackTrace();
