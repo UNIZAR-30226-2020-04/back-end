@@ -1071,6 +1071,21 @@ public class UserController {
 		return false;
 	}
 	
+	@PostMapping(value = "/checkFollowUser", produces = "application/json")
+	@ResponseBody
+	public Boolean checkFollowUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	
+		try {
+			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
+			String sessionUser = lhm.get("sessionUser");
+			String targetUser = lhm.get("targetUser");
+			return usuarioService.checkFollowUser(sessionUser, targetUser);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	@PostMapping(value = "/unfollowUser", produces = "application/json")
 	@ResponseBody
 	public Boolean unfollowUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
@@ -1105,7 +1120,7 @@ public class UserController {
 	
 		try {
 			
-			return usuarioService.listFollowedUsers(u);
+			return usuarioService.followers(u);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

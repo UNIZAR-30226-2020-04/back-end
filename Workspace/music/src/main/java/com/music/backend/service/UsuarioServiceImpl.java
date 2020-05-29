@@ -583,7 +583,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 	public Usuario[] listFollowedUsers(String sessionUser) throws Exception{
 		try {
 			Usuario u = repository.findByEmail(sessionUser);
-			return  u.likedSongs.toArray(new Usuario[u.likedSongs.size()]);
+			return  u.followedUsers.toArray(new Usuario[u.followedUsers.size()]);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -602,7 +602,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 	}
 
 	@Override
-	public Boolean checkFollowedUser(String sessionUser, String targetUser) throws Exception{
+	public Boolean checkFollowUser(String sessionUser, String targetUser) throws Exception{
 		try {
 			Usuario u1 = repository.findByEmail(sessionUser);
 			Usuario u2 = repository.findByEmail(targetUser);
