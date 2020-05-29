@@ -18,4 +18,5 @@ public interface CancionService {
 	public Album[] getAlbumsBySongs(Cancion[] canciones) throws Exception;
 	public Usuario[] getUsersBySongs(Cancion[] canciones) throws Exception;
 	public Boolean saveSong(Cancion c) throws Exception;
+	public Cancion[] getAll() throws Exception;
 }

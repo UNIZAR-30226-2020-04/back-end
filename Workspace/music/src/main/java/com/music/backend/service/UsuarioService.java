@@ -62,4 +62,5 @@ public interface UsuarioService {
 	public Boolean checkFollowUser(String sessionUser, String targetUser) throws Exception;
 	
 	public Boolean saveUser(Usuario u) throws Exception;
+	public Usuario[] getAllUsers() throws Exception;
 }

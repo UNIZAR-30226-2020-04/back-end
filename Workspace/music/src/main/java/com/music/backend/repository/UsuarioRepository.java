@@ -19,4 +19,6 @@ public interface UsuarioRepository extends CrudRepository<Usuario,String> {
 	public Usuario findByEmailAndPass(String email, String pass);
 	@Query(value = "SELECT * FROM zzusuario WHERE nombre LIKE %?1%", nativeQuery = true)
 	public Usuario[] getUsersBySearch(String c);
+	@Query(value = "SELECT * FROM zzusuario", nativeQuery = true)
+	public Usuario[] getAllUsers();
 }

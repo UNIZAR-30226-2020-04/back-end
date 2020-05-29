@@ -170,4 +170,14 @@ public class CancionServiceImpl implements CancionService{
 		}
 		return false;
 	}
+	
+	@Override
+	public Cancion[] getAll() throws Exception {
+		try {
+			return repository.getAllSongs();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

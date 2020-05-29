@@ -624,4 +624,16 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return false;
 	}
 	
+	@Override
+	public Usuario[] getAllUsers() throws Exception {
+		
+		try {
+			repository.getAllUsers();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 }

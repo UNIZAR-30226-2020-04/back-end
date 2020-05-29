@@ -34,6 +34,9 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 	
 	@Autowired
 	CancionService canService;
+	
+	@Autowired
+	UsuarioService userService;
 
 	@Override
 	public Boolean createReproduccion(Reproduccion r) throws Exception{
@@ -65,9 +68,18 @@ public class ReproduccionServiceImpl implements ReproduccionService{
 
 	@Override
 	public Boolean deleteReproduccion(int i, String s) throws Exception {
-		
+		Reproduccion r = repository.findById(i, s);
 		try {
-			repository.delete(repository.findById(i, s));
+			Usuario[] uu = userService.getAllUsers();
+			if(uu != null) {
+				for(Usuario u : uu) {
+					if(u.followingPlaylist.contains(r)) {
+						u.followingPlaylist.remove(r);
+						userService.saveUser(u);
+					}
+				}	
+			}
+			repository.delete(r);
 			return true;
 		}catch(Exception e) {
 			System.out.println(e);

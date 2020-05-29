@@ -25,4 +25,6 @@ public interface CancionRepository extends CrudRepository<Cancion,keyCancion> {
 	public Iterable<Cancion> getListFromAlbum(int i, String s);
 	@Query(value = "SELECT * FROM zzcancion WHERE nombre LIKE %?1%", nativeQuery = true)
 	public Cancion[] getSongsBySearch(String nombre);
+	@Query(value = "SELECT * FROM zzcancion", nativeQuery = true)
+	public Cancion[] getAllSongs();
 }
