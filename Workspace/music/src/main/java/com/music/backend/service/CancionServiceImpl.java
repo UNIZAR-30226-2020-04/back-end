@@ -26,20 +26,20 @@ public class CancionServiceImpl implements CancionService{
 	UsuarioService usuarioService;
 	
 	@Override
-	public Boolean createCancion(keyLista a, Cancion c) throws Exception{
+	public keyCancion createCancion(keyLista a, Cancion c) throws Exception{
 		
 		try {
 			// Calculo el número de canción dentro del album
 			int c_id = repository.listSongsInAlbumUser(a.getL_id(), a.getU()).length + 1;
 			keyCancion idCancion = new keyCancion(a, c_id);
 			c.setIdCancion(idCancion);
-			repository.save(c);
-			return true;
+			c = repository.save(c);
+			return c.getIdCancion();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
 
-		return false;
+		return null;
 	}
 	
 	@Override
@@ -153,5 +153,16 @@ public class CancionServiceImpl implements CancionService{
 		}
 		
 		return null;
+	}
+
+	@Override
+	public Boolean saveSong(Cancion c) throws Exception {
+		try {
+			c = repository.save(c);
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

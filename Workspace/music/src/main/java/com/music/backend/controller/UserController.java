@@ -105,8 +105,8 @@ public class UserController {
 			//Cancion
 			
 			Cancion c = new Cancion(kLa, 1, "Cancion", "Genero", null);
-			
-			if(!cancionService.createCancion( kLa, c)) {
+			keyCancion kc = cancionService.createCancion( kLa, c);
+			if(kc == null) {
 				throw new Exception("INSERT cancion mal hecho");
 			}
 			
@@ -1243,7 +1243,8 @@ public class UserController {
 			keyLista kLa = new keyLista(1,"usuario");
 			Cancion c = new Cancion(kLa, 1, "nombre", "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
-			if(!cancionService.createCancion( kLa, c )) {
+			keyCancion kc = cancionService.createCancion( kLa, c );
+			if(kc == null) {
 				throw new Exception("No se ha podido guardar la cancion");
 			}
       
@@ -1316,17 +1317,20 @@ public class UserController {
 			keyLista kl = new keyLista(id_a,user);
 			Cancion c = new Cancion(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
 			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
-			String songName = String.valueOf(c.getIdCancion().getC_id()) + String.valueOf(c.getIdCancion().getL_id().getL_id()) + 
-					c.getIdCancion().getL_id().getU() + ".mp3";
-			String urlsong = "Cancion?idsong=" + songName;
-			c.setMp3(urlsong);
-			if(!cancionService.createCancion( kl, c )) {
+			keyCancion kc = cancionService.createCancion( kl, c );
+			if(kc == null) {
 				throw new Exception("No se ha podido guardar la cancion");
 			}
-			
-			String directory = Paths.get("").toAbsolutePath().toString();
+			Cancion guardada = cancionService.getCancion(kc.getL_id().getL_id(), kc.getL_id().getU(), kc.getC_id());
+			String songName = String.valueOf(guardada.getIdCancion().getC_id()) + 
+					String.valueOf(guardada.getIdCancion().getL_id().getL_id()) + 
+					guardada.getIdCancion().getL_id().getU() + ".mp3";
+			String urlsong = "Cancion?idsong=" + songName;
+			guardada.setMp3(urlsong);
+			if(!cancionService.saveSong(guardada)) {
+				throw new Exception("No se ha podido añadir el mp3 a la canción");
+			}
 			System.out.println("Directorio de Trabajoooooo: " + System.getProperty("user.dir"));
-			String prueba = System.getProperty("user.dir") + "/src/main/resources/static/assets/";
 			// Id Cancion + Id Album + Id Usuario
 			String path = "./src/main/resources/static/assets/";
 			
@@ -1334,12 +1338,9 @@ public class UserController {
 			FileOutputStream fos = new FileOutputStream(path + songName);
 			fos.write(file.getBytes());
 			fos.close();
-			File f = new File(path + songName);
-			if(!f.exists()) {
-				System.out.println("No existeeeeeeee!!!");
-			}
 			
-			return c.getIdCancion();
+			System.out.println("LA ID QUE MANDO ES ESTA: " + guardada.getIdCancion().toString());
+			return guardada.getIdCancion();
 		}catch(Exception e) {
 			System.out.println(e);
 		}
@@ -1606,8 +1607,8 @@ public class UserController {
 				
 				keyLista kLa = new keyLista(1,"usuario");
 				Cancion c = new Cancion(kLa, 1, "nombre", "genero", null);
-				
-				if(!cancionService.createCancion(kLa, c)) {
+				keyCancion kc = cancionService.createCancion(kLa, c);
+				if(kc == null) {
 					throw new Exception("No se ha podido guardar la cancion");
 				}
 			}
@@ -1822,21 +1823,15 @@ public class UserController {
 			
 			Cancion c1 = new Cancion(kLa, 1, "Cancion1", "Genero", null);
 			
-			if(!cancionService.createCancion( kLa, c1)) {
-				throw new Exception("INSERT cancion mal hecho");
-			}
+			cancionService.createCancion( kLa, c1);
 			
 			Cancion c2 = new Cancion(kLa, 2, "Cancion2", "Genero", null);
 			
-			if(!cancionService.createCancion( kLa, c2)) {
-				throw new Exception("INSERT cancion mal hecho");
-			}
+			cancionService.createCancion( kLa, c2);
 			
 			Cancion c3 = new Cancion(kLa, 3, "Cancion3", "Genero", null);
 			
-			if(!cancionService.createCancion( kLa, c3)) {
-				throw new Exception("INSERT cancion mal hecho");
-			}
+			cancionService.createCancion( kLa, c3);
 			System.out.println("He acabado de crear las Canciones");
 			//Reproduccion
 			keyLista kLr = new keyLista(1,"CorreoRep1");

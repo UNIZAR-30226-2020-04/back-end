@@ -8,7 +8,7 @@ import com.music.backend.entity.Album;
 
 public interface CancionService {
 
-	public Boolean createCancion(keyLista a, Cancion c) throws Exception;
+	public keyCancion createCancion(keyLista a, Cancion c) throws Exception;
 	public Cancion getCancion(int i, String s, int c) throws Exception;
 	public Boolean deleteCancion(int i, String s, int c) throws Exception;
 	public Boolean deleteByUser(String s) throws Exception;
@@ -17,4 +17,5 @@ public interface CancionService {
 	public Cancion[] getSongsBySearch(String nombre) throws Exception;
 	public Album[] getAlbumsBySongs(Cancion[] canciones) throws Exception;
 	public Usuario[] getUsersBySongs(Cancion[] canciones) throws Exception;
+	public Boolean saveSong(Cancion c) throws Exception;
 }
