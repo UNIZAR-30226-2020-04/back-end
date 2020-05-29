@@ -66,8 +66,9 @@ public class CancionServiceImpl implements CancionService{
 			String songName = String.valueOf(c) + String.valueOf(i) + s + ".mp3";
 			File f = new File(path + songName);
 			System.out.println("Intentando borrar la canción: " + path + songName);
-			Path p = f.toPath();
-			Files.delete(p);
+			if(!f.delete()) {
+				throw new Exception("No se ha podido eliminar el fichero");
+			}
 			repository.delete(repository.findById(i, s, c));
 			return true;
 		}catch(Exception e) {
