@@ -23,17 +23,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.music.backend.entity.*;
 import com.music.backend.service.*;
 
-@Controller
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiImplicitParams;
+
+@RestController 
+@Api(value = "listenit", description = "API creada para el funcionamento de la web ListenIt")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -54,16 +62,14 @@ public class UserController {
 	@Autowired
     public JavaMailSender emailSender;
 	
-	/*
-		Método Login:
-		/loginUser
-		Parámetro: Usuario (Correo + Pass)	
-		Devuelve el Usuario si se ha podido hacer login, sino un Usuario vacío
-	 */
 	
+	@ApiOperation(value = "Operación para iniciar sesión", response = Usuario.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "email", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "password", value = "Contraseña del usuario")
+							})
 	@PostMapping(value = "/loginUser", produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<Usuario> login(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public ResponseEntity<Usuario> login(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -87,18 +93,12 @@ public class UserController {
 	}
 	
 	
-	/*
-		Método Register:
-		/registerUser
-		Parámetro: Usuario
-		Devuelve true si se ha podido hacer el registro, sino false
-	*/
 	@PostMapping(value = "/registerUser", produces = "application/json")
 	@ResponseBody
 	public Usuario register(@RequestParam("name") String name, @RequestParam("surname") String surname,
 			@RequestParam("username") String username, @RequestParam("email") String email,
 			@RequestParam("password") String password, @RequestParam("dateOfBirth") String dateOfBirth, 
-			@RequestParam(name = "foto", required = false) MultipartFile f , ModelMap model, HttpServletResponse response){
+			@RequestParam(name = "foto", required = false) MultipartFile f , HttpServletResponse response){
 			System.out.println("Entro en el register");
 		try {
 			//LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
@@ -157,7 +157,7 @@ public class UserController {
 	public Boolean register1(@RequestParam("name") String name, @RequestParam("surname") String surname,
 			@RequestParam("username") String username, @RequestParam("email") String email,
 			@RequestParam("password") String password, @RequestParam("dateOfBirth") String dateOfBirth,
-			ModelMap model, HttpServletResponse response){
+			HttpServletResponse response){
 			System.out.println("Entro en el register");
 		try {
 			//LinkedHashMap<String,Object> lhm = (LinkedHashMap) u;
@@ -194,10 +194,11 @@ public class UserController {
 	}
 	
 	
+	
 	@PostMapping(value = "/createAlbum", produces = "application/json")
 	@ResponseBody
 	public keyLista createAlbum( @RequestParam(name = "foto", required = false) MultipartFile f, @RequestParam("email") String e,
-			@RequestParam("name") String n, ModelMap model, HttpServletResponse response){
+			@RequestParam("name") String n, HttpServletResponse response){
 		
 		try {
 			String a = usuarioService.getUser(e).getNick();
@@ -211,7 +212,7 @@ public class UserController {
 	@PostMapping(value = "/createPlaylist", produces = "application/json")
 	@ResponseBody
 	public keyLista createPlaylist(@RequestParam(name = "foto", required = false) MultipartFile f, @RequestParam("email") String user,
-			@RequestParam("playlist") String p, ModelMap model, HttpServletResponse response){
+			@RequestParam("playlist") String p, HttpServletResponse response){
 		
 		try {
 			Usuario usuario = usuarioService.getUser(user);
@@ -245,11 +246,17 @@ public class UserController {
 		return null;
 	}
 	
-	
+	@ApiOperation(value = "Operación para añadir canciones a una lista de reproducción" , response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del quien quiere añadir la canción"),
+							@ApiImplicitParam(name = "usercancion", value = "Correo del dueño de la canción"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del álbum al que pertenece la canción"),
+							@ApiImplicitParam(name = "idplaylist", value = "ID numérico de la playlist"),
+							@ApiImplicitParam(name = "idcancion", value = "ID numérico de la canción")
+							})
 	@PostMapping(value = "/addToPlaylist", produces = "application/json")
 	@ResponseBody
 	public Boolean addToPlaylist(@RequestBody Object u, 
-			ModelMap model, HttpServletResponse response, BindingResult result){
+			HttpServletResponse response, BindingResult result){
 		
 		try {
 			
@@ -274,7 +281,7 @@ public class UserController {
 	@PostMapping(value = "/createPodcast", produces = "application/json")
 	@ResponseBody
 	public keyLista createPodcast(@RequestParam(name = "foto", required = false) MultipartFile f, @RequestParam("email") String user,
-			@RequestParam("podcast") String nombre, ModelMap model, HttpServletResponse response){
+			@RequestParam("podcast") String nombre, HttpServletResponse response){
 		
 		try {
 			Usuario usuario = usuarioService.getUser(user);
@@ -298,10 +305,14 @@ public class UserController {
 	}
 	
 	
-	
+	@ApiOperation(value = "Operación para eliminar un Usuario", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "pass", value = "Contraseña del usuario"),
+							@ApiImplicitParam(name = "passCheck", value = "Confirmación de la contraseña")
+							})
 	@PostMapping(value = "/deleteUser", produces = "application/json")
 	@ResponseBody
-	public Boolean deleteUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean deleteUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -318,9 +329,14 @@ public class UserController {
 	}
 	
 	
+	@ApiOperation(value = "Operación para cambiar el nombre de un Usuario", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "name", value = "Nombre antiguo"),
+							@ApiImplicitParam(name = "newName", value = "Nuevo nombre")
+							})
 	@PostMapping(value = "/cambiarNombre", produces = "application/json")
 	@ResponseBody
-	public Boolean cambiarNombre(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean cambiarNombre(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -336,9 +352,14 @@ public class UserController {
 	}
 	
 	
+	@ApiOperation(value = "Operación para cambiar el nick de un Usuario", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "nick", value = "Nick antiguo"),
+							@ApiImplicitParam(name = "newNick", value = "Nuevo nick")
+							})
 	@PostMapping(value = "/cambiarNick", produces = "application/json")
 	@ResponseBody
-	public Boolean cambiarNick(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean cambiarNick(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -353,9 +374,15 @@ public class UserController {
 		return false;
 	}
 	
+	
+	@ApiOperation(value = "Operación para cambiar la contraseña de un Usuario", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "pass", value = "Contraseña antiguo"),
+							@ApiImplicitParam(name = "newPass", value = "Nueva contraseña")
+							})
 	@PostMapping(value = "/cambiarPass", produces = "application/json")
 	@ResponseBody
-	public Boolean cambiarPass(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean cambiarPass(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -373,7 +400,7 @@ public class UserController {
 	@PostMapping(value = "/cambiarFotoUsuario", produces = "application/json")
 	@ResponseBody
 	public Boolean cambiarFotoUsuario(@RequestParam("foto")MultipartFile f, @RequestParam("correo")String correo,
-								ModelMap model, HttpServletResponse response){
+								HttpServletResponse response){
 		
 		try {
 			return usuarioService.changeImage(f, correo);
@@ -386,7 +413,7 @@ public class UserController {
 	@PostMapping(value = "/cambiarFotoAlbum", produces = "application/json")
 	@ResponseBody
 	public Boolean cambiarFotoAlbum(@RequestParam("foto")MultipartFile f, @RequestParam("correo")String correo,
-								@RequestParam("idalbum")String id, ModelMap model, HttpServletResponse response){
+								@RequestParam("idalbum")String id, HttpServletResponse response){
 		
 		try {
 			return albumService.changeImage(f, correo, Integer.parseInt(id));
@@ -399,7 +426,7 @@ public class UserController {
 	@PostMapping(value = "/cambiarFotoRep", produces = "application/json")
 	@ResponseBody
 	public Boolean cambiarFotoRep(@RequestParam("foto")MultipartFile f, @RequestParam("correo")String correo,
-			@RequestParam("idplaylist")String id, ModelMap model, HttpServletResponse response){
+			@RequestParam("idplaylist")String id, HttpServletResponse response){
 		
 		try {
 			return repService.changeImage(f, correo, Integer.parseInt(id));
@@ -412,7 +439,7 @@ public class UserController {
 	@PostMapping(value = "/cambiarFotoPod", produces = "application/json")
 	@ResponseBody
 	public Boolean cambiarFotoPod(@RequestParam("foto")MultipartFile f, @RequestParam("correo")String correo,
-			@RequestParam("idpodcast")String id, ModelMap model, HttpServletResponse response){
+			@RequestParam("idpodcast")String id, HttpServletResponse response){
 		
 		try {
 			return podService.changeImage(f, correo, Integer.parseInt(id));
@@ -423,9 +450,13 @@ public class UserController {
 	}
 	
 	
+	@ApiOperation(value = "Operación para listar las Canciones de un Album", response = Cancion[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del álbum")
+							})
 	@PostMapping(value = "/listSongsAlbum", produces = "application/json")
 	@ResponseBody
-	public Cancion[] listSongsAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Cancion[] listSongsAlbum(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -440,10 +471,13 @@ public class UserController {
 		return null;
 	}
 	
-	
+	@ApiOperation(value = "Operación para listar las Canciones de una Playlist(Reproduccion)", response = Cancion[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idplaylist", value = "ID numérico de la Playlist")
+							})
 	@PostMapping(value = "/listSongsPlaylist", produces = "application/json")
 	@ResponseBody
-	public Cancion[] listSongsPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Cancion[] listSongsPlaylist(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -458,10 +492,13 @@ public class UserController {
 		return null;
 	}
 	
-	
+	@ApiOperation(value = "Operación para listar los Capitulos de un Podcast", response = Capitulo[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del Podcast")
+							})
 	@PostMapping(value = "/listPodcast", produces = "application/json")
 	@ResponseBody
-	public Capitulo[] listPodcast(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Capitulo[] listPodcast(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -476,9 +513,14 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para eliminar una Cancion", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del Album"),
+							@ApiImplicitParam(name = "idcancion", value = "ID numérico de la Cancion")
+							})
 	@PostMapping(value = "/deleteCancion", produces = "application/json")
 	@ResponseBody
-	public Boolean deleteCancion(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean deleteCancion(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -504,9 +546,14 @@ public class UserController {
 	}
 
 	
+	@ApiOperation(value = "Operación para eliminar un Capitulo", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idpodcast", value = "ID numérico del Podcast"),
+							@ApiImplicitParam(name = "idcapitulo", value = "ID numérico del Capitulo")
+							})
 	@PostMapping(value = "/deleteCapitulo", produces = "application/json")
 	@ResponseBody
-	public Boolean deleteCapitulo(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean deleteCapitulo(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -522,10 +569,13 @@ public class UserController {
 		return false;
 	}
 	
-	
+	@ApiOperation(value = "Operación para eliminar un Album", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del Album")
+							})
 	@PostMapping(value = "/deleteAlbum", produces = "application/json")
 	@ResponseBody
-	public Boolean deleteAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean deleteAlbum(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -539,10 +589,13 @@ public class UserController {
 		return false;
 	}
 	
-	
+	@ApiOperation(value = "Operación para eliminar un Podcast", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idpodcast", value = "ID numérico del Podcast")
+							})
 	@PostMapping(value = "/deletePodcast", produces = "application/json")
 	@ResponseBody
-	public Boolean deletePodcast(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean deletePodcast(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -556,10 +609,13 @@ public class UserController {
 		return false;
 	}
 	
-	
+	@ApiOperation(value = "Operación para eliminar una Playlist", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idplaylist", value = "ID numérico de la Playlist")
+							})
 	@PostMapping(value = "/deletePlaylist", produces = "application/json")
 	@ResponseBody
-	public Boolean deletePlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean deletePlaylist(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -573,229 +629,20 @@ public class UserController {
 		return false;
 	}
 
-	/*
-	@PostMapping(value = "/subscribeUser", produces = "application/json")
-	@ResponseBody
-	public Boolean subscribeUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("user");
-			String user_p = lhm.get("userpodcast");
-			int id_p = Integer.parseInt(lhm.get("idpodcast"));
-			
-			keyLista kl = new keyLista(id_p, user_p);
-			
-			return usuarioService.subscribePodcast(user, kl);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return false;
-	}
-
-	@PostMapping(value = "/unsubscribeUser", produces = "application/json")
-	@ResponseBody
-	public Boolean unsubscribeUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("user");
-			String user_p = lhm.get("userpodcast");
-			int id_p = Integer.parseInt(lhm.get("idpodcast"));
-			
-			keyLista kl = new keyLista(id_p, user_p);
-			
-			return usuarioService.unsubscribePodcast(user, kl);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return false;
-	}
-
-	@PostMapping(value = "/checkSubscription", produces = "application/json")
-	@ResponseBody
-	public Boolean checkSubscription(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("user");
-			String user_p = lhm.get("userpodcast");
-			int id_p = Integer.parseInt(lhm.get("idpodcast"));
-			
-			keyLista kl = new keyLista(id_p, user_p);
-			
-			return usuarioService.checkSubscription(user, kl);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return false;
-	}
-
-	@PostMapping(value = "/listSubscriptions", produces = "application/json")
-	@ResponseBody
-	public Podcast[] listSubscriptions(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			String user = (String) u;
-			
-			return usuarioService.listSubscriptions(user);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/followPlayList", produces = "application/json")
-	@ResponseBody
-	public Boolean followPlayList(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
-		try{
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("correo");
-			int id_r = Integer.parseInt(lhm.get("idplaylist"));
-			return usuarioService.followPlaylist(user, id_r);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/unfollowPlayList", produces = "application/json")
-	@ResponseBody
-	public Boolean unfollowPlayList(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
-		try{
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("correo");
-			int id_r = Integer.parseInt(lhm.get("idplaylist"));
-			return usuarioService.unfollowPlaylist(user, id_r);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/checkFollow", produces = "application/json")
-	@ResponseBody
-	public Boolean checkFollow(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
-		try{
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("correo");
-			int id_r = Integer.parseInt(lhm.get("idplaylist"));
-			return usuarioService.checkFollow(user, id_r);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/listFollows", produces = "application/json")
-	@ResponseBody
-	public Reproduccion[] listFollows(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			String user = (String) u;
-			
-			return usuarioService.listFollows(user);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/likeSong", produces = "application/json")
-	@ResponseBody
-	public Boolean likeSong(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
-		try{
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("correo");
-			int id_a = Integer.parseInt(lhm.get("idalbum"));
-			int id_c = Integer.parseInt(lhm.get("idcancion"));
-			return usuarioService.likeSong(id_a, user, id_c);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/unlikeSong", produces = "application/json")
-	@ResponseBody
-	public Boolean unlikeSong(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
-		try{
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("correo");
-			int id_a = Integer.parseInt(lhm.get("idalbum"));
-			int id_c = Integer.parseInt(lhm.get("idcancion"));
-			return usuarioService.unlikeSong(id_a, user, id_c);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/checkLike", produces = "application/json")
-	@ResponseBody
-	public Boolean checkLike(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
-		try{
-			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
-			String user = lhm.get("correo");
-			int id_a = Integer.parseInt(lhm.get("idalbum"));
-			int id_c = Integer.parseInt(lhm.get("idcancion"));
-			return usuarioService.checkLike(user, id_c, id_a);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/listLikes", produces = "application/json")
-	@ResponseBody
-	public Cancion[] listLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			String user = (String) u;
-			
-			return usuarioService.listLikes(user);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/listAlbumsLikes", produces = "application/json")
-	@ResponseBody
-	public Album[] listAlbumsLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			String user = (String) u;
-			
-			return usuarioService.listAlbumsLikes(user);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-
-	@PostMapping(value = "/listUsersLikes", produces = "application/json")
-	@ResponseBody
-	public Usuario[] listUsersLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
-		
-		try {
-			String user = (String) u;
-			
-			return usuarioService.listUsersLikes(user);
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	*/
+	@ApiOperation(value = "Operación para eliminar una Cancion de una Playlist", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "usercancion", value = "Correo del dueño de la Cancion"),
+							@ApiImplicitParam(name = "idplaylist", value = "ID numérico de la Playlist"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del Album al que pertenece la Cancion"),
+							@ApiImplicitParam(name = "idcancion", value = "ID numérico de la Cancion")
+							})
 	@PostMapping(value = "/deleteSongPlaylist", produces = "application/json")
 	@ResponseBody
-	public Boolean deleteSongPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean deleteSongPlaylist(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("user");
-			String nombre = lhm.get("nombre");
 			String user_c = lhm.get("usercancion");
 			int id_p = Integer.parseInt(lhm.get("idplaylist"));
 			int id_a = Integer.parseInt(lhm.get("idalbum"));
@@ -812,9 +659,15 @@ public class UserController {
 	}
 //////////////////////////////////	
 
-@PostMapping(value = "/subscribeUser", produces = "application/json")
+	
+	@ApiOperation(value = "Operación para suscribir un Usuario a un Podcast", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "userpodcast", value = "Correo del dueño del Podcast"),
+							@ApiImplicitParam(name = "idpodcast", value = "ID numérico del Podcast")
+							})
+	@PostMapping(value = "/subscribeUser", produces = "application/json")
 	@ResponseBody
-	public Boolean subscribeUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean subscribeUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -831,9 +684,14 @@ public class UserController {
 		return false;
 	}
 
+	@ApiOperation(value = "Operación para eliminar la suscripción de un Usuario a un Podcast", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "userpodcast", value = "Correo del dueño del Podcast"),
+							@ApiImplicitParam(name = "idpodcast", value = "ID numérico del Podcast")
+							})
 	@PostMapping(value = "/unsubscribeUser", produces = "application/json")
 	@ResponseBody
-	public Boolean unsubscribeUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean unsubscribeUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -850,9 +708,14 @@ public class UserController {
 		return false;
 	}
 
+	@ApiOperation(value = "Operación para comprobar la suscripción de un Usuario a un Podcast", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "userpodcast", value = "Correo del dueño del Podcast"),
+							@ApiImplicitParam(name = "idpodcast", value = "ID numérico del Podcast")
+							})
 	@PostMapping(value = "/checkSubscription", produces = "application/json")
 	@ResponseBody
-	public Boolean checkSubscription(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean checkSubscription(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -869,9 +732,12 @@ public class UserController {
 		return false;
 	}
 
+	@ApiOperation(value = "Operación para listar las suscripciones a Podcasts de un Usuario", response = Podcast[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario")
+							})
 	@PostMapping(value = "/listSubscriptions", produces = "application/json")
 	@ResponseBody
-	public Podcast[] listSubscriptions(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Podcast[] listSubscriptions(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			String user = (String) u;
@@ -883,10 +749,14 @@ public class UserController {
 		return null;
 	}
 	
-	
+	@ApiOperation(value = "Operación para que un Usuario siga una Playlist", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idplaylist", value = "Correo del dueño de la Playlist"),
+							@ApiImplicitParam(name = "correoplaylist", value = "ID numérico de la Playlist")
+							})
 	@PostMapping(value = "/followPlayList", produces = "application/json")
 	@ResponseBody
-	public Boolean followPlayList(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Boolean followPlayList(@RequestBody Object u, HttpServletResponse response, BindingResult result) {
 		try{
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("correo");
@@ -901,9 +771,14 @@ public class UserController {
 		return false;
 	}
 	
+	@ApiOperation(value = "Operación para que un Usuario deje de seguir una Playlist", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idplaylist", value = "Correo del dueño de la Playlist"),
+							@ApiImplicitParam(name = "correoplaylist", value = "ID numérico de la Playlist")
+							})
 	@PostMapping(value = "/unfollowPlayList", produces = "application/json")
 	@ResponseBody
-	public Boolean unfollowPlayList(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Boolean unfollowPlayList(@RequestBody Object u, HttpServletResponse response, BindingResult result) {
 		try{
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("correo");
@@ -918,9 +793,14 @@ public class UserController {
 		return false;
 	}
 
+	@ApiOperation(value = "Operación para comprobar si un Usuario sigue una Playlist", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idplaylist", value = "Correo del dueño de la Playlist"),
+							@ApiImplicitParam(name = "correoplaylist", value = "ID numérico de la Playlist")
+							})
 	@PostMapping(value = "/checkFollow", produces = "application/json")
 	@ResponseBody
-	public Boolean checkFollow(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Boolean checkFollow(@RequestBody Object u, HttpServletResponse response, BindingResult result) {
 		try{
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("correo");
@@ -932,9 +812,13 @@ public class UserController {
 		return null;
 	}
 	
+	@ApiOperation(value = "Operación para que un Usuario siga a un Usuario", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "sessionUser", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "targetUser", value = "Correo del Usuario al que seguir")
+							})
 	@PostMapping(value = "/followUser", produces = "application/json")
 	@ResponseBody
-	public Boolean followUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean followUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 	
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -947,9 +831,13 @@ public class UserController {
 		return false;
 	}
 	
+	@ApiOperation(value = "Operación para comprobar si un Usuario sigue a un Usuario", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "sessionUser", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "targetUser", value = "Correo del Usuario al que seguir")
+							})
 	@PostMapping(value = "/checkFollowUser", produces = "application/json")
 	@ResponseBody
-	public Boolean checkFollowUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean checkFollowUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 	
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -962,9 +850,14 @@ public class UserController {
 		return false;
 	}
 	
+	
+	@ApiOperation(value = "Operación para que un Usuario deje de seguir a un Usuario", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "sessionUser", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "targetUser", value = "Correo del Usuario al que dejar de seguir")
+							})
 	@PostMapping(value = "/unfollowUser", produces = "application/json")
 	@ResponseBody
-	public Boolean unfollowUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Boolean unfollowUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 	
 		try {
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
@@ -977,9 +870,13 @@ public class UserController {
 		return false;
 	}
 	
+	
+	@ApiOperation(value = "Operación para listar los Usuarios que sigue un Usuario", response = Usuario[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario")
+							})
 	@PostMapping(value = "/listFollowingUsers", produces = "application/json")
 	@ResponseBody
-	public Usuario[] listFollowingUsers(@RequestBody String u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Usuario[] listFollowingUsers(@RequestBody String u, HttpServletResponse response, BindingResult result){
 	
 		try {
 			
@@ -990,9 +887,12 @@ public class UserController {
 		return null;
 	}
 	
+	@ApiOperation(value = "Operación para listar los Usuarios que siguen a un Usuario", response = Usuario[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario")
+							})
 	@PostMapping(value = "/listFollowers", produces = "application/json")
 	@ResponseBody
-	public Usuario[] listFollowers(@RequestBody String u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Usuario[] listFollowers(@RequestBody String u, HttpServletResponse response, BindingResult result){
 	
 		try {
 			
@@ -1003,9 +903,12 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para listar las Playlists que sigue un Usuario", response = Reproduccion[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "sessionUser", value = "Correo del usuario")
+							})
 	@PostMapping(value = "/listFollowsPlaylists", produces = "application/json")
 	@ResponseBody
-	public Reproduccion[] listFollowsPlaylists(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Reproduccion[] listFollowsPlaylists(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			String user = (String) u;
@@ -1017,10 +920,15 @@ public class UserController {
 		return null;
 	}
 	
-	
+	@ApiOperation(value = "Operación para que un Usuario le de Me Gusta a una Cancion", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del Album"),
+							@ApiImplicitParam(name = "correoalbum", value = "Correo del Usuario dueño del Album"),
+							@ApiImplicitParam(name = "idcancion", value = "ID numérico de la Cancion")
+						})
 	@PostMapping(value = "/likeSong", produces = "application/json")
 	@ResponseBody
-	public Boolean likeSong(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Boolean likeSong(@RequestBody Object u, HttpServletResponse response, BindingResult result) {
 		try{
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("correo");
@@ -1034,9 +942,15 @@ public class UserController {
 		return false;
 	}
 	
+	@ApiOperation(value = "Operación para que un Usuario le quite el Me Gusta a una Cancion", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del Album"),
+							@ApiImplicitParam(name = "correoalbum", value = "Correo del Usuario dueño del Album"),
+							@ApiImplicitParam(name = "idcancion", value = "ID numérico de la Cancion")
+						})
 	@PostMapping(value = "/unlikeSong", produces = "application/json")
 	@ResponseBody
-	public Boolean unlikeSong(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Boolean unlikeSong(@RequestBody Object u, HttpServletResponse response, BindingResult result) {
 		try{
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("correo");
@@ -1052,9 +966,16 @@ public class UserController {
 		return false;
 	}
 	
+	
+	@ApiOperation(value = "Operación para comprobar si a un Usuario Le Gusta una Cancion", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario"),
+							@ApiImplicitParam(name = "idalbum", value = "ID numérico del Album"),
+							@ApiImplicitParam(name = "correoalbum", value = "Correo del Usuario dueño del Album"),
+							@ApiImplicitParam(name = "idcancion", value = "ID numérico de la Cancion")
+						})
 	@PostMapping(value = "/checkLike", produces = "application/json")
 	@ResponseBody
-	public Boolean checkLike(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Boolean checkLike(@RequestBody Object u, HttpServletResponse response, BindingResult result) {
 		try{
 			LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			String user = lhm.get("correo");
@@ -1068,9 +989,12 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para listar las Canciones que Le Gustan a un Usuario", response = Cancion[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario")
+						})
 	@PostMapping(value = "/listLikes", produces = "application/json")
 	@ResponseBody
-	public Cancion[] listLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Cancion[] listLikes(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			String user = (String) u;
@@ -1082,9 +1006,12 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para listar los Albums que Le Gustan a un Usuario", response = Album[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario")
+						})
 	@PostMapping(value = "/listAlbumsLikes", produces = "application/json")
 	@ResponseBody
-	public Album[] listAlbumsLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Album[] listAlbumsLikes(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			String user = (String) u;
@@ -1096,9 +1023,12 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para listar los Usuarios que Le Gustan a un Usuario", response = Usuario[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario")
+						})
 	@PostMapping(value = "/listUsersLikes", produces = "application/json")
 	@ResponseBody
-	public Usuario[] listUsersLikes(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Usuario[] listUsersLikes(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		
 		try {
 			String user = (String) u;
@@ -1110,107 +1040,11 @@ public class UserController {
 		return null;
 	}
 	
-	@PostMapping(value = "/uploadSong", produces = "application/json")
-	@ResponseBody
-	public Boolean uploadSong(@RequestParam("file") MultipartFile file, ModelMap model, HttpServletResponse response){
-		System.out.println("Entro en uploadSong");
-		try {
-			/*if(!f.getContentType().equals("MIME_AUDIO_MPEG")) {
-				throw new Exception("No es un archivo de audio");
-			}
-			*/
-			System.out.println(file.getContentType());
-			System.out.println(file.getName());
-			System.out.println(file.getOriginalFilename());
-			System.out.println(file.getSize());
-			System.out.println(file.getClass());
-			System.out.println(file.getResource());
-			byte[] b = file.getBytes();
-
-  		System.out.println("Bytes antes:");
-			System.out.println(b.length);
-			/*
-			byte[] b_compressed = compressBytes(b);
-			
-			System.out.println("Bytes despues:");
-			System.out.println(b_compressed.length);
-			System.out.println("Bytes uncompressed:");
-			System.out.println(decompressBytes(b_compressed).length);
-			*/
-			/*
-			System.out.println("He pillado los bytes");
-      */
-			keyLista kLa = new keyLista(1,"usuario");
-			Cancion c = new Cancion(kLa, 1, "nombre", "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
-			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
-			keyCancion kc = cancionService.createCancion( kLa, c );
-			if(kc == null) {
-				throw new Exception("No se ha podido guardar la cancion");
-			}
-      
-			System.out.println("He guardado la cancion");
-			/*
-			String directory = Paths.get("").toAbsolutePath().toString();
-			
-			System.out.println("Directory: " + directory);
-			String path = directory + "\\src\\main\\resources\\files\\";
-			String songName = c.getNombre() + c.getIdCancion().getL_id().getU() + ".mp3";
-			
-			FileOutputStream fos = new FileOutputStream(path + songName);
-			fos.write(b);
-			*/
-			return true;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	
-	/*
+	@ApiOperation(value = "Operación para subir una Cancion a un Album", response = keyCancion.class)
 	@PostMapping(value = "/subirCancion", produces = "application/json")
 	@ResponseBody
 	public keyCancion subirCancion(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
-								@RequestParam("nombreC") String nombre, ModelMap model, HttpServletResponse response){
-		
-		try {
-			int id_a = Integer.parseInt(id);
-			keyLista kl = new keyLista(id_a,user);
-			Cancion c = new Cancion(kl, -1, nombre, "genero", null); 	// Se crea el objeto con un 1 como id_cancion temporalmente, 
-			System.out.println("He construido la nueva cancion");							// se actualiza en el metodo repository.createCancion()
-			if(!cancionService.createCancion( kl, c )) {
-				throw new Exception("No se ha podido guardar la cancion");
-			}
-			
-			String directory = Paths.get("").toAbsolutePath().toString();
-			
-			//String path = directory + "/src/main/resources/files/";
-			//String path = "\\app\\app\\src\\main\\resources\\static\\assets\\";
-			//String songsPath = directory + "/src/main/resources/static/assets/";
-			//String path = songsPath;
-			// Id Cancion + Id Album + Id Usuario
-			System.out.println("Es del tipo: " + file.getContentType());
-			String path = directory + "/src/main/resources/static/assets/";
-			String songName = String.valueOf(c.getIdCancion().getC_id()) + String.valueOf(c.getIdCancion().getL_id().getL_id()) + 
-								c.getIdCancion().getL_id().getU() + ".mp3";
-			
-			FileOutputStream fos = new FileOutputStream(path + songName);
-			fos.write(file.getBytes());
-			fos.close();
-			
-			return c.getIdCancion();
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	*/
-	
-	@PostMapping(value = "/subirCancion", produces = "application/json")
-	@ResponseBody
-	public keyCancion subirCancion(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
-								@RequestParam("nombreC") String nombre, @RequestParam("genero") String gen, ModelMap model, HttpServletResponse response){
+								@RequestParam("nombreC") String nombre, @RequestParam("genero") String gen, HttpServletResponse response){
 		
 		try {
 			int id_a = Integer.parseInt(id);
@@ -1244,11 +1078,11 @@ public class UserController {
 		return null;
 	}
 	
-	
+	@ApiOperation(value = "Operación para subir un Capitulo a un Podcast", response = keyCancion.class)
 	@PostMapping(value = "/subirCapitulo", produces = "application/json")
 	@ResponseBody
 	public keyCancion subirCapitulo(@RequestParam("file") MultipartFile file, @RequestParam("idalbum") String id, @RequestParam("user") String user, 
-								@RequestParam("nombreC") String nombre, @RequestParam("genero") String gen, ModelMap model, HttpServletResponse response){
+								@RequestParam("nombreC") String nombre, @RequestParam("genero") String gen, HttpServletResponse response){
 		
 		try {
 			int id_a = Integer.parseInt(id);
@@ -1283,54 +1117,17 @@ public class UserController {
 		return null;
 	}
 	
-	/*
-	@PostMapping(value = "/URLCancion", produces = "application/json")
-	@ResponseBody
-	public File URLCancion(@RequestParam("idalbum") String id, @RequestParam("user") String user, 
-								@RequestParam("idcancion") String idc, ModelMap model, HttpServletResponse response){
-		
-		try {
-			String directory = Paths.get("").toAbsolutePath().toString();
-			System.out.println("Directorio: " + directory);
-			String songsPath = "/src/main/resources/static/assets/";
-			//String path = directory.concat(songsPath);
-			//String path = "\\app\\app\\src\\main\\resources\\static\\assets\\";
-			// Id Cancion + Id Album + Id Usuario
-			String songName = idc + id + user + ".mp3";
-			String path = directory + "/src/main/resources/static/assets/";
-			
-			File f = new File(path + songName);
-			
-			System.out.println("Path: " + f.getPath());
-			
-			if(!f.exists()) {
-				throw new Exception("La cancion no existe");
-			}
-			System.out.println("URL: " + f.toURI().toURL().toString());
-			System.out.println("URI: " + f.toURI().toString());
-			System.out.println("getAbsolutePath: " + f.getAbsolutePath());
-			System.out.println("getCanonicalPath: " + f.getCanonicalPath());
-			System.out.println("getPath: " + f.getPath());
-			f.setReadable(true);
-			return f;
-		}catch(Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	*/
 	
+	@ApiOperation(value = "Operación para obtener la URL a una Cancion", response = String.class)
 	@PostMapping(value = "/URLCancion", produces = "application/json")
 	@ResponseBody
 	public String URLCancion(@RequestParam("idalbum") String id, @RequestParam("user") String user, 
-								@RequestParam("idcancion") String idc, ModelMap model, HttpServletResponse response){
+								@RequestParam("idcancion") String idc, HttpServletResponse response){
 		
 		try {
 			String directory = Paths.get("").toAbsolutePath().toString();
 			System.out.println("Directorio: " + directory);
 			String songsPath = "/src/main/resources/static/assets/";
-			//String path = directory.concat(songsPath);
-			//String path = "\\app\\app\\src\\main\\resources\\static\\assets\\";
 			// Id Cancion + Id Album + Id Usuario
 			String songName = "Cancion?idsong=";
 			songName = songName + idc + id + user + ".mp3";
@@ -1342,9 +1139,10 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para obtener la URL a una Foto de un Usuario", response = String.class)
 	@PostMapping(value = "/URLFotoUsuario", produces = "application/json")
 	@ResponseBody
-	public String URLFotoUsuario(@RequestBody Object u, ModelMap model, HttpServletResponse response){
+	public String URLFotoUsuario(@RequestBody Object u, HttpServletResponse response){
 		
 		try {
 
@@ -1358,9 +1156,10 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para obtener la URL a una Foto de un Album", response = String.class)
 	@PostMapping(value = "/URLFotoAlbum", produces = "application/json")
 	@ResponseBody
-	public String URLFotoAlbum(@RequestBody Object u, ModelMap model, HttpServletResponse response){
+	public String URLFotoAlbum(@RequestBody Object u, HttpServletResponse response){
 		
 		try {
 
@@ -1378,9 +1177,10 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para obtener la URL a una Foto de un Podcast", response = String.class)
 	@PostMapping(value = "/URLFotoPodcast", produces = "application/json")
 	@ResponseBody
-	public String URLFotoPodcast(@RequestBody Object u, ModelMap model, HttpServletResponse response){
+	public String URLFotoPodcast(@RequestBody Object u, HttpServletResponse response){
 		
 		try {
 
@@ -1398,9 +1198,10 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para obtener la URL a una Foto de una Playlist", response = String.class)
 	@PostMapping(value = "/URLFotoPlaylist", produces = "application/json")
 	@ResponseBody
-	public String URLFotoPlaylist(@RequestBody Object u, ModelMap model, HttpServletResponse response){
+	public String URLFotoPlaylist(@RequestBody Object u, HttpServletResponse response){
 		
 		try {
 
@@ -1418,9 +1219,10 @@ public class UserController {
 		return null;
 	}
 	
+	@ApiOperation(value = "Operación que devuelve la Cancion especificada en idsong", response = InputStreamResource.class)
 	@GetMapping(value = "/Cancion", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	@ResponseBody
-	public ResponseEntity requestSong(@RequestParam("idsong") String song, ModelMap model, HttpServletResponse response) throws IOException{
+	public ResponseEntity requestSong(@RequestParam("idsong") String song, HttpServletResponse response) throws IOException{
 		
 		try {
 			System.out.println("Cancion con id: " + song);
@@ -1435,9 +1237,10 @@ public class UserController {
 		return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
 	}
 
+	@ApiOperation(value = "Operación que devuelve la Foto especificada en idfoto", response = InputStreamResource.class)
 	@GetMapping(value = "/Image", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	@ResponseBody
-	public ResponseEntity requestFoto(@RequestParam("idfoto") String foto, ModelMap model, HttpServletResponse response) throws IOException{
+	public ResponseEntity requestFoto(@RequestParam("idfoto") String foto, HttpServletResponse response) throws IOException{
 		
 		try {
 			System.out.println("Foto con id: " + foto);
@@ -1452,9 +1255,12 @@ public class UserController {
 		return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
 	}
 	
+	@ApiOperation(value = "Operación para recuperar la Contraseña dado un Correo", response = Boolean.class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "user", value = "Correo del usuario")
+						})
 	@PostMapping(value = "/recoverEmail", produces = "application/json")
 	@ResponseBody
-	public Boolean recoverEmail(@RequestBody String u, ModelMap model, HttpServletResponse response){
+	public Boolean recoverEmail(@RequestBody String u, HttpServletResponse response){
 		try {
 			String to = u;
 			System.out.println("El correo: " + u + "quiere recuperar la contraseña");
@@ -1492,62 +1298,13 @@ public class UserController {
 		}
 		return false;
 	}
-	
-	@PostMapping(value = "/uploadSongs")
-	@ResponseBody
-	public boolean uploadSongs(@RequestBody MultipartFile[] f, ModelMap model, HttpServletResponse response, BindingResult result){
-		try {
-			for(int i = 0; i < f.length; i++) {
-				MultipartFile f_ = f[i];
-				if(!f_.getContentType().equals("MIME_AUDIO_MPEG")) {
-					throw new Exception("No es un archivo de audio");
-				}
-				
-				byte[] b = f_.getBytes();
-				
-				keyLista kLa = new keyLista(1,"usuario");
-				Cancion c = new Cancion(kLa, 1, "nombre", "genero", null);
-				keyCancion kc = cancionService.createCancion(kLa, c);
-				if(kc == null) {
-					throw new Exception("No se ha podido guardar la cancion");
-				}
-			}
-			
-			return true;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return false;
-	}
-	
-	@GetMapping(value = "/getSong",  produces = "application/json")
-	public URL getSong(ModelMap model, HttpServletResponse response){
-		URL url = null;
-		try {
-			
-			Cancion c = cancionService.getCancion(1, "usuario", 1);
-			
-			String directory = Paths.get("").toAbsolutePath().toString();
-			
-			System.out.println("Directory: " + directory);
-			String path = directory + "\\src\\main\\resources\\files\\";
-			String songName = c.getNombre() + c.getIdCancion().getL_id().getU() + ".mp3";
-			
-			FileOutputStream fos = new FileOutputStream(directory + songName);
-			//fos.write(c.getMp3());
-			File f = new File(directory + songName);
-			url = f.toURI().toURL();
-			String u;
-			return url;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return url;
-	}
 
+	@ApiOperation(value = "Operación para listar los Albums de un Usuario", response = Album[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario")
+						})
 	@PostMapping(value = "/getAlbumsByUser", produces = "application/json")
 	@ResponseBody
-	public Album[] getAlbumsByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Album[] getAlbumsByUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		try {
 			//LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			
@@ -1563,9 +1320,12 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para listar los Podcasts de un Usuario", response = Podcast[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario")
+						})
 	@PostMapping(value = "/getPodcastsByUser", produces = "application/json")
 	@ResponseBody
-	public Podcast[] getPodcastsByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Podcast[] getPodcastsByUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		try {
 			//LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			
@@ -1579,9 +1339,12 @@ public class UserController {
 		return null;
 	}
 
+	@ApiOperation(value = "Operación para listar las Playlists de un Usuario", response = Reproduccion[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "correo", value = "Correo del usuario")
+						})
 	@PostMapping(value = "/getPlaylistByUser", produces = "application/json")
 	@ResponseBody
-	public Reproduccion[] getPlaylistByUser(@RequestBody Object u, ModelMap model, HttpServletResponse response, BindingResult result){
+	public Reproduccion[] getPlaylistByUser(@RequestBody Object u, HttpServletResponse response, BindingResult result){
 		try {
 			//LinkedHashMap<String,String> lhm = (LinkedHashMap) u;
 			
@@ -1598,9 +1361,12 @@ public class UserController {
 	
 	//Métodos de búsqueda:
 	
+	@ApiOperation(value = "Operación para buscar Albums dado un nombre", response = Album[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "nombre", value = "Nombre del Album")
+						})
 	@PostMapping(value = "/searchAlbum", produces = "application/json")
 	@ResponseBody
-	public Album[] searchAlbum(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Album[] searchAlbum(@RequestBody String s, HttpServletResponse response, BindingResult result) {
 		try {
 			String[] divide = s.split("\"");
 			if(divide.length > 1) {
@@ -1615,9 +1381,12 @@ public class UserController {
 		return null;
 	}
 	
+	@ApiOperation(value = "Operación para buscar Usuarios dado un nombre", response = Usuario[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "nombre", value = "Nombre del Usuario")
+						})
 	@PostMapping(value = "/searchUser", produces = "application/json")
 	@ResponseBody
-	public Usuario[] searchUser(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Usuario[] searchUser(@RequestBody String s, HttpServletResponse response, BindingResult result) {
 		try {
 			String[] divide = s.split("\"");
 			if(divide.length > 1) {
@@ -1634,9 +1403,12 @@ public class UserController {
 		return null;
 	}
 	
+	@ApiOperation(value = "Operación para buscar Playlists dado un nombre", response = Reproduccion[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "nombre", value = "Nombre de la Playlist")
+						})
 	@PostMapping(value = "/searchPlaylist", produces = "application/json")
 	@ResponseBody
-	public Reproduccion[] searchPlaylist(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Reproduccion[] searchPlaylist(@RequestBody String s, HttpServletResponse response, BindingResult result) {
 		try {
 			String[] divide = s.split("\"");
 			if(divide.length > 1) {
@@ -1652,9 +1424,12 @@ public class UserController {
 		return null;
 	}
 	
+	@ApiOperation(value = "Operación para buscar Podcasts dado un nombre", response = Podcast[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "nombre", value = "Nombre del Podcast")
+						})
 	@PostMapping(value = "/searchPodcast", produces = "application/json")
 	@ResponseBody
-	public Podcast[] searchPodcast(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Podcast[] searchPodcast(@RequestBody String s, HttpServletResponse response, BindingResult result) {
 		try {
 			String[] divide = s.split("\"");
 			if(divide.length > 1) {
@@ -1670,10 +1445,12 @@ public class UserController {
 		return null;
 	}
 	
-	
+	@ApiOperation(value = "Operación para buscar Canciones dado un nombre", response = Cancion[].class)
+	@ApiImplicitParams({@ApiImplicitParam(name = "nombre", value = "Nombre de la Cancion")
+						})
 	@PostMapping(value = "/searchSong", produces = "application/json")
 	@ResponseBody
-	public Cancion[] searchSong(@RequestBody String s, ModelMap model, HttpServletResponse response, BindingResult result) {
+	public Cancion[] searchSong(@RequestBody String s, HttpServletResponse response, BindingResult result) {
 		try {
 			String[] divide = s.split("\"");
 			if(divide.length > 1) {
